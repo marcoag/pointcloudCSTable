@@ -14,6 +14,9 @@
 
 #include "cloudPFConfig.h"
 
+using namespace RMat;
+
+
 class CloudPFInputData
 {
 public:

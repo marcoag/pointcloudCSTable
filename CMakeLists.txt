@@ -6,10 +6,10 @@ SET ( SOURCES
   main.cpp
   outlierExtraction.cpp
   cloudParticle.cpp
-  qvec.cpp
-  qmat.cpp
-  qmatrot.cpp
-  qrtmat.cpp
+  QMat/qvec.cpp
+  QMat/qmat.cpp
+  QMat/qmatrot.cpp
+  QMat/qrtmat.cpp
 
 )
 set(CMAKE_CXX_FLAGS "-Wall -Wfatal-errors")
