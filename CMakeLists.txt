@@ -6,6 +6,7 @@ SET ( SOURCES
   main.cpp
   outlierExtraction.cpp
   cloudParticle.cpp
+  icp.cpp
   QMat/qvec.cpp
   QMat/qmat.cpp
   QMat/qmatrot.cpp
@@ -18,7 +19,7 @@ include_directories(.)
 
 find_package(PCL 1.6 REQUIRED COMPONENTS common )
 include_directories(${PCL_INCLUDE_DIRS})
-include_directories(/usr/include/pcl-1.6)
+include_directories(/usr/include/pcl-1.6 /usr/include/vtk-5.8)
 link_directories(${PCL_LIBRARY_DIRS} /usr/local/lib )
 add_definitions(${PCL_DEFINITIONS})
 
@@ -42,7 +43,7 @@ SET( QT_USE_QTXML TRUE )
 INCLUDE( ${QT_USE_FILE} )
 
 # PCL
-SET ( PCL_USER_LIBRARIES  ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_LIBRARIES} -lpcl_search -lpcl_common -lpcl_io -lpcl_filters -lpcl_kdtree -lpcl_octree -lpcl_segmentation -lgsl -lblas )
+SET ( PCL_USER_LIBRARIES  ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_LIBRARIES} -lpcl_search -lpcl_common -lpcl_io -lpcl_filters -lpcl_kdtree -lpcl_octree -lpcl_segmentation -lgsl -lblas -lpcl_visualization -lvtkCommon -lvtkFiltering)
 
 # Specify construction and link process
 SET (EXECUTABLE_OUTPUT_PATH .)
