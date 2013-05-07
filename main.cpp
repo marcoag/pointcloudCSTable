@@ -25,48 +25,46 @@ int main(int argc, char* argv[])
 	printf("Reading point clouds from hard disk...\n");
 	boost::shared_ptr< PCLPointCloud > real_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	boost::shared_ptr< PCLPointCloud > virtual_points0 = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
-  boost::shared_ptr< PCLPointCloud > outliers = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
+	boost::shared_ptr< PCLPointCloud > outliers = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	readPCD(argv[1], real_points);
 	readPCD(argv[2], virtual_points0);
   
-  //Visalization of the point clouds before adjusts
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Results"));
-  int v1(0);
-  viewer->createViewPort (0.0, 0.666, 0.5, 1.0, v1);
-  viewer->setBackgroundColor (0, 0, 0, v1);
-  viewer->addText ("Point clouds previous to adjusts", 10, 10, "v1 text", v1);
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_points(real_points, 0, 255, 0);
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points0, 255, 0, 0);
-  viewer->addPointCloud<pcl::PointXYZ> (real_points, color_real_points, "real_points", v1);
-  viewer->addPointCloud<pcl::PointXYZ> (virtual_points0, color_virtual_points, "virtual_points", v1);
-  
-  //Outliers
-  pcl::SegmentDifferences<pcl::PointXYZ> sgmnt;
-  sgmnt.setDistanceThreshold(0.1);
-  sgmnt.setTargetCloud(virtual_points0);
-  sgmnt.setInputCloud(real_points);
-  sgmnt.segment(*outliers);
-  
-  //visalize outliers:
-  int v2(0);
-  viewer->createViewPort (0.5, 0.6666, 1.0, 1.0, v2);
-  viewer->addText ("Outliers previous to adjusts", 10, 10, "v2 text", v2);
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(outliers, 0, 0, 255);
-  viewer->addPointCloud<pcl::PointXYZ> (outliers, color_outliers, "outliers", v2);
-  
+	//Visalization of the point clouds without adjustments
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Results"));
+	int v1(0);
+	viewer->createViewPort (0.0, 0.666, 0.5, 1.0, v1);
+	viewer->setBackgroundColor (0, 0, 0, v1);
+	viewer->addText ("Input point clouds", 10, 10, "v1 text", v1);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_points(real_points, 255, 0, 0);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points0, 0, 255, 0);
+	viewer->addPointCloud<pcl::PointXYZ> (real_points, color_real_points, "real_points", v1);
+	viewer->addPointCloud<pcl::PointXYZ> (virtual_points0, color_virtual_points, "virtual_points", v1);
+	//Outliers
+	pcl::SegmentDifferences<pcl::PointXYZ> sgmnt;
+	sgmnt.setDistanceThreshold(0.1);
+	sgmnt.setTargetCloud(virtual_points0);
+	sgmnt.setInputCloud(real_points);
+	sgmnt.segment(*outliers);
+	//visalize outliers:
+	int v2(0);
+	viewer->createViewPort (0.5, 0.6666, 1.0, 1.0, v2);
+	viewer->addText ("Outliers previous to adjusts", 10, 10, "v2 text", v2);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(outliers, 0, 0, 255);
+	viewer->addPointCloud<pcl::PointXYZ> (outliers, color_outliers, "outliers", v2);
+
 
 	// ICP
-  Icp *icp = new Icp(real_points, virtual_points0, viewer);
+	ICP *icp = new ICP(real_points, virtual_points0, viewer);
 
 	// Cognitive Subtraction
 	Worker *worker = new Worker(real_points, virtual_points0, viewer);
 
 	// Visualization
-  while (!viewer->wasStopped ())
-  {
-    viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
-  }
+	while (!viewer->wasStopped ())
+	{
+		viewer->spinOnce (100);
+		usleep(100);
+	}
 
 	// deletes
 	delete worker;
