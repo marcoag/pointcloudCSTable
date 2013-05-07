@@ -4,7 +4,7 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-
+#include <pcl/visualization/pcl_visualizer.h>
 
 #include "config.h"
 #include "outlierExtraction.h"
@@ -18,7 +18,7 @@ typedef pcl::PointCloud<pcl::PointXYZ> PCLPointCloud;
 class Worker
 {
 public:
-	Worker(boost::shared_ptr< PCLPointCloud > real_points_F, boost::shared_ptr< PCLPointCloud > virtual_points0_F)
+	Worker(boost::shared_ptr< PCLPointCloud > real_points_F, boost::shared_ptr< PCLPointCloud > virtual_points0_F,  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 	{
 		real_points = real_points_F;
 		virtual_points0 = virtual_points0_F;
@@ -33,6 +33,25 @@ public:
 
 		exps = 1;
 		compute();
+    
+    //show results:
+    int v5(0);
+    viewer->createViewPort (0.0, 0.0, 0.5, 0.3, v5);
+    viewer->setBackgroundColor (0, 0, 0, v5);
+    viewer->addText ("Cognitive substraction adjust", 10, 10, "v5 text", v5);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_pointsv5(outlierExtraction->getInput(), 0, 255, 0);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_pointsv5(outlierExtraction->getVirtual(), 255, 0, 0);
+    viewer->addPointCloud<pcl::PointXYZ> (outlierExtraction->getInput(), color_real_pointsv5, "real_pointsv5", v5);
+    viewer->addPointCloud<pcl::PointXYZ> (outlierExtraction->getVirtual(), color_virtual_pointsv5, "virtual_pointsv5", v5);
+    
+    //Show outliers
+    int v6(0);
+    viewer->createViewPort (0.5, 0.0, 1.0, 0.3, v6);
+    viewer->setBackgroundColor (0, 0, 0, v6);
+    viewer->addText ("Cognitive substraction outliers", 10, 10, "v6 text", v6);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliersv6(outlierExtraction->getOutliers(), 0, 255, 0);
+    viewer->addPointCloud<pcl::PointXYZ> (outlierExtraction->getOutliers(), color_outliersv6, "cloud_outliersv6", v6);   
+    
 	}
 
 	void compute()
