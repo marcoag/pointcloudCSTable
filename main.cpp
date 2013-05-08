@@ -16,6 +16,7 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <QtCore>
+#include <iostream>
 #include "worker.h"
 #include "icp.h"
 
@@ -27,6 +28,9 @@ int main(int argc, char* argv[])
 	boost::shared_ptr< PCLPointCloud > virtual_points0 = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	readPCD(argv[1], real_points);
 	readPCD(argv[2], virtual_points0);
+ 
+  std::cout<<"number of real: "<<real_points->size()<<std::endl;
+  std::cout<<"number of virtual: "<<virtual_points0->size()<<std::endl;
   
 	//Visalization of the point clouds without adjustments
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Results"));
@@ -38,9 +42,15 @@ int main(int argc, char* argv[])
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points0, 0, 255, 0);
 	viewer->addPointCloud<pcl::PointXYZ> (real_points, color_real_points, "raw_input", v1);
 	viewer->addPointCloud<pcl::PointXYZ> (virtual_points0, color_virtual_points, "raw_virtual", v1);
+  
 	//Outliers
 	boost::shared_ptr< PCLPointCloud > outliers = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
-	pclGetOutliers(real_points, virtual_points0, outliers, 0.1);
+  pcl::SegmentDifferences<pcl::PointXYZ> sgmnt;
+  sgmnt.setDistanceThreshold(0.1);
+  sgmnt.setTargetCloud(virtual_points0);
+  sgmnt.setInputCloud(real_points);
+  sgmnt.segment(*outliers);
+
 	//visalize outliers:
 	int v2(0);
 	viewer->createViewPort (0.5, 0.6666, 1.0, 1.0, v2);
