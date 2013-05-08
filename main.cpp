@@ -26,7 +26,9 @@ int main(int argc, char* argv[])
 	printf("Reading point clouds from hard disk...\n");
 	boost::shared_ptr< PCLPointCloud > real_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	boost::shared_ptr< PCLPointCloud > virtual_points0 = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
+	printf("Reading real input points: %s\n", argv[1]);
 	readPCD(argv[1], real_points);
+	printf("Reading virtual input points: %s\n", argv[2]);
 	readPCD(argv[2], virtual_points0);
  
   std::cout<<"number of real: "<<real_points->size()<<std::endl;
@@ -40,7 +42,7 @@ int main(int argc, char* argv[])
 	viewer->addText ("Input point clouds", 10, 10, "v1 text", v1);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_points(real_points, 255, 0, 0);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points0, 0, 255, 0);
-	viewer->addPointCloud<pcl::PointXYZ> (real_points, color_real_points, "raw_input", v1);
+	viewer->addPointCloud<pcl::PointXYZ> (real_points,     color_real_points,    "raw_input",   v1);
 	viewer->addPointCloud<pcl::PointXYZ> (virtual_points0, color_virtual_points, "raw_virtual", v1);
   
 	//Outliers
@@ -58,13 +60,13 @@ int main(int argc, char* argv[])
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(outliers, 0, 0, 255);
 	viewer->addPointCloud<pcl::PointXYZ> (outliers, color_outliers, "raw_outliers", v2);
 
-
+/*
 	// ICP
 	ICP *icp = new ICP(real_points, virtual_points0, viewer);
 
 	// Cognitive Subtraction
 	Worker *worker = new Worker(real_points, virtual_points0, viewer);
-
+*/
 	// Visualization
 	while (!viewer->wasStopped ())
 	{
@@ -74,7 +76,8 @@ int main(int argc, char* argv[])
 
 
 	// deletes
-	delete worker;
+// 	delete worker;
+// 	delete icp;
 	return 0;
 }
 
