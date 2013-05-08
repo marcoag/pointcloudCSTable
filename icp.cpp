@@ -33,11 +33,22 @@ ICP::ICP (boost::shared_ptr< PCLPointCloud > cloud_input, boost::shared_ptr< PCL
 // 	writer.writeASCII("result_icp.pcd", *cloud_output);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_outliers (new pcl::PointCloud<pcl::PointXYZ>);
-	pclGetOutliers(cloud_input, cloud_output, cloud_outliers, 0.1);
+	//pclGetOutliers(cloud_input, cloud_output, cloud_outliers, 0.1);
+    
+  pcl::SegmentDifferences<pcl::PointXYZ> sgmnt;
+  sgmnt.setDistanceThreshold(0.1);
+  sgmnt.setTargetCloud(cloud_target0);
+  sgmnt.setInputCloud(cloud_output);
+  sgmnt.segment(*cloud_outliers);
+/*  
+  std::cout<<"input: "<<cloud_input->size()<<std::endl;
+  std::cout<<"output: "<<cloud_output->size()<<std::endl;
+  std::cout<<"outliers: "<<cloud_outliers->size()<<std::endl;*/
 // 	try{writer.writeASCII("outliers.pcd", *cloud_outliers);}catch(...){}
 
-	pclGetOutliers(cloud_input, cloud_outliers, cloud_input, 0.1);
+	//pclGetOutliers(cloud_input, cloud_outliers, cloud_input, 0.1);
 // 	try{	writer.writeASCII("non_outliers.pcd", *cloud_input);}catch(...){}
+
 	
 	//Showing results
 	int v3(0);

@@ -60,13 +60,13 @@ int main(int argc, char* argv[])
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(outliers, 0, 0, 255);
 	viewer->addPointCloud<pcl::PointXYZ> (outliers, color_outliers, "raw_outliers", v2);
 
-/*
+
 	// ICP
 	ICP *icp = new ICP(real_points, virtual_points0, viewer);
 
 	// Cognitive Subtraction
 	Worker *worker = new Worker(real_points, virtual_points0, viewer);
-*/
+
 	// Visualization
 	while (!viewer->wasStopped ())
 	{
