@@ -1,10 +1,9 @@
 #include "outlierExtraction.h"
 
 
-OutlierExtraction::OutlierExtraction(CloudPFConfig *cfg) : QThread()
+OutlierExtraction::OutlierExtraction(CloudPFConfig *cfg)
 {
 	config = cfg;
-	computing = false;
 	cloud_input               = boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> >(new pcl::PointCloud<pcl::PointXYZ>);
 	cloud_virtual_transformed = boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> >(new pcl::PointCloud<pcl::PointXYZ>);
 	cloud_virtual             = boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> >(new pcl::PointCloud<pcl::PointXYZ>);
@@ -18,169 +17,155 @@ OutlierExtraction::OutlierExtraction(CloudPFConfig *cfg) : QThread()
 	cOutliers = boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> >(new pcl::PointCloud<pcl::PointXYZ>);
 }
 
-
-void OutlierExtraction::run()
-{
-	while (true)
-	{
-		while (computing==false)
-			usleep(5000);
-		printf("Computing...\n");
-
-		downsample(cloud_input, cloud_input, DOWNSAMPLE_INPUT);
-		downsample(cloud_virtual, cloud_virtual, DOWNSAMPLE_VIRTUAL);
-		/// Set the point cloud 'cloud_virtual' from the virtual point set 'virtualPoints'.
-		/// Particle filter
-		CloudPFInputData input;
-		input.cloud_static = cloud_virtual;
-		input.cloud_moves  = cloud_input;
-		input.kdtree = pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr(new pcl::KdTreeFLANN<pcl::PointXYZ>);
-		input.kdtree->setInputCloud(input.cloud_static);
-		RCParticleFilter<CloudPFInputData, CloudPFControl, CloudParticle, CloudPFConfig> pf(config, input, control);
-		float vT = config->varianceT;
-		float vR = config->varianceR;
-		double t;
-double a = getmsecofday();
-		for (uint i=0; i<config->iters; i++)
-		{
-			CloudParticle::setVarianceT(QVec::vec3(vT, vT, vT));
-			CloudParticle::setVarianceR(QVec::vec3(vR, vR, vR));
-			vT *= config->annealingConstant;
-			vR *= config->annealingConstant;
-			QVec vr = CloudParticle::getVarianceR();
-			QVec vt = CloudParticle::getVarianceT();
-// 			printf("===   Step: %d   ==   VarR:(%f,%f,%f) ===  VarT:(%f,%f,%f)\n", i,vr(0),vr(1),vr(2),vt(0),vt(1),vt(2));
-			pf.step(input, control, false, 8);
-// 			pf.getOrderedParticle(i).getT().print("T");
-// 			pf.getOrderedParticle(i).getR().print("R");
-		}
-double b = getmsecofday();
-t = b-a;
-
-		/// Average last best particles
-/*
-		QVec finalT=QVec::vec3(0,0,0);
-		QVec finalR=QVec::vec3(0,0,0);
-		uint ps = config->particles*0.1>0?config->particles*0.1:0;
-// 		if (ps>5) ps = 5;
-		ps = 1;
-		for (uint i=0; i<ps; ++i)
-		{
-			finalT += pf.getOrderedParticle(i).getT();
-			finalR += pf.getOrderedParticle(i).getR();
-		}
-		if (ps>0)
-		{
-			finalT = finalT.operator/(ps);
-			finalR = finalR.operator/(ps);
-		}
-		CloudParticle best;
-		best.setValues(finalT, finalR);
-		finalT.print("T");
-		finalR.print("R");
-*/
-		CloudParticle best = pf.getBest();
-// 		best.getT().print("T");
-// 		best.getR().print("R");
-// 		printf("exps: %d\n", exps);
-		if (exps>0)
-		{
-			FILE *fd = fopen("results.txt", "a");
-			if (fd == NULL) { printf("Can't open results.txt!\n"); exit(-1); }
-			fprintf(fd, "particles:%d ", (int)config->particles);
-			fprintf(fd, "varianceR:%f ", (float)config->varianceR);
-			fprintf(fd, "varianceT:%f ", (float)config->varianceT);
-			fprintf(fd, "annealingConstant:%f ", (float)config->annealingConstant);
-			fprintf(fd, "iters:%d ", (int)config->iters);
-			fprintf(fd, "downsampleInput:%f ",   (float)DOWNSAMPLE_INPUT);
-			fprintf(fd, "downsampleVirtual:%f ", (float)DOWNSAMPLE_VIRTUAL);
-			fprintf(fd, "optimizationMin:%f ", (float)PARTICLE_OPTIMIZATION_MIN);
-			fprintf(fd, "optimizationMax:%f ", (float)PARTICLE_OPTIMIZATION_MAX);
-			fprintf(fd, "distanceFunction:%d ", (int)DISTANCE_FUNCTION);
-			fprintf(fd, "input:%s ",   INPUT_FILE);
-			fprintf(fd, "virtual:%s ", VIRTUAL_FILE);
-			fprintf(fd, "mul:%f ",    (float)MUL_SCALE_FILE);
-			fprintf(fd, "error:%f ", (float)best.getError());
-			fprintf(fd, "R:%f_%f_%f ", best.getR()(0), best.getR()(1), best.getR()(2) );
-			fprintf(fd, "T:%f_%f_%f ", best.getT()(0), best.getT()(1), best.getT()(2) );
-			fprintf(fd, "t:%f\n", t);
-			fclose( fd );
-			exps--;
-		}
-		else
-		{
-// 			system("killall -9 gualzru_unknown");
-			exit(0);
-		}
-
-		/// Transform the input cloud to match the target using the information provided by the particle filter
-		pcl::transformPointCloud(*cloud_virtual, *cloud_virtual_transformed, best.getEigenTransformation());
-
-		/// Use such cloud to extract outliers
-		pclGetOutliers(cloud_input, cloud_virtual_transformed, cloud_outliers, PARTICLE_DISTANCE_THRESHOLD);
-
-		cm.lock();
-		*cInput    = *cloud_input;
-		*cVirtual  = *cloud_virtual_transformed;
-		*cOutliers = *cloud_outliers;
-		cm.unlock();
-
-		write = true;
-		if (write) writeMainClouds();
-
-
-		/// Subtraction itself
-		cloudss.clear();
-		const uint min_cluster_size = 30;
-		if (cloud_outliers->points.size() > min_cluster_size)
-		{
-			boost::shared_ptr< pcl::search::KdTree<pcl::PointXYZ> > tree(new pcl::search::KdTree<pcl::PointXYZ>);
-			tree->setInputCloud(cloud_outliers);
-
-			pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-			ec.setClusterTolerance (150);
-			ec.setMinClusterSize (min_cluster_size);
-			ec.setMaxClusterSize (640*480);
-			ec.setSearchMethod(tree);
-			ec.setInputCloud(cloud_outliers);
-
-			std::vector<pcl::PointIndices> cluster_indices;
-			ec.extract(cluster_indices);
-
-			for (std::vector<pcl::PointIndices>::const_iterator it=cluster_indices.begin(); it!=cluster_indices.end(); ++it)
-			{
-				boost::shared_ptr < pcl::PointCloud<pcl::PointXYZ> > cloud_cluster(new pcl::PointCloud<pcl::PointXYZ>);
-				for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
-				{
-					cloud_cluster->points.push_back(cloud_outliers->points[*pit]);
-				}
-				cloud_cluster->width = cloud_cluster->points.size();
-				cloud_cluster->height = 1;
-				cloud_cluster->is_dense = true;
-				if (cloud_cluster->points.size() > min_cluster_size)
-				{
-// 					printf("  +1  (%u)\n", (uint32_t)cloud_cluster->points.size());
-					cloudss.push_back(cloud_cluster);
-				}
-			}
-		}
-		else
-		{
-			printf("  Too few outlier points ( <= %d )\n", min_cluster_size);
-		}
-
-		printf("OUTLIER EXTRACTION ENDS: %u clouds\n", (unsigned int)cloudss.size());
-		computing = false;
-		cloudss_copy = cloudss;
-	}
-}
-
 void OutlierExtraction::compute(const CloudPFControl p, bool w, int expss)
 {
 	write = w;
 	control = p;
 	exps = expss;
-	computing = true;
+	printf("Computing...\n");
+
+	downsample(cloud_input, cloud_input, DOWNSAMPLE_INPUT);
+	downsample(cloud_virtual, cloud_virtual, DOWNSAMPLE_VIRTUAL);
+	/// Set the point cloud 'cloud_virtual' from the virtual point set 'virtualPoints'.
+	/// Particle filter
+	CloudPFInputData input;
+	input.cloud_static = cloud_virtual;
+	input.cloud_moves  = cloud_input;
+	input.kdtree = pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr(new pcl::KdTreeFLANN<pcl::PointXYZ>);
+	input.kdtree->setInputCloud(input.cloud_static);
+	RCParticleFilter<CloudPFInputData, CloudPFControl, CloudParticle, CloudPFConfig> pf(config, input, control);
+	float vT = config->varianceT;
+	float vR = config->varianceR;
+	double t;
+double a = getmsecofday();
+	for (uint i=0; i<config->iters; i++)
+	{
+		CloudParticle::setVarianceT(QVec::vec3(vT, vT, vT));
+		CloudParticle::setVarianceR(QVec::vec3(vR, vR, vR));
+		vT *= config->annealingConstant;
+		vR *= config->annealingConstant;
+		QVec vr = CloudParticle::getVarianceR();
+		QVec vt = CloudParticle::getVarianceT();
+// 			printf("===   Step: %d   ==   VarR:(%f,%f,%f) ===  VarT:(%f,%f,%f)\n", i,vr(0),vr(1),vr(2),vt(0),vt(1),vt(2));
+		pf.step(input, control, false, 8);
+// 			pf.getOrderedParticle(i).getT().print("T");
+// 			pf.getOrderedParticle(i).getR().print("R");
+	}
+double b = getmsecofday();
+t = b-a;
+
+	/// Average last best particles
+/*
+	QVec finalT=QVec::vec3(0,0,0);
+	QVec finalR=QVec::vec3(0,0,0);
+	uint ps = config->particles*0.1>0?config->particles*0.1:0;
+// 		if (ps>5) ps = 5;
+	ps = 1;
+	for (uint i=0; i<ps; ++i)
+	{
+		finalT += pf.getOrderedParticle(i).getT();
+		finalR += pf.getOrderedParticle(i).getR();
+	}
+	if (ps>0)
+	{
+		finalT = finalT.operator/(ps);
+		finalR = finalR.operator/(ps);
+	}
+	CloudParticle best;
+	best.setValues(finalT, finalR);
+	finalT.print("T");
+	finalR.print("R");
+*/
+	CloudParticle best = pf.getBest();
+// 		best.getT().print("T");
+// 		best.getR().print("R");
+// 		printf("exps: %d\n", exps);
+	if (exps>0)
+	{
+		FILE *fd = fopen("results.txt", "a");
+		if (fd == NULL) { printf("Can't open results.txt!\n"); exit(-1); }
+		fprintf(fd, "particles:%d ", (int)config->particles);
+		fprintf(fd, "varianceR:%f ", (float)config->varianceR);
+		fprintf(fd, "varianceT:%f ", (float)config->varianceT);
+		fprintf(fd, "annealingConstant:%f ", (float)config->annealingConstant);
+		fprintf(fd, "iters:%d ", (int)config->iters);
+		fprintf(fd, "downsampleInput:%f ",   (float)DOWNSAMPLE_INPUT);
+		fprintf(fd, "downsampleVirtual:%f ", (float)DOWNSAMPLE_VIRTUAL);
+		fprintf(fd, "optimizationMin:%f ", (float)PARTICLE_OPTIMIZATION_MIN);
+		fprintf(fd, "optimizationMax:%f ", (float)PARTICLE_OPTIMIZATION_MAX);
+		fprintf(fd, "distanceFunction:%d ", (int)DISTANCE_FUNCTION);
+		fprintf(fd, "input:%s ",   INPUT_FILE);
+		fprintf(fd, "virtual:%s ", VIRTUAL_FILE);
+		fprintf(fd, "mul:%f ",    (float)MUL_SCALE_FILE);
+		fprintf(fd, "error:%f ", (float)best.getError());
+		fprintf(fd, "R:%f_%f_%f ", best.getR()(0), best.getR()(1), best.getR()(2) );
+		fprintf(fd, "T:%f_%f_%f ", best.getT()(0), best.getT()(1), best.getT()(2) );
+		fprintf(fd, "t:%f\n", t);
+		fclose( fd );
+		exps--;
+	}
+	else
+	{
+// 			system("killall -9 gualzru_unknown");
+		exit(0);
+	}
+
+	/// Transform the input cloud to match the target using the information provided by the particle filter
+	pcl::transformPointCloud(*cloud_virtual, *cloud_virtual_transformed, best.getEigenTransformation());
+
+	/// Use such cloud to extract outliers
+	pclGetOutliers(cloud_input, cloud_virtual_transformed, cloud_outliers, PARTICLE_DISTANCE_THRESHOLD);
+
+	*cInput    = *cloud_input;
+	*cVirtual  = *cloud_virtual_transformed;
+	*cOutliers = *cloud_outliers;
+
+	write = true;
+	if (write) writeMainClouds();
+
+
+	/// Subtraction itself
+	cloudss.clear();
+	const uint min_cluster_size = 30;
+	if (cloud_outliers->points.size() > min_cluster_size)
+	{
+		boost::shared_ptr< pcl::search::KdTree<pcl::PointXYZ> > tree(new pcl::search::KdTree<pcl::PointXYZ>);
+		tree->setInputCloud(cloud_outliers);
+
+		pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+		ec.setClusterTolerance (150);
+		ec.setMinClusterSize (min_cluster_size);
+		ec.setMaxClusterSize (640*480);
+		ec.setSearchMethod(tree);
+		ec.setInputCloud(cloud_outliers);
+
+		std::vector<pcl::PointIndices> cluster_indices;
+		ec.extract(cluster_indices);
+
+		for (std::vector<pcl::PointIndices>::const_iterator it=cluster_indices.begin(); it!=cluster_indices.end(); ++it)
+		{
+			boost::shared_ptr < pcl::PointCloud<pcl::PointXYZ> > cloud_cluster(new pcl::PointCloud<pcl::PointXYZ>);
+			for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+			{
+				cloud_cluster->points.push_back(cloud_outliers->points[*pit]);
+			}
+			cloud_cluster->width = cloud_cluster->points.size();
+			cloud_cluster->height = 1;
+			cloud_cluster->is_dense = true;
+			if (cloud_cluster->points.size() > min_cluster_size)
+			{
+// 					printf("  +1  (%u)\n", (uint32_t)cloud_cluster->points.size());
+				cloudss.push_back(cloud_cluster);
+			}
+		}
+	}
+	else
+	{
+		printf("  Too few outlier points ( <= %d )\n", min_cluster_size);
+	}
+
+	printf("OUTLIER EXTRACTION ENDS: %u clouds\n", (unsigned int)cloudss.size());
+	cloudss_copy = cloudss;
 }
 
 void readPCD(std::string path, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
@@ -263,10 +248,6 @@ void pclGetOutliers(pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud, pcl::PointCl
 
 	outliers->points.clear();
 
-	cloud2m(inputCloud);
-	cloud2m(virtualCloud);
-	threshold*=0.001;
-
 	pcl::KdTreeFLANN<pcl::PointXYZ> kd;
 	kd.setInputCloud(virtualCloud);
 // 	printf("------------\n");
@@ -286,9 +267,6 @@ void pclGetOutliers(pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud, pcl::PointCl
 	outliers->width = outliers->points.size();
 	outliers->height = 1;
 	outliers->is_dense = false;
-	cloud2mm(inputCloud);
-	cloud2mm(virtualCloud);
-	cloud2mm(outliers);
 
 	return;
 // 	writePCD("target_pclout_mm.pcd", virtualCloud);

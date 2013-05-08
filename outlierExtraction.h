@@ -26,9 +26,6 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/extract_indices.h>
 
-#include <QThread>
-#include <QMutexLocker>
-
 #include "config.h"
 #include "cloudParticle.h"
 
@@ -40,12 +37,11 @@ using namespace std;
 
 typedef pcl::PointCloud<pcl::PointXYZ> PCLPointCloud;
 
-class OutlierExtraction : public QThread
+class OutlierExtraction
 {
 public:
 	OutlierExtraction(CloudPFConfig *cfg);
 	void compute(CloudPFControl c, bool write = false, int iters=1);
-	void run();
 	void setPointsReal(pcl::PointCloud<pcl::PointXYZ>::Ptr pts)
 	{
 		cloud_input = pts;
@@ -54,7 +50,6 @@ public:
 	{
 		cloud_virtual = pts;
 	}
-	bool computing;
 	std::vector< boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> > > getClouds()
 	{
 		return cloudss_copy;
@@ -68,7 +63,6 @@ public:
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cInput, cVirtual, cOutliers;
 
-	QMutex cm;
 	pcl::PointCloud<pcl::PointXYZ>::Ptr getInput()    { return cInput; }
 	pcl::PointCloud<pcl::PointXYZ>::Ptr getVirtual()  { return cVirtual; }
 	pcl::PointCloud<pcl::PointXYZ>::Ptr getOutliers() { return cOutliers; }

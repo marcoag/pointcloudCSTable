@@ -28,7 +28,6 @@ public:
 		//CloudPFConfig *config = new CloudPFConfig(1, 0, 0, 0.7);
 		CloudPFConfig *config = new CloudPFConfig(PARTICLES, VARIANCE_R, VARIANCE_T, ANNEALING, ITERS);
 		outlierExtraction = new OutlierExtraction(config);
-		outlierExtraction->start();
 		updateData();
 
 		exps = 1;
@@ -58,8 +57,6 @@ public:
 	void compute()
 	{
 		callOutlierExtraction();
-		while(outlierExtraction->computing)
-			usleep(500);
 	}
 
 private:

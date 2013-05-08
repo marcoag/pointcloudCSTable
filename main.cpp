@@ -30,7 +30,14 @@ int main(int argc, char* argv[])
 	readPCD(argv[1], real_points);
 	printf("Reading virtual input points: %s\n", argv[2]);
 	readPCD(argv[2], virtual_points0);
- 
+	
+// 	boost::shared_ptr< PCLPointCloud > rpD = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
+// 	downsample(real_points, rpD, 0.04);
+// 	writePCD("lastReal.pcd", rpD);
+// 	boost::shared_ptr< PCLPointCloud > vpD = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
+// 	downsample(virtual_points0, vpD, 0.04);
+// 	writePCD("lastVirtual.pcd", vpD);
+
   std::cout<<"number of real: "<<real_points->size()<<std::endl;
   std::cout<<"number of virtual: "<<virtual_points0->size()<<std::endl;
   
@@ -76,8 +83,8 @@ int main(int argc, char* argv[])
 
 
 	// deletes
-// 	delete worker;
-// 	delete icp;
+	delete worker;
+	delete icp;
 	return 0;
 }
 
