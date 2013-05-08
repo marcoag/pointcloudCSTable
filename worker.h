@@ -36,7 +36,7 @@ public:
     
 		//show results:
 		int v5(0);
-		viewer->createViewPort (0.5, 0.6666, 1.0, 1.0, v5);
+		viewer->createViewPort (0., 0.0, 0.5, 0.3333, v5);
 		viewer->setBackgroundColor (0, 0, 0, v5);
 		viewer->addText ("Cognitive substraction adjust", 10, 10, "v5 text", v5);
 		pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_pointsv5(outlierExtraction->getInput(), 255, 0, 0);
@@ -46,10 +46,10 @@ public:
 		
 		//Show outliers
 		int v6(0);
-		viewer->createViewPort (0.5, 0.6666, 1.0, 1.0, v6);
-// 		viewer->createViewPort (0.5, 0.0, 1.0, 0.3, v6);
+		viewer->createViewPort (0.5, 0.0, 1.0, 0.3333, v6);
 		viewer->setBackgroundColor (0, 0, 0, v6);
 		viewer->addText ("Cognitive substraction outliers", 10, 10, "v6 text", v6);
+		cloud2m(outlierExtraction->getOutliers());
 		pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliersv6(outlierExtraction->getOutliers(), 0, 0, 255);
 		viewer->addPointCloud<pcl::PointXYZ> (outlierExtraction->getOutliers(), color_outliersv6, "cloud_outliersv6", v6);   
     
