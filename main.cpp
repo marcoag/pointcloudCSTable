@@ -25,21 +25,12 @@ int main(int argc, char* argv[])
 	// Read point clouds from hard disk
 	printf("Reading point clouds from hard disk...\n");
 	boost::shared_ptr< PCLPointCloud > real_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
-	boost::shared_ptr< PCLPointCloud > virtual_points0 = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
+	boost::shared_ptr< PCLPointCloud > virtual_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	printf("Reading real input points: %s\n", argv[1]);
 	readPCD(argv[1], real_points);
 	printf("Reading virtual input points: %s\n", argv[2]);
-	readPCD(argv[2], virtual_points0);
-	
-// 	boost::shared_ptr< PCLPointCloud > rpD = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
-// 	downsample(real_points, rpD, 0.04);
-// 	writePCD("lastReal.pcd", rpD);
-// 	boost::shared_ptr< PCLPointCloud > vpD = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
-// 	downsample(virtual_points0, vpD, 0.04);
-// 	writePCD("lastVirtual.pcd", vpD);
+	readPCD(argv[2], virtual_points);
 
-  std::cout<<"number of real: "<<real_points->size()<<std::endl;
-  std::cout<<"number of virtual: "<<virtual_points0->size()<<std::endl;
   
 	//Visalization of the point clouds without adjustments
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Results"));
@@ -48,17 +39,13 @@ int main(int argc, char* argv[])
 	viewer->setBackgroundColor (0, 0, 0, v1);
 	viewer->addText ("Input point clouds", 10, 10, "v1 text", v1);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_points(real_points, 255, 0, 0);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points0, 0, 255, 0);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points, 0, 255, 0);
 	viewer->addPointCloud<pcl::PointXYZ> (real_points,     color_real_points,    "raw_input",   v1);
-	viewer->addPointCloud<pcl::PointXYZ> (virtual_points0, color_virtual_points, "raw_virtual", v1);
+	viewer->addPointCloud<pcl::PointXYZ> (virtual_points, color_virtual_points, "raw_virtual", v1);
   
 	//Outliers
 	boost::shared_ptr< PCLPointCloud > outliers = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
-  pcl::SegmentDifferences<pcl::PointXYZ> sgmnt;
-  sgmnt.setDistanceThreshold(0.1);
-  sgmnt.setTargetCloud(virtual_points0);
-  sgmnt.setInputCloud(real_points);
-  sgmnt.segment(*outliers);
+	pclGetOutliers(real_points, virtual_points, outliers, 0.1);
 
 	//visalize outliers:
 	int v2(0);
@@ -69,10 +56,12 @@ int main(int argc, char* argv[])
 
 
 	// ICP
-	ICP *icp = new ICP(real_points, virtual_points0, viewer);
+	printf("Running \"Iterative Closest Point\"...\n");
+	ICP *icp = new ICP(real_points, virtual_points, viewer);
 
 	// Cognitive Subtraction
-	Worker *worker = new Worker(real_points, virtual_points0, viewer);
+	printf("Running \"Point Cloud Cognitive Subtraction\" annealed particle filter...\n");
+	Worker *worker = new Worker(real_points, virtual_points, viewer);
 
 	// Visualization
 	while (!viewer->wasStopped ())

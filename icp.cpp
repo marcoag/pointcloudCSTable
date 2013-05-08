@@ -54,8 +54,8 @@ ICP::ICP (boost::shared_ptr< PCLPointCloud > cloud_input, boost::shared_ptr< PCL
 	int v3(0);
 	viewer->createViewPort (0.0, 0.3333, 0.5, 0.6666, v3);
 	viewer->addText ("Point clouds after ICP", 10, 10, "v3 text", v3);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_target(cloud_target, 255, 0, 0);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_output(cloud_output, 0, 255, 0);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_target(cloud_target, 0, 255, 0);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_output(cloud_output, 255, 0, 0);
 	viewer->addPointCloud<pcl::PointXYZ> (cloud_target, color_target, "icp_target", v3);
 	viewer->addPointCloud<pcl::PointXYZ> (cloud_output, color_output, "icp_output", v3);
 	
