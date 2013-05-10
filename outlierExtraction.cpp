@@ -36,7 +36,7 @@ void OutlierExtraction::compute(const CloudPFControl p, bool w)
 		CloudParticle::setVarianceR(QVec::vec3(vR(0), vR(1), vR(2)));
 		vT.operator*(config->annealingConstant);
 		vR.operator*(config->annealingConstant);
-		pf.step(input, control, false, 8);
+		pf.step(input, control, true);
 	}
 
 	CloudParticle best = pf.getBest();
