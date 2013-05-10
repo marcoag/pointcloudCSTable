@@ -201,9 +201,9 @@ protected:
 		}
 		else
 		{
-			printf("omp_get_max_threads:%d maxThreads:%d\n", omp_get_max_threads(), maxThreads);
+// 			printf("omp_get_max_threads:%d maxThreads:%d\n", omp_get_max_threads(), maxThreads);
 			const int th = maxThreads<0?omp_get_max_threads():maxThreads;
-			printf("th:%d\n", th);
+// 			printf("th:%d\n", th);
 			omp_set_num_threads(th);
 			#pragma omp parallel for
 			for (uint i=0; i<config->particles; ++i)

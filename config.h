@@ -14,11 +14,11 @@
 
 #define DISTANCE_FUNCTION 2
 
-#define vT_X 0.
+#define vT_X 0.1
 #define vT_Y 0.1
 #define vT_Z 1.5
-#define vR_X 0.0
-#define vR_Y 0.0
-#define vR_Z 0.0
+#define vR_X 0.05
+#define vR_Y 0.05
+#define vR_Z 0.05
 
 #endif
