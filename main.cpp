@@ -38,10 +38,13 @@ int main(int argc, char* argv[])
 	real_points_name = "data/dataR" + dataset + ".pcd";
 	printf("Reading real input points: %s\n", real_points_name.c_str());
 	readPCD(real_points_name, real_points);
+	downsample(real_points, real_points, DOWNSAMPLE_INPUT);
+
 	string virtual_points_name;
 	virtual_points_name = "data/dataV" + dataset + ".pcd";
 	printf("Reading virtual input points: %s\n", virtual_points_name.c_str());
 	readPCD(virtual_points_name, virtual_points);
+	downsample(virtual_points, virtual_points, DOWNSAMPLE_VIRTUAL);
 
   
 	//Visalization of the point clouds without adjustments
@@ -79,7 +82,7 @@ int main(int argc, char* argv[])
 	printf("Running \"Point Cloud Cognitive Subtraction\" annealed particle filter...\n");
 
 	Worker *worker = new Worker(real_points, virtual_points, viewer, atoi(dataset.c_str()));
-	printf("Threads: %d\n", omp_get_num_threads());
+// 	printf("Threads: %d\n", omp_get_num_threads());
 
 	// Visualization
 	while (!viewer->wasStopped ())

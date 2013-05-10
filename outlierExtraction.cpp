@@ -139,7 +139,6 @@ void cloud2mm(PCLPointCloud::Ptr cloud)
 
 void writePCD(std::string path, PCLPointCloud::Ptr cloud)
 {
-	printf("Writing: %s  width:%d height:%d points:%d\n", path.c_str(), (int)cloud->width, (int)cloud->height, (int)cloud->points.size());
 	cloud->width = 1;
 	cloud->height = cloud->points.size();
 	static pcl::PCDWriter writer;
