@@ -52,7 +52,7 @@ void CloudParticle::computeWeight(const CloudPFInputData &data)
 		{
 			const float d = pDistance[0];
 // 			particleError += d*d;
-			if (d > PARTICLE_DISTANCE_THRESHOLD)
+			if (d > DISTANCE_THRESHOLD)
 				particleError+=1;
 
 			if (d < PARTICLE_OPTIMIZATION_MAX)
@@ -61,7 +61,7 @@ void CloudParticle::computeWeight(const CloudPFInputData &data)
 				{
 					if (DISTANCE_FUNCTION == 0)  /// BINARY
 					{
-						if (d > PARTICLE_DISTANCE_THRESHOLD)
+						if (d > DISTANCE_THRESHOLD)
 							sum+=1;
 					}
 					else if (DISTANCE_FUNCTION == 1) /// Exponential

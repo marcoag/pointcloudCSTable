@@ -36,7 +36,7 @@ void OutlierExtraction::compute(const CloudPFControl p, bool w)
 		CloudParticle::setVarianceR(QVec::vec3(vR(0), vR(1), vR(2)));
 		vT.operator*(config->annealingConstant);
 		vR.operator*(config->annealingConstant);
-		pf.step(input, control, false, 8);
+		pf.step(input, control, true);
 	}
 
 	CloudParticle best = pf.getBest();
@@ -46,7 +46,7 @@ void OutlierExtraction::compute(const CloudPFControl p, bool w)
 	pcl::transformPointCloud(*cloud_virtual0, *cloud_virtual_transformed, best.getEigenTransformation());
 
 	/// Use such cloud to extract outliers
-	pclGetOutliers(cloud_input0, cloud_virtual_transformed, cloud_outliers, PARTICLE_DISTANCE_THRESHOLD);
+	pclGetOutliers(cloud_input0, cloud_virtual_transformed, cloud_outliers, DISTANCE_THRESHOLD);
 
 
 	/// Subtraction itself
