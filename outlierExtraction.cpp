@@ -5,6 +5,8 @@ OutlierExtraction::OutlierExtraction(CloudPFConfig *cfg)
 {
 	config = cfg;
 	cloud_input               = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
+	cloud_input0              = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
+	cloud_virtual0            = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	cloud_virtual_transformed = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	cloud_virtual             = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	cloud_outliers            = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
@@ -13,6 +15,8 @@ OutlierExtraction::OutlierExtraction(CloudPFConfig *cfg)
 void OutlierExtraction::compute(const CloudPFControl p, bool w)
 {
 	control = p;
+	*cloud_input0 = *cloud_input;
+	*cloud_virtual0 = *cloud_virtual;
 	downsample(cloud_input, cloud_input, DOWNSAMPLE_INPUT);
 	downsample(cloud_virtual, cloud_virtual, DOWNSAMPLE_VIRTUAL);
 	/// Set the point cloud 'cloud_virtual' from the virtual point set 'virtualPoints'.
@@ -39,10 +43,10 @@ void OutlierExtraction::compute(const CloudPFControl p, bool w)
 	
 
 	/// Transform the input cloud to match the target using the information provided by the particle filter
-	pcl::transformPointCloud(*cloud_virtual, *cloud_virtual_transformed, best.getEigenTransformation());
+	pcl::transformPointCloud(*cloud_virtual0, *cloud_virtual_transformed, best.getEigenTransformation());
 
 	/// Use such cloud to extract outliers
-	pclGetOutliers(cloud_input, cloud_virtual_transformed, cloud_outliers, PARTICLE_DISTANCE_THRESHOLD);
+	pclGetOutliers(cloud_input0, cloud_virtual_transformed, cloud_outliers, PARTICLE_DISTANCE_THRESHOLD);
 
 
 	/// Subtraction itself

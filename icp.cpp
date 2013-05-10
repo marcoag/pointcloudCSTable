@@ -52,8 +52,9 @@ ICP::ICP (boost::shared_ptr< PCLPointCloud > cloud_input, boost::shared_ptr< PCL
 	
 	//Showing results
 	int v3(0);
-	viewer->createViewPort (0.0, 0.3333, 0.5, 0.6666, v3);
-	viewer->addText ("Point clouds after ICP", 10, 10, "v3 text", v3);
+	viewer->createViewPort (0.3333, 0.5, 0.6666, 1.0, v3);
+	viewer->setBackgroundColor (1,1,1, v3);
+	viewer->addText ("Point clouds after ICP", 10, 10, 14, 0,0,0, "v3 text", v3);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_target(cloud_target, 0, 255, 0);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_output(cloud_output, 255, 0, 0);
 	viewer->addPointCloud<pcl::PointXYZ> (cloud_target, color_target, "icp_target", v3);
@@ -61,8 +62,9 @@ ICP::ICP (boost::shared_ptr< PCLPointCloud > cloud_input, boost::shared_ptr< PCL
 	
 	//Showing outliers
 	int v4(0);
-	viewer->createViewPort (0.5, 0.3333, 1.0, 0.6666, v4);
-	viewer->addText ("ICP outliers", 10, 10, "v4 text", v4);	
+	viewer->createViewPort (0.3333, 0.0, 0.6666, 0.5, v4);
+	viewer->setBackgroundColor (1,1,1, v4);
+	viewer->addText ("ICP outliers", 10, 10, 14, 0,0,0, "v4 text", v4);	
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(cloud_outliers, 0, 0, 255);
 	viewer->addPointCloud<pcl::PointXYZ> (cloud_outliers, color_outliers, "icp_outliers", v4);
 	

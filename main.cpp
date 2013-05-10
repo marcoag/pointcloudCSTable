@@ -35,9 +35,9 @@ int main(int argc, char* argv[])
 	//Visalization of the point clouds without adjustments
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Results"));
 	int v1(0);
-	viewer->createViewPort (0.0, 0.6666, 0.5, 1.0, v1);
-	viewer->setBackgroundColor (0, 0, 0, v1);
-	viewer->addText ("Input point clouds", 10, 10, "v1 text", v1);
+	viewer->createViewPort (0.6666, 0.5, 1.0, 1.0, v1);
+	viewer->setBackgroundColor (1,1,1, v1);
+	viewer->addText ("Input point clouds", 10, 10, 14, 0,0,0, "v1 text", v1);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_points(real_points, 255, 0, 0);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points, 0, 255, 0);
 	viewer->addPointCloud<pcl::PointXYZ> (real_points,     color_real_points,    "raw_input",   v1);
@@ -49,8 +49,9 @@ int main(int argc, char* argv[])
 
 	//visalize outliers:
 	int v2(0);
-	viewer->createViewPort (0.5, 0.6666, 1.0, 1.0, v2);
-	viewer->addText ("Outliers previous to adjusts", 10, 10, "v2 text", v2);
+	viewer->createViewPort (0.6666, 0.0, 1.0, 0.5, v2);
+	viewer->setBackgroundColor (1,1,1, v2);
+	viewer->addText ("Outliers previous to adjusts", 10, 10, 14, 0,0,0, "v2 text", v2);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(outliers, 0, 0, 255);
 	viewer->addPointCloud<pcl::PointXYZ> (outliers, color_outliers, "raw_outliers", v2);
 

@@ -57,8 +57,8 @@ public:
 	}
 
 
-	PCLPointCloud::Ptr cloud_input;
-	PCLPointCloud::Ptr cloud_virtual;
+	PCLPointCloud::Ptr cloud_input, cloud_input0;
+	PCLPointCloud::Ptr cloud_virtual, cloud_virtual0;
 	PCLPointCloud::Ptr cloud_virtual_transformed;
 	PCLPointCloud::Ptr cloud_outliers;
 
