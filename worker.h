@@ -18,7 +18,7 @@ typedef pcl::PointCloud<pcl::PointXYZ> PCLPointCloud;
 class Worker
 {
 public:
-	Worker(boost::shared_ptr< PCLPointCloud > real_points_F, boost::shared_ptr< PCLPointCloud > virtual_points_F,  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
+	Worker(boost::shared_ptr< PCLPointCloud > real_points_F, boost::shared_ptr< PCLPointCloud > virtual_points_F,  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer, int dataset)
 	{
 		real_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 		virtual_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
@@ -26,7 +26,8 @@ public:
 		*real_points = *real_points_F;
 		*virtual_points = *virtual_points_F;
 
-		CloudPFConfig *config = new CloudPFConfig(PARTICLES, vT_X, vT_Y, vT_Z, vR_X, vR_Y, vR_Z, ANNEALING, ITERS);
+		//get the info of the 		
+		CloudPFConfig *config = new CloudPFConfig(PARTICLES, _data_matrix[dataset-1][0], _data_matrix[dataset-1][1], _data_matrix[dataset-1][2], _data_matrix[-1][3], _data_matrix[dataset-1][4], _data_matrix[dataset-1][5], ANNEALING, ITERS);
 		outlierExtraction = new OutlierExtraction(config);
 
 		compute();

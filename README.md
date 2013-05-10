@@ -8,12 +8,14 @@ Point Cloud Cognitive Subtraction
 -- Compilation: --
 ------------------
 
-cmake . && make
-
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
 
 ----------------
 -- Execution: --
 ----------------
 
-./cogSub inputCloud.pcd virtualCloud.pcd
+$./cogSub inputCloud.pcd virtualCloud.pcd
 

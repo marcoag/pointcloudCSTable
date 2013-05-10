@@ -22,14 +22,26 @@
 
 int main(int argc, char* argv[])
 {
+	//Check for args
+	if (argc != 2)
+	{
+	  printf("You need to provide the number of the data set to try: 1,2,3...");
+	  return -1;
+	}
+	string dataset = argv[1];
+  
 	// Read point clouds from hard disk
 	printf("Reading point clouds from hard disk...\n");
 	boost::shared_ptr< PCLPointCloud > real_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	boost::shared_ptr< PCLPointCloud > virtual_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
-	printf("Reading real input points: %s\n", argv[1]);
-	readPCD(argv[1], real_points);
-	printf("Reading virtual input points: %s\n", argv[2]);
-	readPCD(argv[2], virtual_points);
+	string real_points_name;
+	real_points_name = "../data/dataR" + dataset + ".pcd";
+	printf("Reading real input points: %s\n", real_points_name.c_str());
+	readPCD(real_points_name, real_points);
+	string virtual_points_name;
+	virtual_points_name = "../data/dataV" + dataset + ".pcd";
+	printf("Reading virtual input points: %s\n", virtual_points_name.c_str());
+	readPCD(virtual_points_name, virtual_points);
 
   
 	//Visalization of the point clouds without adjustments
@@ -62,7 +74,7 @@ int main(int argc, char* argv[])
 
 	// Cognitive Subtraction
 	printf("Running \"Point Cloud Cognitive Subtraction\" annealed particle filter...\n");
-	Worker *worker = new Worker(real_points, virtual_points, viewer);
+	Worker *worker = new Worker(real_points, virtual_points, viewer, atoi(dataset.c_str()));
 
 	// Visualization
 	while (!viewer->wasStopped ())
