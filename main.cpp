@@ -20,6 +20,8 @@
 #include "worker.h"
 #include "icp.h"
 
+void setCamera(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
+
 int main(int argc, char* argv[])
 {
 	//Check for args
@@ -49,6 +51,8 @@ int main(int argc, char* argv[])
   
 	//Visalization of the point clouds without adjustments
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Results"));
+	setCamera(viewer);
+	
 	int v1(0);
 	viewer->createViewPort (0.0, 0.5, 0.3333, 1.0, v1);
 	viewer->setBackgroundColor (1,1,1, v1);
@@ -100,3 +104,24 @@ int main(int argc, char* argv[])
 
 
 
+
+void setCamera(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
+{
+#if PCL_MAJOR_VERSION == 1
+	#if PCL_MINOR_VERSION <= 6
+		viewer->initCameraParameters();
+		viewer->camera_.pos[0] = 0;
+		viewer->camera_.pos[1] = 0;
+		viewer->camera_.pos[2] = -4;
+		viewer->camera_.view[0] = 0;
+		viewer->camera_.view[1] = -1;
+		viewer->camera_.view[2] = 0;
+	#else
+		viewer->setCameraPosition(0,0,-4, 0,0,0, 0,1,0);
+	#endif
+#else
+	viewer->setCameraPosition(0,0,-4, 0,0,0, 0,1,0);
+#endif
+	viewer->updateCamera();
+
+}

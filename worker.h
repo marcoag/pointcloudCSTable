@@ -7,7 +7,6 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include "config.h"
-#include "serializableMatrix.h"
 #include "outlierExtraction.h"
 
 #define BASIC_PERIOD 30

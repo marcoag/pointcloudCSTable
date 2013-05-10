@@ -13,7 +13,7 @@ SET ( SOURCES
   QMat/qrtmat.cpp
 
 )
-set(CMAKE_CXX_FLAGS "-Wall -Wfatal-errors " )
+set(CMAKE_CXX_FLAGS "-Wall -Wfatal-errors -fopenmp " )
 
 include_directories(.)
 

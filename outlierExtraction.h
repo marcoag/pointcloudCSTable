@@ -51,11 +51,6 @@ public:
 	{
 		*cloud_virtual = *pts;
 	}
-// 	std::vector< boost::shared_ptr< PCLPointCloud > > getClouds()
-// 	{
-// 		return cloudss_copy;
-// 	}
-
 
 	PCLPointCloud::Ptr cloud_input, cloud_input0;
 	PCLPointCloud::Ptr cloud_virtual, cloud_virtual0;
@@ -71,8 +66,6 @@ private:
 	CloudPFConfig *config;
 
 private:
-// 	std::vector< boost::shared_ptr< PCLPointCloud > > cloudss, cloudss_copy;
-
 	void writeMainClouds();
 	double getmsecofday()
 	{
