@@ -1,21 +1,17 @@
-pointCloudCS
-============
-
-Point Cloud Cognitive Subtraction
+# Point Cloud Cognitive Subtraction
 
 
-------------------
--- Compilation: --
-------------------
+## Compilation
 
-$ mkdir build
-$ cd build
-$ cmake ..
+$ cmake .
+
 $ make
 
-----------------
--- Execution: --
-----------------
+## Execution
 
-$./cogSub inputCloud.pcd virtualCloud.pcd
+$ ./cogSub *DATASET*
+
+where *DATASET* is the example in the dataset to use.
+
+
 

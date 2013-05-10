@@ -35,11 +35,11 @@ int main(int argc, char* argv[])
 	boost::shared_ptr< PCLPointCloud > real_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	boost::shared_ptr< PCLPointCloud > virtual_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	string real_points_name;
-	real_points_name = "../data/dataR" + dataset + ".pcd";
+	real_points_name = "data/dataR" + dataset + ".pcd";
 	printf("Reading real input points: %s\n", real_points_name.c_str());
 	readPCD(real_points_name, real_points);
 	string virtual_points_name;
-	virtual_points_name = "../data/dataV" + dataset + ".pcd";
+	virtual_points_name = "data/dataV" + dataset + ".pcd";
 	printf("Reading virtual input points: %s\n", virtual_points_name.c_str());
 	readPCD(virtual_points_name, virtual_points);
 
