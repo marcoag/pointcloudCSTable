@@ -16,7 +16,7 @@ ICP::ICP (boost::shared_ptr< PCLPointCloud > cloud_input, boost::shared_ptr< PCL
 	printf(" ok!\n");
 	
 	pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-	icp.setMaximumIterations (1);
+	icp.setMaximumIterations (50);
 	icp.setMaxCorrespondenceDistance (0.2);
 	icp.setInputCloud(cloud_input);
 	icp.setInputTarget(cloud_target);
@@ -36,7 +36,7 @@ ICP::ICP (boost::shared_ptr< PCLPointCloud > cloud_input, boost::shared_ptr< PCL
 	//pclGetOutliers(cloud_input, cloud_output, cloud_outliers, 0.1);
     
   pcl::SegmentDifferences<pcl::PointXYZ> sgmnt;
-  sgmnt.setDistanceThreshold(0.1);
+  sgmnt.setDistanceThreshold(DISTANCE_THRESHOLD);
   sgmnt.setTargetCloud(cloud_target0);
   sgmnt.setInputCloud(cloud_output);
   sgmnt.segment(*cloud_outliers);

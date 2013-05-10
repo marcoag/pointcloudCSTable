@@ -46,7 +46,7 @@ void OutlierExtraction::compute(const CloudPFControl p, bool w)
 	pcl::transformPointCloud(*cloud_virtual0, *cloud_virtual_transformed, best.getEigenTransformation());
 
 	/// Use such cloud to extract outliers
-	pclGetOutliers(cloud_input0, cloud_virtual_transformed, cloud_outliers, PARTICLE_DISTANCE_THRESHOLD);
+	pclGetOutliers(cloud_input0, cloud_virtual_transformed, cloud_outliers, DISTANCE_THRESHOLD);
 
 
 	/// Subtraction itself

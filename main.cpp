@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
   
 	//Outliers
 	boost::shared_ptr< PCLPointCloud > outliers = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
-	pclGetOutliers(real_points, virtual_points, outliers, 0.1);
+	pclGetOutliers(real_points, virtual_points, outliers, DISTANCE_THRESHOLD);
 
 	//visalize outliers:
 	int v2(0);
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 	// Cognitive Subtraction
 	printf("Running \"Point Cloud Cognitive Subtraction\" annealed particle filter...\n");
 	Worker *worker = new Worker(real_points, virtual_points, viewer);
-
+	printf("Threads: %d\n", omp_get_num_threads());
 	// Visualization
 	while (!viewer->wasStopped ())
 	{
