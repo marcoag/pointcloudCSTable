@@ -40,16 +40,9 @@ ICP::ICP (boost::shared_ptr< PCLPointCloud > cloud_input, boost::shared_ptr< PCL
   sgmnt.setTargetCloud(cloud_target0);
   sgmnt.setInputCloud(cloud_output);
   sgmnt.segment(*cloud_outliers);
-/*  
-  std::cout<<"input: "<<cloud_input->size()<<std::endl;
-  std::cout<<"output: "<<cloud_output->size()<<std::endl;
-  std::cout<<"outliers: "<<cloud_outliers->size()<<std::endl;*/
-// 	try{writer.writeASCII("outliers.pcd", *cloud_outliers);}catch(...){}
 
-	//pclGetOutliers(cloud_input, cloud_outliers, cloud_input, 0.1);
-// 	try{	writer.writeASCII("non_outliers.pcd", *cloud_input);}catch(...){}
 
-	
+
 	//Showing results
 	int v3(0);
 	viewer->createViewPort (0.3333, 0.5, 0.6666, 1.0, v3);
@@ -67,7 +60,10 @@ ICP::ICP (boost::shared_ptr< PCLPointCloud > cloud_input, boost::shared_ptr< PCL
 	viewer->addText ("ICP outliers", 10, 10, 14, 0,0,0, "v4 text", v4);	
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(cloud_outliers, 0, 0, 255);
 	viewer->addPointCloud<pcl::PointXYZ> (cloud_outliers, color_outliers, "icp_outliers", v4);
-	
+
+	writePCD("icp_input.pcd",  cloud_output);
+	writePCD("icp_virtual.pcd", cloud_target);
+	writePCD("icp_outliers.pcd", cloud_outliers);
 }
 
 void ICP::downsample(const boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> > &input, const boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> > &output, float grid_size)

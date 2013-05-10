@@ -51,6 +51,12 @@ public:
 		viewer->addText ("Cognitive substraction outliers", 10, 10, 14, 0,0,0, "v6 text", v6);
 		pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliersv6(outlierExtraction->getOutliers(), 0, 0, 255);
 		viewer->addPointCloud<pcl::PointXYZ> (outlierExtraction->getOutliers(), color_outliersv6, "cloud_outliersv6", v6);   
+		
+		
+		writePCD("cs_input.pcd",  real_points);
+		writePCD("cs_virtual.pcd", outlierExtraction->getVirtual());
+		writePCD("cs_outliers.pcd", outlierExtraction->getOutliers());
+
 	}
 
 	void compute()

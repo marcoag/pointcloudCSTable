@@ -48,49 +48,47 @@ void OutlierExtraction::compute(const CloudPFControl p, bool w)
 	/// Use such cloud to extract outliers
 	pclGetOutliers(cloud_input0, cloud_virtual_transformed, cloud_outliers, DISTANCE_THRESHOLD);
 
+// 	/// Subtraction itself
+// 	cloudss.clear();
+// 	const uint min_cluster_size = 30;
+// 	if (cloud_outliers->points.size() > min_cluster_size)
+// 	{
+// 		boost::shared_ptr< pcl::search::KdTree<pcl::PointXYZ> > tree(new pcl::search::KdTree<pcl::PointXYZ>);
+// 		tree->setInputCloud(cloud_outliers);
+// 
+// 		pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+// 		ec.setClusterTolerance (150);
+// 		ec.setMinClusterSize (min_cluster_size);
+// 		ec.setMaxClusterSize (640*480);
+// 		ec.setSearchMethod(tree);
+// 		ec.setInputCloud(cloud_outliers);
+// 
+// 		std::vector<pcl::PointIndices> cluster_indices;
+// 		ec.extract(cluster_indices);
+// 
+// 		for (std::vector<pcl::PointIndices>::const_iterator it=cluster_indices.begin(); it!=cluster_indices.end(); ++it)
+// 		{
+// 			boost::shared_ptr < PCLPointCloud > cloud_cluster(new PCLPointCloud);
+// 			for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+// 			{
+// 				cloud_cluster->points.push_back(cloud_outliers->points[*pit]);
+// 			}
+// 			cloud_cluster->width = cloud_cluster->points.size();
+// 			cloud_cluster->height = 1;
+// 			cloud_cluster->is_dense = true;
+// 			if (cloud_cluster->points.size() > min_cluster_size)
+// 			{
+// 				cloudss.push_back(cloud_cluster);
+// 			}
+// 		}
+// 	}
+// 	else
+// 	{
+// 		printf("  Too few outlier points ( <= %d )\n", min_cluster_size);
+// 	}
+// 	printf("OUTLIER EXTRACTION ENDS: %u clouds\n", (unsigned int)cloudss.size());
+// 	cloudss_copy = cloudss;
 
-	/// Subtraction itself
-	cloudss.clear();
-	const uint min_cluster_size = 30;
-	if (cloud_outliers->points.size() > min_cluster_size)
-	{
-		boost::shared_ptr< pcl::search::KdTree<pcl::PointXYZ> > tree(new pcl::search::KdTree<pcl::PointXYZ>);
-		tree->setInputCloud(cloud_outliers);
-
-		pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-		ec.setClusterTolerance (150);
-		ec.setMinClusterSize (min_cluster_size);
-		ec.setMaxClusterSize (640*480);
-		ec.setSearchMethod(tree);
-		ec.setInputCloud(cloud_outliers);
-
-		std::vector<pcl::PointIndices> cluster_indices;
-		ec.extract(cluster_indices);
-
-		for (std::vector<pcl::PointIndices>::const_iterator it=cluster_indices.begin(); it!=cluster_indices.end(); ++it)
-		{
-			boost::shared_ptr < PCLPointCloud > cloud_cluster(new PCLPointCloud);
-			for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
-			{
-				cloud_cluster->points.push_back(cloud_outliers->points[*pit]);
-			}
-			cloud_cluster->width = cloud_cluster->points.size();
-			cloud_cluster->height = 1;
-			cloud_cluster->is_dense = true;
-			if (cloud_cluster->points.size() > min_cluster_size)
-			{
-// 					printf("  +1  (%u)\n", (uint32_t)cloud_cluster->points.size());
-				cloudss.push_back(cloud_cluster);
-			}
-		}
-	}
-	else
-	{
-		printf("  Too few outlier points ( <= %d )\n", min_cluster_size);
-	}
-
-	printf("OUTLIER EXTRACTION ENDS: %u clouds\n", (unsigned int)cloudss.size());
-	cloudss_copy = cloudss;
 }
 
 void readPCD(std::string path, PCLPointCloud::Ptr cloud)
