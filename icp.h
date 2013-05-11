@@ -26,6 +26,4 @@ class ICP
 {
 public:
   ICP(boost::shared_ptr< PCLPointCloud > cloud_input, boost::shared_ptr< PCLPointCloud > cloud_target, boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
-  void downsample(const boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> > &input, const boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> > &output, float grid_size);
-  void pclGetOutliers(const boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> > base, const boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> > cloud, boost::shared_ptr< pcl::PointCloud<pcl::PointXYZ> > outliers, double threshold);
 };

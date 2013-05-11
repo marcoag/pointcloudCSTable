@@ -41,8 +41,10 @@ public:
 		viewer->addText ("Cognitive substraction adjust", 10, 10, 14, 0,0,0, "v5 text", v5);
 		pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_pointsv5(real_points, 255, 0, 0);
 		pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_pointsv5(outlierExtraction->getVirtual(), 0, 255, 0);
-		viewer->addPointCloud<pcl::PointXYZ> (real_points, color_real_pointsv5, "real_pointsv5", v5);
+		viewer->addPointCloud<pcl::PointXYZ> (real_points,                     color_real_pointsv5,    "real_pointsv5",    v5);
 		viewer->addPointCloud<pcl::PointXYZ> (outlierExtraction->getVirtual(), color_virtual_pointsv5, "virtual_pointsv5", v5);
+		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "real_pointsv5", v5);
+		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "virtual_pointsv5", v5);
 
 		//Show outliers
 		int v6(0);
@@ -50,7 +52,8 @@ public:
 		viewer->addText ("Cognitive substraction outliers", 10, 10, 14, 0,0,0, "v6 text", v6);
 		pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliersv6(outlierExtraction->getOutliers(), 0, 0, 255);
 		viewer->addPointCloud<pcl::PointXYZ> (outlierExtraction->getOutliers(), color_outliersv6, "cloud_outliersv6", v6);   
-		
+		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud_outliersv6", v6);
+
 		
 		writePCD("cs_input.pcd",  real_points);
 		writePCD("cs_virtual.pcd", outlierExtraction->getVirtual());

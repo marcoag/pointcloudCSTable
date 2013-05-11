@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 
   
 	//Visalization of the point clouds without adjustments
-	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Results"));
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Point Cloud Cognitive Subtraction"));
 	setCamera(viewer);
 	
 	int v1(0);
@@ -66,6 +66,8 @@ int main(int argc, char* argv[])
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points, 0, 255, 0);
 	viewer->addPointCloud<pcl::PointXYZ> (real_points,     color_real_points,    "raw_input",   v1);
 	viewer->addPointCloud<pcl::PointXYZ> (virtual_points, color_virtual_points, "raw_virtual", v1);
+	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "raw_input", v1);
+	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "raw_virtual", v1);
   
 	//Outliers
 	boost::shared_ptr< PCLPointCloud > outliers = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
@@ -77,6 +79,7 @@ int main(int argc, char* argv[])
 	viewer->addText ("Outliers previous to adjusts", 10, 10, 14, 0,0,0, "v2 text", v2);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(outliers, 0, 0, 255);
 	viewer->addPointCloud<pcl::PointXYZ> (outliers, color_outliers, "raw_outliers", v2);
+	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "raw_outliers", v2);
 
 	writePCD("raw_input.pcd",  real_points);
 	writePCD("raw_virtual.pcd", virtual_points);
@@ -95,6 +98,9 @@ int main(int argc, char* argv[])
 	{
 		viewer->spinOnce(100);
 		usleep(100);
+		static int ffff=0;
+		if (ffff++%100==0)
+			viewer->saveScreenshot("screenshot.png");
 	}
 
 
@@ -133,6 +139,10 @@ void setCamera6(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 			viewer->camera_.view[2] = 0;
 		#endif
 	#endif
+	for (int i=1; i<=6; i++)
+	{
+		viewer->setBackgroundColor (1,1,1, i);
+	}
 	viewer->updateCamera();
 }
 
