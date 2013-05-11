@@ -21,6 +21,8 @@
 #include "icp.h"
 
 void setCamera(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
+void setCamera6(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
+void setCamera7(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
 
 int main(int argc, char* argv[])
 {
@@ -38,15 +40,19 @@ int main(int argc, char* argv[])
 	boost::shared_ptr< PCLPointCloud > virtual_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	string real_points_name;
 	real_points_name = "data/dataR" + dataset + ".pcd";
-	printf("Reading real input points: %s\n", real_points_name.c_str());
+	printf("Reading real input points: %s...", real_points_name.c_str());
+	fflush(stdout);
 	readPCD(real_points_name, real_points);
 	downsample(real_points, real_points, DOWNSAMPLE_INPUT);
+	printf(" ok!\n");
 
 	string virtual_points_name;
 	virtual_points_name = "data/dataV" + dataset + ".pcd";
-	printf("Reading virtual input points: %s\n", virtual_points_name.c_str());
+	printf("Reading virtual input points: %s...", virtual_points_name.c_str());
+	fflush(stdout);
 	readPCD(virtual_points_name, virtual_points);
 	downsample(virtual_points, virtual_points, DOWNSAMPLE_VIRTUAL);
+	printf(" ok!\n");
 
   
 	//Visalization of the point clouds without adjustments
@@ -55,7 +61,6 @@ int main(int argc, char* argv[])
 	
 	int v1(0);
 	viewer->createViewPort (0.0, 0.5, 0.3333, 1.0, v1);
-	viewer->setBackgroundColor (1,1,1, v1);
 	viewer->addText ("Input point clouds", 10, 10, 14, 0,0,0, "v1 text", v1);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_points(real_points, 255, 0, 0);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points, 0, 255, 0);
@@ -69,7 +74,6 @@ int main(int argc, char* argv[])
 	//visalize outliers:
 	int v2(0);
 	viewer->createViewPort (0., 0.0, 0.3333, 0.5, v2);
-	viewer->setBackgroundColor (1,1,1, v2);
 	viewer->addText ("Outliers previous to adjusts", 10, 10, 14, 0,0,0, "v2 text", v2);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(outliers, 0, 0, 255);
 	viewer->addPointCloud<pcl::PointXYZ> (outliers, color_outliers, "raw_outliers", v2);
@@ -79,16 +83,14 @@ int main(int argc, char* argv[])
 	writePCD("raw_outliers.pcd", outliers);
 
 	// ICP
-	printf("Running \"Iterative Closest Point\"...\n");
 	ICP *icp = new ICP(real_points, virtual_points, viewer);
 
 	// Cognitive Subtraction
-	printf("Running \"Point Cloud Cognitive Subtraction\" annealed particle filter...\n");
-
 	Worker *worker = new Worker(real_points, virtual_points, viewer, atoi(dataset.c_str()));
-// 	printf("Threads: %d\n", omp_get_num_threads());
 
+	printf("Done! Take a look at the visualizer.\n");
 	// Visualization
+	setCamera(viewer);
 	while (!viewer->wasStopped ())
 	{
 		viewer->spinOnce(100);
@@ -109,19 +111,41 @@ void setCamera(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 {
 #if PCL_MAJOR_VERSION == 1
 	#if PCL_MINOR_VERSION <= 6
-		viewer->initCameraParameters();
-		viewer->camera_.pos[0] = 0;
-		viewer->camera_.pos[1] = 0;
-		viewer->camera_.pos[2] = -4;
-		viewer->camera_.view[0] = 0;
-		viewer->camera_.view[1] = -1;
-		viewer->camera_.view[2] = 0;
+		setCamera6(viewer);
 	#else
-		viewer->setCameraPosition(0,0,-4, 0,0,0, 0,1,0);
+		setCamera7(viewer);
 	#endif
 #else
-	viewer->setCameraPosition(0,0,-4, 0,0,0, 0,1,0);
+	setCamera7(viewer);
 #endif
-	viewer->updateCamera();
-
 }
+
+void setCamera6(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
+{
+	#if PCL_MAJOR_VERSION == 1
+		#if PCL_MINOR_VERSION <= 6
+			viewer->initCameraParameters();
+			viewer->camera_.pos[0] = 0;
+			viewer->camera_.pos[1] = 0;
+			viewer->camera_.pos[2] = -4;
+			viewer->camera_.view[0] = 0;
+			viewer->camera_.view[1] = -1;
+			viewer->camera_.view[2] = 0;
+		#endif
+	#endif
+	viewer->updateCamera();
+}
+
+void setCamera7(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
+{
+	#if PCL_MAJOR_VERSION == 1
+		#if PCL_MINOR_VERSION >= 7
+			for (int i=0; i<=10; i++)
+			{
+				viewer->setCameraPosition(0,0,-4, 0,0,4, 0,-1,0, i);
+				viewer->setBackgroundColor (1,1,1, i);
+			}
+			#endif
+	#endif
+}
+
