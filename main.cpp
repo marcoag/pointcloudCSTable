@@ -17,7 +17,7 @@
  */
 #include <QtCore>
 #include <iostream>
-#include "worker.h"
+#include "cognitiveSubtraction.h"
 #include "icp.h"
 
 void setCamera(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
@@ -38,8 +38,9 @@ int main(int argc, char* argv[])
 	printf("Reading point clouds from hard disk...\n");
 	boost::shared_ptr< PCLPointCloud > real_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	boost::shared_ptr< PCLPointCloud > virtual_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
+  boost::shared_ptr< PCLPointCloud > result = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
 	string real_points_name;
-	real_points_name = "data/dataR" + dataset + ".pcd";
+	real_points_name = "../data/dataR" + dataset + ".pcd";
 	printf("Reading real input points: %s...", real_points_name.c_str());
 	fflush(stdout);
 	readPCD(real_points_name, real_points);
@@ -47,51 +48,33 @@ int main(int argc, char* argv[])
 	printf(" ok!\n");
 
 	string virtual_points_name;
-	virtual_points_name = "data/dataV" + dataset + ".pcd";
+	virtual_points_name = "../data/dataV" + dataset + ".pcd";
 	printf("Reading virtual input points: %s...", virtual_points_name.c_str());
 	fflush(stdout);
 	readPCD(virtual_points_name, virtual_points);
 	downsample(virtual_points, virtual_points, DOWNSAMPLE_VIRTUAL);
 	printf(" ok!\n");
 
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Results"));
   
-	//Visalization of the point clouds without adjustments
-	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Point Cloud Cognitive Subtraction"));
-	setCamera(viewer);
-	
-	int v1(0);
-	viewer->createViewPort (0.0, 0.5, 0.3333, 1.0, v1);
-	viewer->addText ("Input point clouds", 10, 10, 14, 0,0,0, "v1 text", v1);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_points(real_points, 255, 0, 0);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_virtual_points(virtual_points, 0, 255, 0);
-	viewer->addPointCloud<pcl::PointXYZ> (real_points,     color_real_points,    "raw_input",   v1);
-	viewer->addPointCloud<pcl::PointXYZ> (virtual_points, color_virtual_points, "raw_virtual", v1);
-	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "raw_input", v1);
-	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "raw_virtual", v1);
+// ICP
+//	ICP *icp = new ICP(real_points, virtual_points, viewer);
+
+// Cognitive Subtraction
+	CognitiveSubtraction *cognitiveSubtraction = new CognitiveSubtraction(real_points, virtual_points, viewer, atoi(dataset.c_str()));
+  result = cognitiveSubtraction->run();
   
-	//Outliers
-	boost::shared_ptr< PCLPointCloud > outliers = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
-	pclGetOutliers(real_points, virtual_points, outliers, DISTANCE_THRESHOLD);
-
-	//visalize outliers:
-	int v2(0);
-	viewer->createViewPort (0., 0.0, 0.3333, 0.5, v2);
-	viewer->addText ("Outliers previous to adjusts", 10, 10, 14, 0,0,0, "v2 text", v2);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_outliers(outliers, 0, 0, 255);
-	viewer->addPointCloud<pcl::PointXYZ> (outliers, color_outliers, "raw_outliers", v2);
-	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "raw_outliers", v2);
-
-	writePCD("raw_input.pcd",  real_points);
-	writePCD("raw_virtual.pcd", virtual_points);
-	writePCD("raw_outliers.pcd", outliers);
-
-	// ICP
-	ICP *icp = new ICP(real_points, virtual_points, viewer);
-
-	// Cognitive Subtraction
-	Worker *worker = new Worker(real_points, virtual_points, viewer, atoi(dataset.c_str()));
-
-	printf("Done! Take a look at the visualizer.\n");
+  std::cout<<"SIZE: "<<result->size()<<std::endl;
+  
+  int v1(0);
+  viewer->createViewPort(0, 0, 1, 1, v1);
+  viewer->addText ("Cognitive substraction adjust", 10, 10, 14, 0,0,0, "v1 text", v1);
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_pointsv1(result, 255, 0, 0);
+  viewer->addPointCloud<pcl::PointXYZ> (result, color_real_pointsv1, "real_pointsv1", v1);
+  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "real_pointsv1", v1);
+  
+  
+  
 	// Visualization
 	setCamera(viewer);
 	while (!viewer->wasStopped ())
@@ -105,8 +88,8 @@ int main(int argc, char* argv[])
 
 
 	// deletes
-	delete worker;
-	delete icp;
+	delete cognitiveSubtraction;
+	//delete icp;
 	return 0;
 }
 

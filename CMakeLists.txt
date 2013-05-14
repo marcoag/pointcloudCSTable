@@ -6,6 +6,7 @@ SET ( SOURCES
   main.cpp
   outlierExtraction.cpp
   cloudParticle.cpp
+  cognitiveSubtraction.cpp
   icp.cpp
   QMat/qvec.cpp
   QMat/qmat.cpp
