@@ -1,6 +1,6 @@
 #include "cognitiveSubtraction.h"
 
-CognitiveSubtraction::CognitiveSubtraction(boost::shared_ptr< PCLPointCloud > real_points_F, boost::shared_ptr< PCLPointCloud > virtual_points_F,  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer, int dataset)
+CognitiveSubtraction::CognitiveSubtraction(boost::shared_ptr< PCLPointCloud > real_points_F, boost::shared_ptr< PCLPointCloud > virtual_points_F,  int dataset)
 {
     real_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);
     virtual_points = boost::shared_ptr< PCLPointCloud >(new PCLPointCloud);

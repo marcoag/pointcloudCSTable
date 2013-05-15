@@ -17,12 +17,11 @@
  */
 #include <QtCore>
 #include <iostream>
+
 #include "cognitiveSubtraction.h"
 #include "icp.h"
+#include "myViewer.h"
 
-void setCamera(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
-void setCamera6(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
-void setCamera7(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
 
 int main(int argc, char* argv[])
 {
@@ -55,37 +54,21 @@ int main(int argc, char* argv[])
 	downsample(virtual_points, virtual_points, DOWNSAMPLE_VIRTUAL);
 	printf(" ok!\n");
 
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Results"));
-  
 // ICP
 //	ICP *icp = new ICP(real_points, virtual_points, viewer);
 
 // Cognitive Subtraction
-	CognitiveSubtraction *cognitiveSubtraction = new CognitiveSubtraction(real_points, virtual_points, viewer, atoi(dataset.c_str()));
+	CognitiveSubtraction *cognitiveSubtraction = new CognitiveSubtraction(real_points, virtual_points, atoi(dataset.c_str()));
   result = cognitiveSubtraction->run();
   
   std::cout<<"SIZE: "<<result->size()<<std::endl;
-  
-  int v1(0);
-  viewer->createViewPort(0, 0, 1, 1, v1);
-  viewer->addText ("Cognitive substraction adjust", 10, 10, 14, 0,0,0, "v1 text", v1);
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_real_pointsv1(result, 255, 0, 0);
-  viewer->addPointCloud<pcl::PointXYZ> (result, color_real_pointsv1, "real_pointsv1", v1);
-  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "real_pointsv1", v1);
-  
-  
-  
-	// Visualization
-	setCamera(viewer);
-	while (!viewer->wasStopped ())
-	{
-		viewer->spinOnce(100);
-		usleep(100);
-		static int ffff=0;
-		if (ffff++%100==0)
-			viewer->saveScreenshot("screenshot.png");
-	}
 
+  QApplication app(argc, argv);
+  
+  myViewer m("../scenarios/genericPointCloud.xml");
+  app.exec();
+  
+  
 
 	// deletes
 	delete cognitiveSubtraction;
@@ -93,52 +76,4 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-
-
-
-void setCamera(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
-{
-#if PCL_MAJOR_VERSION == 1
-	#if PCL_MINOR_VERSION <= 6
-		setCamera6(viewer);
-	#else
-		setCamera7(viewer);
-	#endif
-#else
-	setCamera7(viewer);
-#endif
-}
-
-void setCamera6(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
-{
-	#if PCL_MAJOR_VERSION == 1
-		#if PCL_MINOR_VERSION <= 6
-			viewer->initCameraParameters();
-			viewer->camera_.pos[0] = 0;
-			viewer->camera_.pos[1] = 0;
-			viewer->camera_.pos[2] = -4;
-			viewer->camera_.view[0] = 0;
-			viewer->camera_.view[1] = -1;
-			viewer->camera_.view[2] = 0;
-		#endif
-	#endif
-	for (int i=1; i<=6; i++)
-	{
-		viewer->setBackgroundColor (1,1,1, i);
-	}
-	viewer->updateCamera();
-}
-
-void setCamera7(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
-{
-	#if PCL_MAJOR_VERSION == 1
-		#if PCL_MINOR_VERSION >= 7
-			for (int i=0; i<=10; i++)
-			{
-				viewer->setCameraPosition(0,0,-4, 0,0,4, 0,-1,0, i);
-				viewer->setBackgroundColor (1,1,1, i);
-			}
-			#endif
-	#endif
-}
 

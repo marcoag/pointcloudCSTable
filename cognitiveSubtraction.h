@@ -21,7 +21,7 @@ typedef pcl::PointCloud<pcl::PointXYZ> PCLPointCloud;
 class CognitiveSubtraction
 {
 public:
-	CognitiveSubtraction(boost::shared_ptr< PCLPointCloud > real_points_F, boost::shared_ptr< PCLPointCloud > virtual_points_F,  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer, int dataset);
+	CognitiveSubtraction(boost::shared_ptr< PCLPointCloud > real_points_F, boost::shared_ptr< PCLPointCloud > virtual_points_F, int dataset);
   PCLPointCloud::Ptr run();
 
 private:
