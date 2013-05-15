@@ -13,7 +13,7 @@ computing(false)
   c.particles=1000;
   
   //cup from kinect
-//   pcl::io::loadPCDFile<pcl::PointXYZ> ("cloud_cup.pcd", *cloud_cup);
+   pcl::io::loadPCDFile<pcl::PointXYZ> ("../data/cloud_cup.pcd", *cloud_cup);
   
   //Sintetic line
 //   for(int i=1;i<1000;i++)
@@ -26,42 +26,26 @@ computing(false)
 //   }
   
   //Sintetic cylinder
-  int h = 100;
-  int radio = 60;
-  Rot3D r(0.5, 0.2, 0.2);
-  for (float angle=0; angle<2.*M_PI;  angle+=0.05)//(M_PI_2-0.01))
-  {
-    for (float y = -h/2; y<h/2; y+=2)
-    {
-      pcl::PointXYZ p;
-      p.x = radio * cos(angle);
-      p.y = y;
-      p.z = radio * sin(angle);
-      QVec v = r * QVec::vec3(p.x, p.y, p.z);
-      p.x = v(0);
-      p.y = v(1);
-      p.z = v(2);
-      cloud_cup->push_back(p);
-    }
-  }
-  
-
-  //RoboCompInnerModelManager::PointCloudVector point_cloud;
-  //RoboCompInnerModelManager::Colored3DPoint point;
-//   for(pcl::PointCloud<pcl::PointXYZ>::iterator it = cloud_cup->begin(); it != cloud_cup->end(); it++ )
+//   int h = 100;
+//   int radio = 60;
+//   Rot3D r(0.5, 0.2, 0.2);
+//   for (float angle=0; angle<2.*M_PI;  angle+=0.05)//(M_PI_2-0.01))
 //   {
-// //     it->x*=1000;
-// //     it->y*=1000;
-// //     it->z*=1000;
-//     point.x = it->x;
-//     point.y = -it->y;
-//     point.z = it->z;
-//     point.r= 0;
-//     point.g= 255;
-//     point.b= 0;
-//     point_cloud.push_back(point);
+//     for (float y = -h/2; y<h/2; y+=2)
+//     {
+//       pcl::PointXYZ p;
+//       p.x = radio * cos(angle);
+//       p.y = y;
+//       p.z = radio * sin(angle);
+//       QVec v = r * QVec::vec3(p.x, p.y, p.z);
+//       p.x = v(0);
+//       p.y = v(1);
+//       p.z = v(2);
+//       cloud_cup->push_back(p);
+//     }
 //   }
   
+
 //   printf( "%s: %d\n", __FILE__, __LINE__);   
   innermodelManager->setPointCloudData("cup_cloud", cloud_cup);
   

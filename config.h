@@ -14,6 +14,7 @@
 #define DISTANCE_FUNCTION 2
 
 
+
 const static float _data_matrix[7][6] = {
 	// vT_X, vT_Y, vT_Z,  vR_X,  vR_Y,  vR_Z
 	{   0.2,  0.2,  0.2,  0.02,  0.02,  0.02 }, // 1
