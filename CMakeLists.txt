@@ -15,6 +15,7 @@ SET ( SOURCES
   shapes/cylinder.cpp
   shapes/axis.cpp
   shapes/vector.cpp
+  shapes/rectprism.cpp
   osgviewer/osgview.cpp
 )
 SET ( HEADERS

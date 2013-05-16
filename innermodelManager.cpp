@@ -29,7 +29,6 @@ void InnerModelManager::setPointCloudData(const std::string id, pcl::PointCloud<
   pcNode->update();
   imv->update();
   
-
 }
 
 void InnerModelManager::setPose(std::string item,  QVec t,  QVec r,  QVec s)

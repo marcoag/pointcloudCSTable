@@ -21,6 +21,7 @@
 #include "cognitiveSubtraction.h"
 #include "icp.h"
 #include "myViewer.h"
+#include "shapes/rectprism.h"
 
 
 int main(int argc, char* argv[])
@@ -58,20 +59,36 @@ int main(int argc, char* argv[])
 //	ICP *icp = new ICP(real_points, virtual_points, viewer);
 
 // Cognitive Subtraction
-	CognitiveSubtraction *cognitiveSubtraction = new CognitiveSubtraction(real_points, virtual_points, atoi(dataset.c_str()));
-  result = cognitiveSubtraction->run();
+// 	CognitiveSubtraction *cognitiveSubtraction = new CognitiveSubtraction(real_points, virtual_points, atoi(dataset.c_str()));
+//   result = cognitiveSubtraction->run();
   
-  std::cout<<"SIZE: "<<result->size()<<std::endl;
+//  std::cout<<"SIZE: "<<result->size()<<std::endl;
 
-  QApplication app(argc, argv);
+//   QApplication app(argc, argv);
+//   
+//   myViewer m("../scenarios/genericPointCloud.xml");
+//   app.exec();
   
-  myViewer m("../scenarios/genericPointCloud.xml");
-  app.exec();
+  vector<double> t;
+  t.push_back(0);
+  t.push_back(0);
+  t.push_back(0);
+  vector<double> r;
+  r.push_back(0);
+  r.push_back(0);
+  r.push_back(0);
+  vector<double> w;
+  w.push_back(1);
+  w.push_back(1);
+  w.push_back(1);
+  
+  RectPrism rect(t,r,w);
   
   
-
+  n1=n1*n3;
+  
 	// deletes
-	delete cognitiveSubtraction;
+	//delete cognitiveSubtraction;
 	//delete icp;
 	return 0;
 }
