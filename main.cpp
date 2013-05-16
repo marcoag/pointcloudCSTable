@@ -84,8 +84,7 @@ int main(int argc, char* argv[])
   
   RectPrism rect(t,r,w);
   
-  
-  n1=n1*n3;
+  rect.distance(w);
   
 	// deletes
 	//delete cognitiveSubtraction;
