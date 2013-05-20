@@ -33,6 +33,11 @@ void printCode(uint8_t code)
   printf("\n");
 }
 
+double distance_p2p (double x1, double y1, double z1, double x2, double y2, double z2)
+{
+  return sqrt(pow(x1-x2,2.0)+pow(y1-y2,2.0)+pow(z1-z2,2.0));
+}
+
 double RectPrism::distance(vector<double> point)
 {
   double distance = 0.0;
@@ -137,26 +142,22 @@ double RectPrism::distance(vector<double> point)
   
   switch(code)
   {
-    case LAF:
-      break;
+    case LAF: return distance_p2p(point[0],point[1],point[2],-(Wx/2),(Wy/2),-(Wz/2));
     case LAM:
       break;
-    case LAB:
+    case LAB: return distance_p2p(point[0],point[1],point[2],-(Wx/2),(Wy/2),(Wz/2));
+    case LMF: 
       break;
-    case LMF:
-      break;
-    case LMM:
+    case LMM: 
       break;
     case LMB:
       break;
-    case LBF:
-      break;
+    case LBF: return distance_p2p(point[0],point[1],point[2],-(Wx/2),-(Wy/2),-(Wz/2));
     case LBM:
       break;
-    case LBB:
-      break;
+    case LBB: return distance_p2p(point[0],point[1],point[2],-(Wx/2),-(Wy/2),(Wz/2));
     
-    case MAF:
+    case MAF: 
       break;
     case MAM:
       break;
@@ -175,24 +176,20 @@ double RectPrism::distance(vector<double> point)
     case MBB:
       break;
     
-    case RAF:
-      break;
+    case RAF: return distance_p2p(point[0],point[1],point[2],(Wx/2),(Wy/2),-(Wz/2));
     case RAM:
       break;
-    case RAB:
-      break;
+    case RAB: return distance_p2p(point[0],point[1],point[2],(Wx/2),(Wy/2),(Wz/2));
     case RMF:
       break;
     case RMM:
       break;
     case RMB:
       break;
-    case RBF:
-      break;
+    case RBF: return distance_p2p(point[0],point[1],point[2],(Wx/2),-(Wy/2),(Wz/2));
     case RBM:
       break;
-    case RBB:
-      break;
+    case RBB: return distance_p2p(point[0],point[1],point[2],(Wx/2),-(Wy/2),-(Wz/2));
   }
 
   return distance;
