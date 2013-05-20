@@ -22,8 +22,6 @@ RectPrism::RectPrism(vector<double> center, vector<double> rotation, vector<doub
   this->width=width;
 }
 
-
-
 double RectPrism::distance(vector<double> point)
 {
   double distance = 0.0;
@@ -83,12 +81,12 @@ double RectPrism::distance(vector<double> point)
   t(2,0)=center[2];
   
   //calculate distances
-  float d1mat=(n1*t)(0,0)+(width[0]/2);
-  float d2mat=(n2*t)(0,0)+(width[1]/2);
-  float d3mat=(n3*t)(0,0)+(width[2]/2);
-  float d4mat=(n4*t)(0,0)-(width[0]/2);
-  float d5mat=(n5*t)(0,0)-(width[1]/2);
-  float d6mat=(n6*t)(0,0)-(width[2]/2);
+  float d1=(n1*t)(0,0)+(width[0]/2);
+  float d2=(n2*t)(0,0)+(width[1]/2);
+  float d3=(n3*t)(0,0)+(width[2]/2);
+  float d4=(n4*t)(0,0)-(width[0]/2);
+  float d5=(n5*t)(0,0)-(width[1]/2);
+  float d6=(n6*t)(0,0)-(width[2]/2);
 
   n1.print("n1");
   n2.print("n2");
@@ -104,5 +102,45 @@ double RectPrism::distance(vector<double> point)
   std::cout<<d5mat<<std::endl;
   std::cout<<d6mat<<std::endl;
   
+  Plane_3 p1(n1(0),n1(1),n1(2),d1);
+  Plane_3 p2(n2(0),n2(1),n2(2),d2);
+  Plane_3 p3(n3(0),n3(1),n3(2),d3);
+  Plane_3 p4(n4(0),n4(1),n4(2),d4);
+  Plane_3 p5(n5(0),n5(1),n5(2),d5);
+  Plane_3 p6(n6(0),n6(1),n6(2),d6);
+  
+  Polyhedron P;
+  
+  //object_handle o = cube.ray_shoot_to_boundary (Point(point[0],point[1],point[2]));
+  
+  
+//   // the cube [0,1]^3
+//   Point P[8] = { Point(0,0,0), Point(0,0,1), Point(0,1,0), Point(0,1,1),
+//                  Point(1,0,0), Point(1,0,1), Point(1,1,0), Point(1,1,1)};
+// 
+//   // the cube [2,3]^3
+//   Point Q[1] = { Point(point[0], point[1], point[2]) };
+//   
+//   Polytope_distance pd(P, P+8, Q, Q+1);
+//   assert (pd.is_valid());
+//   
+//   distance = sqrt(CGAL::to_double (pd.squared_distance_numerator()) /
+//     CGAL::to_double (pd.squared_distance_denominator()));
+  
+  
+  if (distance == 0)
+    
+  
   return distance;
 }
+
+bitset<6> RectPrism::cohenSutherland3D (vector<double> point)
+{
+    bitset<6> code(string("000000"));
+    
+    //calculate line:
+
+    
+    return code;
+}
+
