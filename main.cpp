@@ -77,14 +77,14 @@ int main(int argc, char* argv[])
   r.push_back(0);
   r.push_back(0);
   r.push_back(0);
-  vector<double> w;
-  w.push_back(1);
-  w.push_back(1);
-  w.push_back(1);
+  vector<double> p;
+  p.push_back(1);
+  p.push_back(1);
+  p.push_back(1);
   
-  RectPrism rect(t,r,w);
+  RectPrism rect(t,r,1,1,1);
   
-  rect.distance(w);
+  rect.distance(p);
   
 	// deletes
 	//delete cognitiveSubtraction;
