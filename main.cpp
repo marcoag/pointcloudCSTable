@@ -64,10 +64,11 @@ int main(int argc, char* argv[])
   
 //  std::cout<<"SIZE: "<<result->size()<<std::endl;
 
-//   QApplication app(argc, argv);
+   QApplication app(argc, argv);
 //   
-//   myViewer m("../scenarios/genericPointCloud.xml");
-//   app.exec();
+   myViewer m;
+   m.cube();
+   app.exec();
   
   vector<double> t;
   t.push_back(0);
@@ -77,14 +78,15 @@ int main(int argc, char* argv[])
   r.push_back(0);
   r.push_back(0);
   r.push_back(0);
+  //point
   vector<double> p;
   p.push_back(1);
   p.push_back(1);
   p.push_back(1);
   
-  RectPrism rect(t,r,1,1,1);
+  RectPrism rect(t,r,2,2,2);
   
-  rect.distance(p);
+  cout<<rect.distance(p)<<endl;
   
 	// deletes
 	//delete cognitiveSubtraction;

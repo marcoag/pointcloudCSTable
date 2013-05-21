@@ -40,7 +40,6 @@ double distance_p2p (double x1, double y1, double z1, double x2, double y2, doub
 
 double RectPrism::distance(vector<double> point)
 {
-  double distance = 0.0;
   
   QMat Rx(3,3);
   Rx(0,0)=1;               Rx(0,1)=0;               Rx(0,2)=0;
@@ -143,56 +142,67 @@ double RectPrism::distance(vector<double> point)
   switch(code)
   {
     case LAF: return distance_p2p(point[0],point[1],point[2],-(Wx/2),(Wy/2),-(Wz/2));
-    case LAM:
-      break;
+    case LAM: return sqrt(pow(point[0]-(-Wx/2),2)+pow(point[1]-(Wy/2),2));
     case LAB: return distance_p2p(point[0],point[1],point[2],-(Wx/2),(Wy/2),(Wz/2));
-    case LMF: 
-      break;
-    case LMM: 
-      break;
-    case LMB:
-      break;
+    case LMF: return sqrt(pow(point[0]-(-Wx/2),2)+pow(point[2]-(-Wz/2),2));
+    case LMM: return point[0]-(-Wx/2);
+    case LMB: return sqrt(pow(point[0]-(-Wx/2),2)+pow(point[2]-(Wz/2),2));
     case LBF: return distance_p2p(point[0],point[1],point[2],-(Wx/2),-(Wy/2),-(Wz/2));
-    case LBM:
-      break;
+    case LBM: return sqrt(pow(point[0]-(-Wx/2),2)+pow(point[1]-(-Wy/2),2));
     case LBB: return distance_p2p(point[0],point[1],point[2],-(Wx/2),-(Wy/2),(Wz/2));
     
-    case MAF: 
-      break;
-    case MAM:
-      break;
-    case MAB:
-      break;
-    case MMF:
-      break;
+    case MAF: return sqrt(pow(point[1]-(Wy/2),2)+pow(point[2]-(-Wz/2),2));
+    case MAM: return point[1]-(Wy/2);
+    case MAB: return sqrt(pow(point[1]-(Wy/2),2)+pow(point[2]-(Wz/2),2));
+    case MMF: return point[2]-(-Wz/2);
+    
+    
     case MMM: 
-      break;
-    case MMB:
-      break;
-    case MBF:
-      break;
-    case MBM:
-      break;
-    case MBB:
-      break;
+      double distances[6];
+      double min_distance;
+      //-x
+      distances[0]=abs((-Wx/2)-point[0]);
+      //y
+      distances[1]=abs((Wy/2)-point[1]);
+      //-z
+      distances[2]=abs((-Wz/2)-point[2]);
+      //-y
+      distances[3]=abs((-Wy/2)-point[1]);
+      //z
+      distances[4]=abs((Wz/2)-point[2]);
+      //x
+      distances[5]=abs((Wx/2)-point[0]);
+      
+      //get the minimum distance
+      min_distance=distances[0];
+      for(int i=1;i<6;i++)
+      {
+        if (min_distance>distances[i])
+        {
+          min_distance=distances[i];
+        }
+      }
+      return min_distance;
+    
+    
+    case MMB: return point[2]-(Wz/2);
+    case MBF: return sqrt(pow(point[1]-(-Wy/2),2)+pow(point[2]-(-Wz/2),2));
+    case MBM: return point[1]-(-Wy/2);
+    case MBB: return sqrt(pow(point[1]-(-Wy/2),2)+pow(point[2]-(Wz/2),2));
     
     case RAF: return distance_p2p(point[0],point[1],point[2],(Wx/2),(Wy/2),-(Wz/2));
-    case RAM:
-      break;
+    case RAM: return sqrt(pow(point[0]-(Wx/2),2)+pow(point[1]-(Wy/2),2));
     case RAB: return distance_p2p(point[0],point[1],point[2],(Wx/2),(Wy/2),(Wz/2));
-    case RMF:
-      break;
-    case RMM:
-      break;
-    case RMB:
-      break;
+    case RMF: return sqrt(pow(point[0]-(Wx/2),2)+pow(point[2]-(-Wz/2),2));
+    case RMM: printf("Point: %f, Wx/2: %f", point[0], Wx/2 );
+      return point[0]-(Wx/2);
+    case RMB: return sqrt(pow(point[0]-(Wx/2),2)+pow(point[2]-(Wz/2),2));
     case RBF: return distance_p2p(point[0],point[1],point[2],(Wx/2),-(Wy/2),(Wz/2));
-    case RBM:
-      break;
+    case RBM: return sqrt(pow(point[0]-(Wx/2),2)+pow(point[1]-(-Wy/2),2));
     case RBB: return distance_p2p(point[0],point[1],point[2],(Wx/2),-(Wy/2),-(Wz/2));
   }
-
-  return distance;
+  
+  return -1;
 }
 
 uint8_t RectPrism::placePoint (vector<double> point)
