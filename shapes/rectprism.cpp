@@ -19,7 +19,9 @@ RectPrism::RectPrism(const QVec &center, const QVec &rotation, double Wx, double
 {
   this->center=center;
   this->rotation=rotation;
-  this->Wx=Wx;this->Wy=Wy;this->Wz=Wz;
+  this->Wx=Wx;
+  this->Wy=Wy;
+  this->Wz=Wz;
 }
 
 
@@ -35,6 +37,7 @@ void printCode(uint8_t code)
 
 double distance_p2p (double x1, double y1, double z1, double x2, double y2, double z2)
 {
+  cout<<"distance: "<<x1<<" "<<y1<<" "<<z1<<" "<<x2<<" "<<y2<<" "<<z2<<endl;
   return sqrt(pow(x1-x2,2.0)+pow(y1-y2,2.0)+pow(z1-z2,2.0));
 }
 
@@ -117,14 +120,7 @@ double RectPrism::distance(const QVec &point)
 
 QVec RectPrism::placePoint(const QVec &point)
 {
-//   rotation.print("rotation");
-//   center.print("center");
-//   QMat mat = RTMat(-rotation(0), -rotation(1), -rotation(2), QVec::vec3(-center(0), -center(1), -center(2)));
-//   mat.print("mat");
-//   point.print("point");
-  
-//   r.print("r");
-  return RTMat(-rotation(0), -rotation(1), -rotation(2), QVec::vec3(-center(0), -center(1), -center(2)))*point; 
+  return RTMat(-rotation(0), -rotation(1), -rotation(2), QVec::vec3(-center(0), -center(1), -center(2)))*QVec::vec4(point(0), point(1), point(2), 1); 
 }
 
 uint8_t RectPrism::collisionVector(const QVec &point)
