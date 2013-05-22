@@ -4,7 +4,7 @@
 #define YN 3
 #define ZP 4
 #define ZN 5
-
+//X Y Z
 //Left Above Front
 #define LAF ((1<<XN) | (1<<YP) | (1<<ZN))
 //Left Above Middle
@@ -15,7 +15,6 @@
 #define LMF ((1<<XN) | (1<<ZN))
 //Left Middle Middle
 #define LMM ((1<<XN))
-//X Y Z
 //Left Middle Back
 #define LMB ((1<<XN) | (1<<ZP))
 //Left Bottom Front

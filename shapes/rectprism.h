@@ -31,19 +31,21 @@ class RectPrism
   
 public:
   RectPrism();
-  RectPrism(vector<double> center, vector<double> rotation, double Wx, double Wy, double Wz);
-  inline vector<double> getCenter () { return center; }
-  inline vector<double> getRotation () { return rotation; }
-  inline void setCenter ( vector<double> center ) { this->center=center; }
-  inline void setRotation ( vector<double> rotation ) { this->rotation=rotation; }
+  RectPrism(const QVec &center, const QVec &rotation, double Wx, double Wy, double Wz);
+  inline const QVec getCenter () { return center; }
+  inline const QVec getRotation () { return rotation; }
+  inline void setCenter ( const QVec center ) { this->center=center; }
+  inline void setRotation ( const QVec  rotation ) { this->rotation=rotation; }
   inline void setWidth ( double Wx, double Wy, double Wz ) { this->Wx=Wx;this->Wy=Wy;this->Wz=Wz; }
-  uint8_t placePoint ( vector<double> point);
   
-  double distance(vector<double> point);
+  QVec placePoint(const QVec &point);
+  uint8_t collisionVector(const QVec &point);
+  
+  double distance(const QVec &point);
   
 private:
-  vector<double> center;
-  vector<double> rotation;
+  QVec center;
+  QVec rotation;
   double Wx, Wy, Wz;
   
 };

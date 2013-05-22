@@ -70,23 +70,13 @@ int main(int argc, char* argv[])
    m.cube();
    app.exec();
   
-  vector<double> t;
-  t.push_back(0);
-  t.push_back(0);
-  t.push_back(0);
-  vector<double> r;
-  r.push_back(0);
-  r.push_back(0);
-  r.push_back(0);
-  //point
-  vector<double> p;
-  p.push_back(1);
-  p.push_back(1);
-  p.push_back(1);
+  QVec t = QVec::vec3(0.5,0.5,0.5);
+  QVec r = QVec::vec3(0,0,0);
+  QVec point = QVec::vec3(-3,-2,-23);
   
-  RectPrism rect(t,r,2,2,2);
+  RectPrism rect(t,r,1,1,1);
   
-  cout<<rect.distance(p)<<endl;
+  cout<<rect.distance(point)<<endl;
   
 	// deletes
 	//delete cognitiveSubtraction;
