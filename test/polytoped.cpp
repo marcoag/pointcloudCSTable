@@ -29,7 +29,7 @@ int main()
                  Point(1,0,0), Point(1,0,1), Point(1,1,0), Point(1,1,1)};
 
   // the cube [2,3]^3
-  Point Q[1] = { Point(-3,-2,-23) };
+  Point Q[1] = { Point(3,-2,-23) };
 
   Polytope_distance pd(P, P+8, Q, Q+1);
   assert (pd.is_valid());

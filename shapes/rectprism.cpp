@@ -109,9 +109,9 @@ double RectPrism::distance(const QVec &point)
     case RMM: printf("Point: %f, Wx/2: %f\n", point2(0), Wx/2 );
       return point2(0)-(Wx/2);
     case RMB: return sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(2)-(Wz/2),2));
-    case RBF: return distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),(Wz/2));
+    case RBF: return distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),-(Wz/2));
     case RBM: return sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(1)-(-Wy/2),2));
-    case RBB: return distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),-(Wz/2));
+    case RBB: return distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),(Wz/2));
   }
   
   return -1;

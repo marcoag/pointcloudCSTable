@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
   
   QVec t = QVec::vec3(0.5,0.5,0.5);
   QVec r = QVec::vec3(0,0,0);
-  QVec point = QVec::vec3(-3,-2,-23);
+  QVec point = QVec::vec3(3,-2,-23);
   
   RectPrism rect(t,r,1,1,1);
   
