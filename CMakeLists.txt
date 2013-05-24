@@ -23,7 +23,7 @@ SET ( HEADERS
   osgviewer/osgview.h
 )
 
-set(CMAKE_CXX_FLAGS "-Wall -Wfatal-errors -fopenmp " )
+set(CMAKE_CXX_FLAGS "-Wall -Wfatal-errors -fopenmp -frounding-math" )
 
 include_directories(.)
 
@@ -63,7 +63,7 @@ SET ( PCL_USER_LIBRARIES  ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_LIBR
 # Specify construction and link process
 SET (EXECUTABLE_OUTPUT_PATH .)
 ADD_EXECUTABLE( cogSub ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
-TARGET_LINK_LIBRARIES( cogSub ${LIBS} ${QT_LIBRARIES} ${PCL_USER_LIBRARIES} -lrobocomp_innermodel -lqmat -losgGA -losgText -losgDB -losgUtil -losg -losgViewer -lCGAL )
+TARGET_LINK_LIBRARIES( cogSub ${LIBS} ${QT_LIBRARIES} ${PCL_USER_LIBRARIES} -lrobocomp_innermodel -lqmat -losgGA -losgText -losgDB -losgUtil -losg -losgViewer -lCGAL -lCGAL_Core )
 INSTALL(FILES cogSub DESTINATION /usr/local/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 
 

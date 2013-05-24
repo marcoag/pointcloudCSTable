@@ -18,8 +18,9 @@ class myViewer: public QWidget
 {
 Q_OBJECT
 public:
-//   myViewer();
-  myViewer(string xml);
+  myViewer();
+  void cube();
+  void cylinder();
 //   void setXmlPath(string xml);
   inline string getXmlPath() { return xmlLocation; }
   
