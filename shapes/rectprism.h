@@ -34,9 +34,10 @@ public:
   RectPrism(const QVec &center, const QVec &rotation, double Wx, double Wy, double Wz);
   inline const QVec getCenter () { return center; }
   inline const QVec getRotation () { return rotation; }
+  inline const QVec getWiwth () { return Qvec::vec3(Wx,Wy,Wz); }
   inline void setCenter ( const QVec center ) { this->center=center; }
   inline void setRotation ( const QVec  rotation ) { this->rotation=rotation; }
-  inline void setWidth ( double Wx, double Wy, double Wz ) { this->Wx=Wx;this->Wy=Wy;this->Wz=Wz; }
+  inline void setWidth ( const QVec Width ) { this->Wx=Width(0);this->Wy=Width(1);this->Wz=Width(2); }
   
   QVec placePoint(const QVec &point);
   uint8_t collisionVector(const QVec &point);
