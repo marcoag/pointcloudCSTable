@@ -11,6 +11,8 @@ SET ( SOURCES
   myViewer.cpp
   cylinderFitting.cpp
   cylinderCloudParticle.cpp
+  rectprismFitting.cpp
+  rectprismCloudParticle.cpp
   innermodelManager.cpp
   shapes/cylinder.cpp
   shapes/axis.cpp

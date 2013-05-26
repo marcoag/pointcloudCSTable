@@ -1,4 +1,4 @@
-#include "cylinderCloudParticle.h"
+#include "rectprismCloudParticle.h"
 
 
 RectPrismCloudParticle::RectPrismCloudParticle(): r()
@@ -7,9 +7,9 @@ RectPrismCloudParticle::RectPrismCloudParticle(): r()
 //   varianceA=QVec::vec3(0, 0, 0);
 //   varianceB=QVec::vec3(0, 0, 0);
 //   varianceR=0;
-  varianceA=QVec::vec3(10, 10, 10);
-  varianceB=QVec::vec3(10, 10, 10);
-  varianceR=10;
+  varianceC=QVec::vec3(10, 10, 10);
+  varianceW=QVec::vec3(10, 10, 10);
+  varianceR=QVec::vec3(10, 10, 10);
 }
 
 void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInputData &data, Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid)
@@ -62,7 +62,7 @@ void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInpu
 }
 
 
-void RectPrismCloudParticle::initializeFromEigenValues(const CylinderCloudPFInputData &data){
+void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInputData &data){
   Eigen::Vector4f centroid;
   Eigen::Matrix3f covariance_matrix;
   
@@ -79,6 +79,7 @@ void RectPrismCloudParticle::initializeFromEigenValues(const CylinderCloudPFInpu
   EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
   EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
 //   pcl::eigen33(covariance_matrix, eigen_vectors, eigen_values);
+  
   estimateEigenAndCentroid(data, eigen_values, eigen_vectors, centroid);
 
   printf (" EigenValues  | %f %f %f  | \n", eigen_values(0), eigen_values(1), eigen_values(2));
@@ -125,24 +126,25 @@ void RectPrismCloudParticle::initializeFromEigenValues(const CylinderCloudPFInpu
 //   printf("b:      (%f, %f, %f)\n", b[0], b[1], b[2]);
 //   printf("r:      %f\n\n", r);
   // Set data
-  c.setValues(a, b, r);
+//   c.setValues(a, b, r);
 
 }
 
-void RectPrismCloudParticle::gypsyInitization(const CylinderCloudPFInputData &data)
+void RectPrismCloudParticle::gypsyInitization(const RectPrismCloudPFInputData &data)
 {
    Eigen::Vector4f centroid;
    pcl::compute3DCentroid (*data.cloud_target,centroid);
    Vector center (centroid(0), centroid(1), centroid(2));
    Vector a (centroid(0), centroid(1) + 50, centroid(2));
    Vector b (centroid(0), centroid(1) - 50, centroid(2));
-   double r=30;
    
-   c.setValues(a,b,r);
+   r.setCenter(QVec::vec3(centroid(0), centroid(1), centroid(2)));
+   r.setWidth(QVec::vec3(50,50,50));
+   r.setRotation(QVec::vec3(0,0,0));
 
 }
 
-void RectPrismCloudParticle::initialize(const CylinderCloudPFInputData &data, const int &control, const RCParticleFilter_Config *config)
+void RectPrismCloudParticle::initialize(const RectPrismCloudPFInputData &data, const int &control, const RCParticleFilter_Config *config)
 { 
 //   initializeFromEigenValues(data);
   gypsyInitization(data);
@@ -150,62 +152,75 @@ void RectPrismCloudParticle::initialize(const CylinderCloudPFInputData &data, co
 
 void RectPrismCloudParticle::adapt(const int &controlBack, const int &controlNew, const bool noValidCandidates)
 {
-  Vector a(c.getA().getX()+getRandom(varianceA(0)), c.getA().getY()+getRandom(varianceA(1)), c.getA().getZ()+getRandom(varianceA(2)));
-  Vector b(c.getB().getX()+getRandom(varianceB(0)), c.getB().getY()+getRandom(varianceB(1)), c.getB().getZ()+getRandom(varianceB(2)));
-  double r = fabs(c.getR()+getRandom(varianceR));
-  c.setValues(a,b,r);
-  varianceA = varianceA.operator*(0.95);
-  varianceB = varianceB.operator*(0.95);
-  varianceR *= 0.95;
+//   Vector a(c.getA().getX()+getRandom(varianceA(0)), c.getA().getY()+getRandom(varianceA(1)), c.getA().getZ()+getRandom(varianceA(2)));
+//   Vector b(c.getB().getX()+getRandom(varianceB(0)), c.getB().getY()+getRandom(varianceB(1)), c.getB().getZ()+getRandom(varianceB(2)));
+//   double r = fabs(c.getR()+getRandom(varianceR));
+//   c.setValues(a,b,r);
+  
+  QVec currentCenter = r.getCenter();
+  QVec currentWidth = r.getWidth();
+  QVec currentRotation = r.getRotation();
+  
+  r.setCenter(QVec::vec3(currentCenter(0)+getRandom(varianceC(0)), currentCenter(1)+getRandom(varianceC(1)), currentCenter(2)+getRandom(varianceC(2))));
+  r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), currentWidth(1)+getRandom(varianceW(1)), currentWidth(2)+getRandom(varianceW(2))));
+  r.setRotation(QVec::vec3(currentRotation(0)+getRandom(varianceR(0)), currentRotation(1)+getRandom(varianceR(1)), currentRotation(2)+getRandom(varianceR(2))));
+   
+  varianceC = varianceC.operator*(0.95);
+  varianceW = varianceW.operator*(0.95);
+  varianceR = varianceR.operator*(0.95);
 }
 
-void RectPrismCloudParticle::computeWeight(const CylinderCloudPFInputData &data)
+void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data)
 {
-//   printf("Cylinder: A(%f,%f,%f), B(%f,%f,%f), r=%f\n", c.getA().getX() , c.getA().getY() ,c.getA().getZ() , c.getB().getX() ,c.getB().getY() ,c.getB().getZ(), c.getR());
+//   printf("RectPrism: A(%f,%f,%f), B(%f,%f,%f), r=%f\n", c.getA().getX() , c.getA().getY() ,c.getA().getZ() , c.getB().getX() ,c.getB().getY() ,c.getB().getZ(), c.getR());
   this->weight=0.;
-  double mint, maxt;
+  //double mint, maxt;
   for( pcl::PointCloud<pcl::PointXYZ>::iterator it = data.cloud_target->begin(); it != data.cloud_target->end(); it++ )
   {
-    Vector point(it->x, it->y, it->z);
-    double dist,t;
-    const float distA = sqrt(c.R(point));   
     
-    QVec qP = QVec::vec3(it->x, it->y, it->z);
-    QVec qA = QVec::vec3(c.getA().getX(), c.getA().getY(), c.getA().getZ());
-    QVec qB = QVec::vec3(c.getB().getX(), c.getB().getY(), c.getB().getZ());
     
-    if (distA<0.0001)
-    {
-      const double distB = c.getR() - ((qP-qA).crossProduct(qP-qB)).norm2() / (qB-qA).norm2();
-//       printf("metodo 2: %f\n", distB);
-      dist = distB;
-    }
-    else
-    {
-//       printf("metodo 1: %f\n", distA);
-      dist = distA;
-    }
+    QVec point = QVec::vec3(it->x, it->y, it->z);
+//     double dist,t;
+//     const float distA = sqrt(c.R(point));   
+//     
+//     QVec qP = QVec::vec3(it->x, it->y, it->z);
+//     QVec qA = QVec::vec3(c.getA().getX(), c.getA().getY(), c.getA().getZ());
+//     QVec qB = QVec::vec3(c.getB().getX(), c.getB().getY(), c.getB().getZ());
+//     
+//     if (distA<0.0001)
+//     {
+//       const double distB = c.getR() - ((qP-qA).crossProduct(qP-qB)).norm2() / (qB-qA).norm2();
+// //       printf("metodo 2: %f\n", distB);
+//       dist = distB;
+//     }
+//     else
+//     {
+// //       printf("metodo 1: %f\n", distA);
+//       dist = distA;
+//     }
+    double dist = r.distance(point);
+    
     this->weight += dist;
 //     std::cout<<"X:"<<it->x<<" Y:"<<it->y<<" Z:"<<it->z<<" D:"<<dist<<std::endl;
     
     //look for the upper and low points
-    t=-((qA-qP).dotProduct(qB-qA))/fabs(pow((qB-qA).norm2(),2));
-    if (t<mint || it==data.cloud_target->begin())
-    {
-      mint=t;
-    }
-    if (t>maxt || it==data.cloud_target->begin())
-    {
-      maxt=t;
-    }
+//     t=-((qA-qP).dotProduct(qB-qA))/fabs(pow((qB-qA).norm2(),2));
+//     if (t<mint || it==data.cloud_target->begin())
+//     {
+//       mint=t;
+//     }
+//     if (t>maxt || it==data.cloud_target->begin())
+//     {
+//       maxt=t;
+//     }
   }
   this->weight /= data.cloud_target->points.size();
-  const float k = fabs(0.-mint)+fabs(1.-maxt);
-  const float topbottom_weight = 1./(c.getR()*k+1);
+  //const float k = fabs(0.-mint)+fabs(1.-maxt);
+  //const float topbottom_weight = 1./(c.getR()*k+1);
   const float distance_weight = 1./(this->weight+1.);
 //   std::cout<<"k: "<<k<<std::endl;
 //   std::cout<<"topbottom_weight: "<<topbottom_weight<<" distance_weight: "<<distance_weight<<std::endl;
-  this->weight=distance_weight*topbottom_weight;
+  this->weight=distance_weight;//*topbottom_weight;
 //   printf("WEIGHT: %f\n", this->weight);
 }
 
@@ -214,46 +229,19 @@ RectPrismCloudParticle::~RectPrismCloudParticle()
 
 }
 
-QVec RectPrismCloudParticle::getTranslation() const
+QVec RectPrismCloudParticle::getTranslation()
 {
-  return QVec::vec3(c.c[0], c.c[1], c.c[2]);
+  return r.getCenter();
 }
 
 QVec RectPrismCloudParticle::getRotation()
 {
-  QVec qA = QVec::vec3(c.getA().getX(), c.getA().getY(), c.getA().getZ());
-  QVec qB = QVec::vec3(c.getB().getX(), c.getB().getY(), c.getB().getZ());
-
-//   qA = QVec::vec3(0, -50, 0);
-//   qB = QVec::vec3(0, 50, 0);
-//   Rot3D r(0.5, 0.2, 0.2);
-//   qA = r * qA;
-//   qB = r * qB;
-  
- 
-  QVec qAB = qA-qB;
-  if (qA(1) < qB(1)) qAB = qAB.operator*(-1);
-  
-//   qAB.print("VECTOR");
-  
-  //Agustiiiiin!
-  //float distIncl = -acos(qAB(2)/(qAB.norm2())) - M_PI_2;
-  //float distAzim = atan2(qAB(0),(-1.0)*qAB(1));
-  
-
-//   float rx = asin(qAB(1)/sqrt(pow(qAB(1),2)+pow(qAB(2),2)));
-//   float rz = asin(qAB(1)/sqrt(pow(qAB(0),2)+pow(qAB(1),2)));
-
-  float rx = atan2(qAB(2), qAB(1));
-  float rz = -atan2(qAB(0), qAB(1));
-  
-  return QVec::vec3(3.1415926535/2+rx,rz,0); // :-)
-  
+  return r.getRotation();
 }
 
-QVec RectPrismCloudParticle::getScale() const
+QVec RectPrismCloudParticle::getScale()
 {
-  return QVec::vec3(c.r[0], c.r[0], c.h);
+  return r.getWidth();
 }
 
 float RectPrismCloudParticle::getRandom(float var)
@@ -267,6 +255,15 @@ void RectPrismCloudParticle::setRectPrism (RectPrism r )
 {
   this->r.setCenter ( r.getCenter() );
   this->r.setRotation ( r.getRotation() );
-  this->r.setWidth ( r.getWith() );
+  this->r.setWidth ( r.getWidth() );
   
 }
+
+void RectPrismCloudParticle::print(std::string v)
+{
+  printf("%s: \n", v.c_str());
+  printf("RectPrism: Center (%f,%f,%f), Rotation (%f,%f,%f), Width (%f,%f,%f), Weight: %f\n", 
+	 r.getCenter()(0),r.getCenter()(1),r.getCenter()(2),
+	 r.getRotation()(0),r.getRotation()(1),r.getRotation()(2),
+	 r.getWidth()(0),r.getWidth()(1),r.getWidth()(2), weight);
+}   

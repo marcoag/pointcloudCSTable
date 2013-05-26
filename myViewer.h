@@ -11,6 +11,7 @@
 
 #include "innermodelManager.h"
 #include "cylinderFitting.h"
+#include "rectprismFitting.h"
 
 using namespace std;
 
@@ -35,6 +36,7 @@ private:
   OsgView *world3D;
   InnerModelManager *innerModelManager;
   CylinderFitting *cylinderFitting;
+  RectPrismFitting *rectprismFitting;
 };
 
 #endif

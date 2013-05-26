@@ -12,7 +12,7 @@ public:
   ~RectPrismFitting();
   void sig_term();
   void run();
-  Vector V(const double& r);
+  //Vector V(const double& r);
   inline double getRandom() { return (rand()%32000)/32000.0; }
   inline void setInnerModel(InnerModelManager *innermodelManager) { this->innermodelManager=innermodelManager; }
   inline bool isComputing () { return computing; }
@@ -20,9 +20,9 @@ public:
 private:
   
   bool computing;
-  CylinderCloudPFInputData input;
+  RectPrismCloudPFInputData input;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cup;
-  RCParticleFilter<CylinderCloudPFInputData, int, CylinderCloudParticle, RCParticleFilter_Config> *pf;
+  RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> *pf;
   Vector p[10000];
   Vector d[10000];
   double t[10000];

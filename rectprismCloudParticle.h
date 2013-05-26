@@ -31,29 +31,25 @@ public:
   void computeWeight(const RectPrismCloudPFInputData &data);
   void initializeFromEigenValues(const RectPrismCloudPFInputData &data);
   void gypsyInitization(const RectPrismCloudPFInputData &data);
-  QVec getTranslation() const;
+  QVec getTranslation();
   QVec getRotation();
-  QVec getScale() const;
+  QVec getScale();
   float getRandom(float var);
   void setRectPrism (RectPrism r );
+  void print(std::string v);
 
   void estimateEigenAndCentroid(const RectPrismCloudPFInputData &data, Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid);
 
   
-  inline RectPrism getRectPrism() { return c; };
+  inline RectPrism getRectPrism() { return r; };
 
-  void print(std::string v)
-  {
-    printf("%s: \n", v.c_str());
-    printf("RectPrism: A(%f,%f,%f), B(%f,%f,%f), r=%f, Weight: %f\n", c.getA().getX() , c.getA().getY() ,c.getA().getZ() , c.getB().getX() ,c.getB().getY() ,c.getB().getZ(), c.getR(), weight);
-  }   
 private:
   RectPrism r;
   
   //Random variance variables
-  QVec varianceA;
-  QVec varianceB;
-  float varianceR;
+  QVec varianceC;
+  QVec varianceW;
+  QVec varianceR;
 
 
 

@@ -29,12 +29,11 @@ void myViewer::cube()
   
   innerModelManager = new InnerModelManager(innerModel, imv);
 
-  /*
-  cylinderFitting = new CylinderFitting(innerModelManager);
+  
+  rectprismFitting = new RectPrismFitting(innerModelManager);
   
   connect (&timer, SIGNAL(timeout()),this,SLOT(run()));
   timer.start(10);
-  */
 
 }
 
