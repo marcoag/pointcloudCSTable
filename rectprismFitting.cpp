@@ -10,10 +10,10 @@ computing(false)
   //sigset(SIGINT, sig_term); 
   innermodelManager = imm;
   
-  c.particles=1000;
+  c.particles=100;
   
   //cup from kinect
-   pcl::io::loadPCDFile<pcl::PointXYZ> ("../data/cloud_cup.pcd", *cloud_cup);
+  //pcl::io::loadPCDFile<pcl::PointXYZ> ("../data/cloud_cup.pcd", *cloud_cup);
   
   //Sintetic line
 //   for(int i=1;i<1000;i++)
@@ -45,6 +45,65 @@ computing(false)
 //     }
 //   }
   
+     //Sintetic cube
+  int Wx = 100;
+  int Wy = 100;
+  int Wz = 100;
+  int res = 3;
+  //Rot3D r(0.5, 0.2, 0.2);
+  //Faces front and back
+  for(float x=0; x<=Wx; x=x+res)
+  {
+    for(float y=0; y<=Wx; y=y+res)
+    {
+      //face front (x=0)
+      pcl::PointXYZ p;
+      p.x = x;
+      p.y = y;
+      p.z = 0;
+      cloud_cup->push_back(p);
+      p.x = x;
+      p.y = y;
+      p.z = Wz;      
+      cloud_cup->push_back(p);
+    }
+  }
+  //Faces up and down
+  for(float x=0; x<=Wx; x=x+res)
+  {
+    for(float z=0; z<=Wz; z=z+res)
+    {
+      //face front (x=0)
+      pcl::PointXYZ p;
+      p.x = x;
+      p.y = 0;
+      p.z = z;
+      cloud_cup->push_back(p);
+      p.x = x;
+      p.y = Wy;
+      p.z = z;      
+      cloud_cup->push_back(p);
+    }
+  }
+  //Faces right and left
+  for(float y=0; y<=Wy; y=y+res)
+  {
+    for(float z=0; z<=Wz; z=z+res)
+    {
+      //face front (x=0)
+      pcl::PointXYZ p;
+      p.x = 0;
+      p.y = y;
+      p.z = z;
+      cloud_cup->push_back(p);
+      p.x = Wx;
+      p.y = y;
+      p.z = z;      
+      cloud_cup->push_back(p);
+    }
+  }
+
+   
 
 //   printf( "%s: %d\n", __FILE__, __LINE__);   
   innermodelManager->setPointCloudData("cup_cloud", cloud_cup);
@@ -63,6 +122,31 @@ computing(false)
 //   double rad1= 60;
 //   Cylinder cyl(a1,b1,rad1);
 //   pf->weightedParticles[1].setCylinder(cyl);
+}
+
+/**
+  * \brief Default constructor
+  */
+RectPrismFitting::RectPrismFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud): QThread(),
+computing(false)
+{
+  //sigset(SIGINT, sig_term); 
+  innermodelManager = imm;
+  
+  c.particles=1000;
+  
+  cout<<"RectPrismFitting, cloud size: "<<cloud->size()<<endl;
+  
+  cloud_cup = cloud;
+  
+  cout<<"RectPrismFitting, cloud size: "<<cloud_cup->size()<<endl;
+  
+  innermodelManager->setPointCloudData("cup_cloud", cloud_cup);
+  
+  input.cloud_target=cloud_cup;
+  pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
+  cout<<"RectPrismFitting, cloud size: "<<input.cloud_target->size()<<endl;
+  
 }
 
 /**
@@ -130,7 +214,7 @@ void RectPrismFitting::run()
 //   printf("%f %f %f\n", r(0), r(1), r(2));
 
   innermodelManager->setPose("cube_0_t", t, r, w );
-  innermodelManager->setScale("cube_0", w(0), w(1), w(2));
+  innermodelManager->setScale("cube_0", w(0)/2, w(1)/2, w(2)/2);
 //   catch(RoboCompInnerModelManager::InnerModelManagerError e)
 //   {
 //     std::cout<<e.text<<std::endl;

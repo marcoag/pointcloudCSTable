@@ -4,9 +4,15 @@
 // {
 // }
 
-myViewer::myViewer() : QWidget()
+myViewer::myViewer() : QWidget(), cloudGiven(false)
 {
+  
+}
 
+myViewer::myViewer(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud) : QWidget(),
+cloudGiven(true)
+{
+  cloudToFit = cloud;
 }
 
 void myViewer::cube()
@@ -19,8 +25,9 @@ void myViewer::cube()
   world3D = new OsgView(this);
   world3D->init();
 //  world3D->addXYZAxisOnNode(world3D->getRootGroup(), 2, 0.2, osg::Vec4(1,0,0,0.5));
-
+  
   InnerModelViewer *imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup());
+    
   world3D->getRootGroup()->addChild(imv);
   world3D->show();
   world3D->setHomePosition(QVecToOSGVec(QVec::vec3(0,2000,-2000)), QVecToOSGVec(QVec::vec3(0,0,6000)), QVecToOSGVec(QVec::vec3(0,8000,-2000)), false);
@@ -29,10 +36,12 @@ void myViewer::cube()
   
   innerModelManager = new InnerModelManager(innerModel, imv);
 
+  if(!cloudGiven)
+    rectprismFitting = new RectPrismFitting(innerModelManager);
+  else
+    rectprismFitting = new RectPrismFitting(innerModelManager,cloudToFit);
   
-  rectprismFitting = new RectPrismFitting(innerModelManager);
-  
-  connect (&timer, SIGNAL(timeout()),this,SLOT(run()));
+  connect (&timer, SIGNAL(timeout()),this,SLOT(runRectPrism()));
   timer.start(10);
 
 }
@@ -57,13 +66,29 @@ void myViewer::cylinder()
   
   innerModelManager = new InnerModelManager(innerModel, imv);
 
-  cylinderFitting = new CylinderFitting(innerModelManager);
+  if(!cloudGiven)
+    cylinderFitting = new CylinderFitting(innerModelManager);
+  else
+    cylinderFitting = new CylinderFitting(innerModelManager,cloudToFit);
   
-  connect (&timer, SIGNAL(timeout()),this,SLOT(run()));
+  connect (&timer, SIGNAL(timeout()),this,SLOT(runCylinder()));
   timer.start(10);
 }
 
-void myViewer::run()
+void myViewer::runRectPrism()
+{
+  if(rectprismFitting->isComputing())
+  {
+    world3D->update();
+  }
+  else
+  {
+    rectprismFitting->start();
+    world3D->update();
+  }
+}
+
+void myViewer::runCylinder()
 {
   if(cylinderFitting->isComputing())
   {

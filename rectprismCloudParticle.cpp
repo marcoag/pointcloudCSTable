@@ -9,7 +9,7 @@ RectPrismCloudParticle::RectPrismCloudParticle(): r()
 //   varianceR=0;
   varianceC=QVec::vec3(10, 10, 10);
   varianceW=QVec::vec3(10, 10, 10);
-  varianceR=QVec::vec3(10, 10, 10);
+  varianceR=QVec::vec3(0.1, 0.1, 0.1);
 }
 
 void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInputData &data, Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid)
@@ -165,9 +165,10 @@ void RectPrismCloudParticle::adapt(const int &controlBack, const int &controlNew
   r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), currentWidth(1)+getRandom(varianceW(1)), currentWidth(2)+getRandom(varianceW(2))));
   r.setRotation(QVec::vec3(currentRotation(0)+getRandom(varianceR(0)), currentRotation(1)+getRandom(varianceR(1)), currentRotation(2)+getRandom(varianceR(2))));
    
-  varianceC = varianceC.operator*(0.95);
-  varianceW = varianceW.operator*(0.95);
-  varianceR = varianceR.operator*(0.95);
+  float annealing = 0.99;
+  varianceC = varianceC.operator*(annealing);
+  varianceW = varianceW.operator*(annealing);
+  varianceR = varianceR.operator*(annealing);
 }
 
 void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data)

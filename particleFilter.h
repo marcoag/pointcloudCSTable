@@ -5,6 +5,7 @@
 #include <QVector>
 
 #include <biasedRandomSelector.h>
+#include <string.h>
 
 #include <omp.h>
 
@@ -141,7 +142,16 @@ public:
 
 	RCPFParticle getOrderedParticle(uint32_t p) const
 	{
-		return weightedParticles[selector->getNumber(p)];
+    RCPFParticle rcpfparticle;
+    try {
+      rcpfparticle = weightedParticles[selector->getNumber(p)];
+    }
+    catch(std::string& s)
+    {
+      std::cout<<"getOrderedParticle exception: "<<s<<std::endl;
+    }
+//	return weightedParticles[selector->getNumber(p)];
+    return rcpfparticle;
 	}
 
 	RCPFParticle getResampledParticle(uint32_t p) const

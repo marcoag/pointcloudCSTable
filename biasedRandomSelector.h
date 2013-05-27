@@ -81,6 +81,7 @@ public:
 		if (fabs(totalWeight) <= 0.000000000000000000000000001)
 		{
 			throw std::string("BiasedSelector::Error: No possible choice.");
+      printf("BiasedSelector::Error: No possible choice.");
 		}
 		const long double result = fmodl(qrand()/RAND_MAX, totalWeight);
 		for (size_t i=0; i<candidates.size(); i++)
@@ -102,14 +103,17 @@ public:
 				return candidates[i].weight / BIASED_MULT;
 			}
 		}
-		//printf("BiasedSelector::WTF!? 2\n");
+		printf("BiasedSelector::WTF!? 2\n");
 		throw std::string("BiasedSelector::WTF!? 2");
 	}
 	bool setWeight(uint32_t id, double p, bool perform_sort=true)
 	{
 // 		printf("BiasedSelector:setw %lu", candidates.size());
 		if (p<0.)
+    {
 			throw std::string("Me does not allows negatif veilius");
+      printf("Me does not allows negatif veilius");
+    }
 		for (size_t i=0; i<candidates.size(); ++i)
 		{
 			if (candidates[i].id == id)

@@ -119,6 +119,7 @@ void downsample(const boost::shared_ptr< PCLPointCloud > &input, const boost::sh
 		sor.setInputCloud(input);
 		sor.filter(*output);
 	}
+//   *output=*input;
 }
 
 void pclGetOutliers(PCLPointCloud::Ptr inputCloud, PCLPointCloud::Ptr virtualCloud, PCLPointCloud::Ptr outliers, double threshold)

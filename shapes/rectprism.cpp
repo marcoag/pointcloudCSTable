@@ -37,36 +37,36 @@ void printCode(uint8_t code)
 
 double distance_p2p (double x1, double y1, double z1, double x2, double y2, double z2)
 {
-  cout<<"distance: "<<x1<<" "<<y1<<" "<<z1<<" "<<x2<<" "<<y2<<" "<<z2<<endl;
+  //cout<<"distance: "<<x1<<" "<<y1<<" "<<z1<<" "<<x2<<" "<<y2<<" "<<z2<<endl;
   return sqrt(pow(x1-x2,2.0)+pow(y1-y2,2.0)+pow(z1-z2,2.0));
 }
 
 double RectPrism::distance(const QVec &point)
 {
   QVec point2 = placePoint(point);
-  point.print("point");
-  point2.print("point2");
+  //point.print("point");
+  //point2.print("point2");
   
   uint8_t code = collisionVector(point2);
   
-  printCode(code);
+  //printCode(code);
   
   switch(code)
   {
-    case LAF: return distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),(Wy/2),-(Wz/2));
-    case LAM: return sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(1)-(Wy/2),2));
-    case LAB: return distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),(Wy/2),(Wz/2));
-    case LMF: return sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(2)-(-Wz/2),2));
-    case LMM: return point2(0)-(-Wx/2);
-    case LMB: return sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(2)-(Wz/2),2));
-    case LBF: return distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),-(Wy/2),-(Wz/2));
-    case LBM: return sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(1)-(-Wy/2),2));
-    case LBB: return distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),-(Wy/2),(Wz/2));
+    case LAF: return abs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),(Wy/2),-(Wz/2)));
+    case LAM: return abs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(1)-(Wy/2),2)));
+    case LAB: return abs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),(Wy/2),(Wz/2)));
+    case LMF: return abs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(2)-(-Wz/2),2)));
+    case LMM: return abs(point2(0)-(-Wx/2));
+    case LMB: return abs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(2)-(Wz/2),2)));
+    case LBF: return abs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),-(Wy/2),-(Wz/2)));
+    case LBM: return abs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(1)-(-Wy/2),2)));
+    case LBB: return abs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),-(Wy/2),(Wz/2)));
     
-    case MAF: return sqrt(pow(point2(1)-(Wy/2),2)+pow(point2(2)-(-Wz/2),2));
-    case MAM: return point2(1)-(Wy/2);
-    case MAB: return sqrt(pow(point2(1)-(Wy/2),2)+pow(point2(2)-(Wz/2),2));
-    case MMF: return point2(2)-(-Wz/2);
+    case MAF: return abs(sqrt(pow(point2(1)-(Wy/2),2)+pow(point2(2)-(-Wz/2),2)));
+    case MAM: return abs(point2(1)-(Wy/2));
+    case MAB: return abs(sqrt(pow(point2(1)-(Wy/2),2)+pow(point2(2)-(Wz/2),2)));
+    case MMF: return abs(point2(2)-(-Wz/2));
     
     
     case MMM: 
@@ -97,21 +97,21 @@ double RectPrism::distance(const QVec &point)
       return min_distance;
     
     
-    case MMB: return point2(2)-(Wz/2);
-    case MBF: return sqrt(pow(point2(1)-(-Wy/2),2)+pow(point2(2)-(-Wz/2),2));
-    case MBM: return point2(1)-(-Wy/2);
-    case MBB: return sqrt(pow(point2(1)-(-Wy/2),2)+pow(point2(2)-(Wz/2),2));
+    case MMB: return abs(point2(2)-(Wz/2));
+    case MBF: return abs(sqrt(pow(point2(1)-(-Wy/2),2)+pow(point2(2)-(-Wz/2),2)));
+    case MBM: return abs(point2(1)-(-Wy/2));
+    case MBB: return abs(sqrt(pow(point2(1)-(-Wy/2),2)+pow(point2(2)-(Wz/2),2)));
     
-    case RAF: return distance_p2p(point2(0),point2(1),point2(2),(Wx/2),(Wy/2),-(Wz/2));
-    case RAM: return sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(1)-(Wy/2),2));
-    case RAB: return distance_p2p(point2(0),point2(1),point2(2),(Wx/2),(Wy/2),(Wz/2));
-    case RMF: return sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(2)-(-Wz/2),2));
-    case RMM: printf("Point: %f, Wx/2: %f\n", point2(0), Wx/2 );
-      return point2(0)-(Wx/2);
-    case RMB: return sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(2)-(Wz/2),2));
-    case RBF: return distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),-(Wz/2));
-    case RBM: return sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(1)-(-Wy/2),2));
-    case RBB: return distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),(Wz/2));
+    case RAF: return abs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),(Wy/2),-(Wz/2)));
+    case RAM: return abs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(1)-(Wy/2),2)));
+    case RAB: return abs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),(Wy/2),(Wz/2)));
+    case RMF: return abs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(2)-(-Wz/2),2)));
+    case RMM: //printf("Point: %f, Wx/2: %f\n", point2(0), Wx/2 );
+      return abs(point2(0)-(Wx/2));
+    case RMB: return abs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(2)-(Wz/2),2)));
+    case RBF: return abs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),-(Wz/2)));
+    case RBM: return abs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(1)-(-Wy/2),2)));
+    case RBB: return abs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),(Wz/2)));
   }
   
   return -1;
@@ -146,7 +146,7 @@ uint8_t RectPrism::collisionVector(const QVec &point)
   else if(point(2)<((-Wz/2)))
     code=code|1<<ZN;
   
-  printCode(code);
+  //printCode(code);
   
   return code;
 }

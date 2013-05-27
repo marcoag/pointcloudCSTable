@@ -20,6 +20,7 @@ class myViewer: public QWidget
 Q_OBJECT
 public:
   myViewer();
+  myViewer(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster);
   void cube();
   void cylinder();
 //   void setXmlPath(string xml);
@@ -28,9 +29,12 @@ public:
   void resizeEvent(QResizeEvent * event);
 
 public slots:
-  void run();
+  void runCylinder();
+  void runRectPrism();
 private:
   
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit;
+  bool cloudGiven;
   QTimer timer;
   string xmlLocation;
   OsgView *world3D;

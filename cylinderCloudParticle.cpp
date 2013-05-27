@@ -136,10 +136,11 @@ void CylinderCloudParticle::gypsyInitization(const CylinderCloudPFInputData &dat
 {
    Eigen::Vector4f centroid;
    pcl::compute3DCentroid (*data.cloud_target,centroid);
+   std::cout<<"Centroid: "<<centroid(0)<<" "<<centroid(1)<<" "<<centroid(2)<<std::endl;
    Vector center (centroid(0), centroid(1), centroid(2));
-   Vector a (centroid(0), centroid(1) + 50, centroid(2));
-   Vector b (centroid(0), centroid(1) - 50, centroid(2));
-   double r=30;
+   Vector a (centroid(0), centroid(1) + 10, centroid(2));
+   Vector b (centroid(0), centroid(1) - 10, centroid(2));
+   double r=120;
    
    c.setValues(a,b,r);
 
@@ -191,7 +192,7 @@ void CylinderCloudParticle::computeWeight(const CylinderCloudPFInputData &data)
     this->weight += dist;
 //     std::cout<<"X:"<<it->x<<" Y:"<<it->y<<" Z:"<<it->z<<" D:"<<dist<<std::endl;
     
-    //look for the upper and low points
+    //look for the pcl and low points
     t=-((qA-qP).dotProduct(qB-qA))/fabs(pow((qB-qA).norm2(),2));
     if (t<mint || it==data.cloud_target->begin())
     {
@@ -208,7 +209,8 @@ void CylinderCloudParticle::computeWeight(const CylinderCloudPFInputData &data)
   const float distance_weight = 1./(this->weight+1.);
 //   std::cout<<"k: "<<k<<std::endl;
 //   std::cout<<"topbottom_weight: "<<topbottom_weight<<" distance_weight: "<<distance_weight<<std::endl;
-  this->weight=distance_weight*topbottom_weight;
+ // this->weight=distance_weight*topbottom_weight;
+   this->weight=distance_weight;
 //   printf("WEIGHT: %f\n", this->weight);
 }
 
