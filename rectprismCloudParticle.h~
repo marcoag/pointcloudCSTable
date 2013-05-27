@@ -31,9 +31,9 @@ public:
   void computeWeight(const RectPrismCloudPFInputData &data);
   void initializeFromEigenValues(const RectPrismCloudPFInputData &data);
   void gypsyInitization(const RectPrismCloudPFInputData &data);
-  QVec getTranslation();
+  QVec getTranslation() const;
   QVec getRotation();
-  QVec getScale();
+  QVec getScale() const;
   float getRandom(float var);
   void setRectPrism (RectPrism r );
   void print(std::string v);

@@ -11,6 +11,8 @@ SET ( SOURCES
   myViewer.cpp
   cylinderFitting.cpp
   cylinderCloudParticle.cpp
+  rectprismFitting.cpp
+  rectprismCloudParticle.cpp
   innermodelManager.cpp
   shapes/cylinder.cpp
   shapes/axis.cpp
@@ -49,7 +51,7 @@ endif(OPENMP_FOUND)
 
 
 # Qt4
-ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_XML_LIB  )
+ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_XML_LIB -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED )
 FIND_PACKAGE( Qt4 REQUIRED )
 SET( QT_USE_QTXML TRUE )
 SET( QT_USE_QTOPENGL TRUE )

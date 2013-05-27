@@ -255,7 +255,7 @@ void RectPrismCloudParticle::setRectPrism (RectPrism r )
 {
   this->r.setCenter ( r.getCenter() );
   this->r.setRotation ( r.getRotation() );
-  this->r.setWidth ( r.getWidth() );
+  this->r.setWidth ( r.getWith() );
   
 }
 

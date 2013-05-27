@@ -12,7 +12,7 @@ public:
   ~RectPrismFitting();
   void sig_term();
   void run();
-  //Vector V(const double& r);
+  Vector V(const double& r);
   inline double getRandom() { return (rand()%32000)/32000.0; }
   inline void setInnerModel(InnerModelManager *innermodelManager) { this->innermodelManager=innermodelManager; }
   inline bool isComputing () { return computing; }
