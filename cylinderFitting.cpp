@@ -68,7 +68,7 @@ computing(false)
 /**
   * \brief Default constructor
   */
-CylinderFitting::CylinderFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud): QThread(),
+CylinderFitting::CylinderFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToShow): QThread(),
 computing(false)
 {
   //sigset(SIGINT, sig_term); 
@@ -76,17 +76,12 @@ computing(false)
   
   c.particles=1000;
   
-  cout<<"CylinderFitting, cloud size: "<<cloud->size()<<endl;
-  
   cloud_cup = cloud;
-  
-  cout<<"CylinderFitting, cloud size: "<<cloud->size()<<endl;
-  
-  innermodelManager->setPointCloudData("cup_cloud", cloud_cup);
+    
+  innermodelManager->setPointCloudData("cup_cloud", cloudToShow);
   
   input.cloud_target=cloud_cup;
   pf = new RCParticleFilter<CylinderCloudPFInputData, int, CylinderCloudParticle, RCParticleFilter_Config> (&c, input, 0);
-  cout<<"CylinderFitting, cloud size: "<<input.cloud_target->size()<<endl;
   
 }
 

@@ -22,7 +22,7 @@ void InnerModelManager::setPointCloudData(const std::string id, pcl::PointCloud<
   for(pcl::PointCloud<pcl::PointXYZ>::iterator it = cloud->begin(); it != cloud->end(); it++ )
   {
     pcNode->points->operator[](i) = QVecToOSGVec(QVec::vec3(it->x, it->y, it->z));
-    pcNode->colors->operator[](i) = osg::Vec4f(float(0)/255, float(255)/255, float(0)/255, 3.f);
+    pcNode->colors->operator[](i) = osg::Vec4f(it->r, it->g, it->b, 1.f);
     std::cout<<i<<": "<<it->x<<" "<<it->y<<" "<<it->z<<std::endl;
     i++;
   }  

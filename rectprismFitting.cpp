@@ -127,7 +127,7 @@ computing(false)
 /**
   * \brief Default constructor
   */
-RectPrismFitting::RectPrismFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud): QThread(),
+RectPrismFitting::RectPrismFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToShow): QThread(),
 computing(false)
 {
   //sigset(SIGINT, sig_term); 
@@ -135,17 +135,12 @@ computing(false)
   
   c.particles=1000;
   
-  cout<<"RectPrismFitting, cloud size: "<<cloud->size()<<endl;
+  cloud_cup = cloudToFit;
   
-  cloud_cup = cloud;
-  
-  cout<<"RectPrismFitting, cloud size: "<<cloud_cup->size()<<endl;
-  
-  innermodelManager->setPointCloudData("cup_cloud", cloud_cup);
+  innermodelManager->setPointCloudData("cup_cloud", cloudToShow);
   
   input.cloud_target=cloud_cup;
   pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
-  cout<<"RectPrismFitting, cloud size: "<<input.cloud_target->size()<<endl;
   
 }
 
@@ -177,23 +172,11 @@ void RectPrismFitting::sig_term ()
 void RectPrismFitting::run()
 { 
   computing=true;
-//   Vector p(0,65,0);
-//   
-//   Vector a(0,50,0);
-//   Vector b(0,-50,0);
-// 
-//   Cylinder cylinder(a,b,120);
-// 
-//   double d=sqrt(cylinder.R(p));
-//   cout<<" distance: "<<d<<endl;
-  
-//   printf( "%s: %d\n", __FILE__, __LINE__);
-// 
+
   pf->step(input, 0, false, -1);
 
   RectPrismCloudParticle bestParticle;
 
-  
 //   for (int i=0;i<c.particles; i++)
 //   {
 //     bestParticle = pf->weightedParticles[i];
@@ -202,35 +185,28 @@ void RectPrismFitting::run()
 //   }
   
   bestParticle = pf->getBest();
-  //bestParticle = pf->getResampledParticle(0);
   bestParticle.print("bestParticle:");
   QVec t = bestParticle.getTranslation();
   QVec r = bestParticle.getRotation();
   QVec w = bestParticle.getScale();
-//   t.print("T");
-//   r.print("R");
-//   s.print("S");
-
-//   printf("%f %f %f\n", r(0), r(1), r(2));
 
   innermodelManager->setPose("cube_0_t", t, r, w );
   innermodelManager->setScale("cube_0", w(0)/2, w(1)/2, w(2)/2);
-//   catch(RoboCompInnerModelManager::InnerModelManagerError e)
-//   {
-//     std::cout<<e.text<<std::endl;
-//   }
+
 //   timer.stop();
-//   getchar();
+
    computing=false;
 }
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr RectPrismFitting::readPCLCloud(QString name)
 {
+  
   pcl::PCDReader reader;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
   if (reader.read(name.toStdString(), *cloud) != -1)
     qFatal("No file %s", name.toStdString().c_str());
   return cloud;
+  
 }
 
 

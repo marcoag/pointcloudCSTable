@@ -20,7 +20,7 @@ class myViewer: public QWidget
 Q_OBJECT
 public:
   myViewer();
-  myViewer(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster);
+  myViewer(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToShow);
   void cube();
   void cylinder();
 //   void setXmlPath(string xml);
@@ -34,6 +34,7 @@ public slots:
 private:
   
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToShow;
   bool cloudGiven;
   QTimer timer;
   string xmlLocation;

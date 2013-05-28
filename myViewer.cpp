@@ -9,10 +9,11 @@ myViewer::myViewer() : QWidget(), cloudGiven(false)
   
 }
 
-myViewer::myViewer(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud) : QWidget(),
+myViewer::myViewer(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToShow) : QWidget(),
 cloudGiven(true)
 {
-  cloudToFit = cloud;
+  this->cloudToFit = cloudToFit;
+  this->cloudToShow = cloudToShow;
 }
 
 void myViewer::cube()
@@ -39,7 +40,7 @@ void myViewer::cube()
   if(!cloudGiven)
     rectprismFitting = new RectPrismFitting(innerModelManager);
   else
-    rectprismFitting = new RectPrismFitting(innerModelManager,cloudToFit);
+    rectprismFitting = new RectPrismFitting(innerModelManager,cloudToFit, cloudToShow);
   
   connect (&timer, SIGNAL(timeout()),this,SLOT(runRectPrism()));
   timer.start(10);
@@ -69,7 +70,7 @@ void myViewer::cylinder()
   if(!cloudGiven)
     cylinderFitting = new CylinderFitting(innerModelManager);
   else
-    cylinderFitting = new CylinderFitting(innerModelManager,cloudToFit);
+    cylinderFitting = new CylinderFitting(innerModelManager,cloudToFit, cloudToShow);
   
   connect (&timer, SIGNAL(timeout()),this,SLOT(runCylinder()));
   timer.start(10);

@@ -26,38 +26,41 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-// class SimpleOpenNIViewer
-// {
-//   public:
-//     SimpleOpenNIViewer () : viewer ("PCL OpenNI Viewer") {}
-// 
-//     void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
-//     {
+pcl::PointCloud<pcl::PointXYZRGBA>::Ptr _cloud_kinect;
+
+class SimpleOpenNIViewer
+{
+  public:
+    SimpleOpenNIViewer () : viewer ("PCL OpenNI Viewer") {}
+
+    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
+    {
 //       if (!viewer.wasStopped())
 //         viewer.showCloud (cloud);
-//     }
-// 
-//     void run ()
-//     {
-//       pcl::Grabber* interface = new pcl::OpenNIGrabber();
-// 
-//       boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-//         boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
-// 
-//       interface->registerCallback (f);
-// 
-//       interface->start ();
-// 
+      _cloud_kinect=cloud;
+    }
+
+    void run ()
+    {
+      pcl::Grabber* interface = new pcl::OpenNIGrabber();
+
+      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+        boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+
+      interface->registerCallback (f);
+
+      interface->start ();
+
 //       while (!viewer.wasStopped())
 //       {
 //         boost::this_thread::sleep (boost::posix_time::seconds (1));
 //       }
-// 
-//      interface->stop ();
-//     }
-// 
+
+      interface->stop ();
+    }
+
 //     pcl::visualization::CloudViewer viewer;
-// };
+};
 
 int main(int argc, char* argv[])
 {
@@ -94,8 +97,8 @@ int main(int argc, char* argv[])
 //	ICP *icp = new ICP(real_points, virtual_points, viewer);
 
 // Cognitive Subtraction
- 	CognitiveSubtraction *cognitiveSubtraction = new CognitiveSubtraction(real_points, virtual_points, atoi(dataset.c_str()));
-  result = cognitiveSubtraction->run();
+//  	CognitiveSubtraction *cognitiveSubtraction = new CognitiveSubtraction(real_points, virtual_points, atoi(dataset.c_str()));
+//   result = cognitiveSubtraction->run();
   
   std::cout<<"Cognitive Subtraction result size: "<<result->size()<<std::endl;
   
@@ -171,7 +174,7 @@ int main(int argc, char* argv[])
 
    QApplication app(argc, argv);
    
-   myViewer m(cloud_cluster);
+   myViewer m(cloud_cluster,_cloud_kinect);
    m.cylinder();
    
    app.exec();

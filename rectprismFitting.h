@@ -9,7 +9,7 @@ class RectPrismFitting: public QThread
    
 public:
   RectPrismFitting(InnerModelManager *imm);
-  RectPrismFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+  RectPrismFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToShow);
   ~RectPrismFitting();
   void sig_term();
   void run();
