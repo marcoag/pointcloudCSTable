@@ -9,7 +9,7 @@ class CylinderFitting: public QThread
    
 public:
   CylinderFitting(InnerModelManager *imm);
-  CylinderFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToShow);
+  CylinderFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit);
   ~CylinderFitting();
   void sig_term();
   void run();

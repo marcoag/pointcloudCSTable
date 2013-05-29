@@ -127,7 +127,7 @@ computing(false)
 /**
   * \brief Default constructor
   */
-RectPrismFitting::RectPrismFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToShow): QThread(),
+RectPrismFitting::RectPrismFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit): QThread(),
 computing(false)
 {
   //sigset(SIGINT, sig_term); 
@@ -137,7 +137,7 @@ computing(false)
   
   cloud_cup = cloudToFit;
   
-  innermodelManager->setPointCloudData("cup_cloud", cloudToShow);
+  innermodelManager->setPointCloudData("cup_cloud", cloudToFit);
   
   input.cloud_target=cloud_cup;
   pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
