@@ -60,7 +60,7 @@ INCLUDE( ${QT_USE_FILE} )
 QT4_WRAP_CPP( MOC_SOURCES ${HEADERS} )
 
 # PCL
-SET ( PCL_USER_LIBRARIES  ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_LIBRARIES} -lpcl_search -lpcl_common -lpcl_io -lpcl_filters -lpcl_kdtree -lpcl_octree -lpcl_segmentation -lgsl -lblas -lpcl_visualization -lvtkCommon -lvtkFiltering)
+SET ( PCL_USER_LIBRARIES  ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_LIBRARIES} -lpcl_search -lpcl_common -lpcl_io -lpcl_filters -lpcl_kdtree -lpcl_octree -lpcl_segmentation -lgsl -lblas -lpcl_visualization -lpcl_sample_consensus -lvtkCommon -lvtkFiltering)
 
 # Specify construction and link process
 SET (EXECUTABLE_OUTPUT_PATH .)
