@@ -52,6 +52,7 @@ class SimpleOpenNIViewer: public QWidget
 
     void cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr &cloud)
     {
+      cout<<"aaaaaaaaaaaaaaaaaaaaaa"<<endl;
 
       pcl::SampleConsensusModelPlane<PointT>::Ptr
         model_s(new pcl::SampleConsensusModelPlane<PointT> (cloud));
@@ -62,10 +63,16 @@ class SimpleOpenNIViewer: public QWidget
       ransac.getInliers(inliers);
       inliers_plane->indices=inliers;
       
+      cout<<"aaaaaaaaaaaaaaaaaaaaaa"<<endl;
+      
       extract.setInputCloud (cloud);
       extract.setIndices (inliers_plane);
       extract.setNegative (true);
       extract.filter(*final_);
+      
+      cout<<final_->size()<<endl;
+      
+      pcl::PointCloud<PointT>::Ptr final2 (new pcl::PointCloud<PointT> (*cloud));
       
       if(rectprismFitting->isComputing())
       {
@@ -73,7 +80,7 @@ class SimpleOpenNIViewer: public QWidget
       }
       else
       {
-        rectprismFitting->setCloud(final_);
+        rectprismFitting->setCloud(final2);
         rectprismFitting->start();
         world3D->update();
       }
@@ -111,10 +118,12 @@ class SimpleOpenNIViewer: public QWidget
     RectPrismFitting *rectprismFitting;
 };
 
-int main ()
+int main (int argc, char* argv[])
 {
   
+  QApplication app(argc, argv);
   SimpleOpenNIViewer v;
   v.run ();
+  app.exec();
   return 0;
 }
