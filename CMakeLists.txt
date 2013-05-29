@@ -4,25 +4,25 @@ PROJECT( cogSub )
 # Sources set
 SET ( SOURCES
   main.cpp
-  outlierExtraction.cpp
-  cloudParticle.cpp
-  cognitiveSubtraction.cpp
-  icp.cpp
-  myViewer.cpp
-  cylinderFitting.cpp
-  cylinderCloudParticle.cpp
-  rectprismFitting.cpp
-  rectprismCloudParticle.cpp
-  innermodelManager.cpp
-  shapes/cylinder.cpp
-  shapes/axis.cpp
-  shapes/vector.cpp
-  shapes/rectprism.cpp
-  osgviewer/osgview.cpp
+#   outlierExtraction.cpp
+#   cloudParticle.cpp
+#   cognitiveSubtraction.cpp
+#   icp.cpp
+#   myViewer.cpp
+#   cylinderFitting.cpp
+#   cylinderCloudParticle.cpp
+#   rectprismFitting.cpp
+#   rectprismCloudParticle.cpp
+#   innermodelManager.cpp
+#   shapes/cylinder.cpp
+#   shapes/axis.cpp
+#   shapes/vector.cpp
+#   shapes/rectprism.cpp
+#   osgviewer/osgview.cpp
 )
 SET ( HEADERS
-  myViewer.h
-  osgviewer/osgview.h
+#   myViewer.h
+#   osgviewer/osgview.h
 )
 
 set(CMAKE_CXX_FLAGS "-Wall -Wfatal-errors -fopenmp -frounding-math" )
