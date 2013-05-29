@@ -6,7 +6,7 @@ InnerModelManager::InnerModelManager(InnerModel *innermodel, InnerModelViewer *i
   this->imv=imv;
 }
 
-void InnerModelManager::setPointCloudData(const std::string id, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+void InnerModelManager::setPointCloudData(const std::string id, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
 {
   QString m = QString("setPointCloudData");
   std::cout<<"InnerModelManager::setPointCloudData: "<<id<<" "<<cloud->size()<<std::endl;
@@ -19,10 +19,10 @@ void InnerModelManager::setPointCloudData(const std::string id, pcl::PointCloud<
   pcNode->colors->resize(points);
   pcNode->setPointSize(1);
   int i = 0;
-  for(pcl::PointCloud<pcl::PointXYZ>::iterator it = cloud->begin(); it != cloud->end(); it++ )
+  for(pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = cloud->begin(); it != cloud->end(); it++ )
   {
     pcNode->points->operator[](i) = QVecToOSGVec(QVec::vec3(it->x, it->y, it->z));
-    pcNode->colors->operator[](i) = osg::Vec4f(float(0)/255, float(255)/255, float(0)/255, 1.f);
+    pcNode->colors->operator[](i) = osg::Vec4f(it->r, it->g, it->b, 1.f);
     std::cout<<i<<": "<<it->x<<" "<<it->y<<" "<<it->z<<std::endl;
     i++;
   }  

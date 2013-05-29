@@ -11,18 +11,18 @@ SET ( SOURCES
 #   myViewer.cpp
 #   cylinderFitting.cpp
 #   cylinderCloudParticle.cpp
-#   rectprismFitting.cpp
-#   rectprismCloudParticle.cpp
-#   innermodelManager.cpp
+   rectprismFitting.cpp
+   rectprismCloudParticle.cpp
+   innermodelManager.cpp
 #   shapes/cylinder.cpp
 #   shapes/axis.cpp
 #   shapes/vector.cpp
-#   shapes/rectprism.cpp
-#   osgviewer/osgview.cpp
+   shapes/rectprism.cpp
+   osgviewer/osgview.cpp
 )
 SET ( HEADERS
 #   myViewer.h
-#   osgviewer/osgview.h
+   osgviewer/osgview.h
 )
 
 set(CMAKE_CXX_FLAGS "-Wall -Wfatal-errors -fopenmp -frounding-math" )

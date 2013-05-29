@@ -3,7 +3,7 @@
 /**
   * \brief Default constructor
   */
-RectPrismFitting::RectPrismFitting(InnerModelManager *imm): cloud_cup (new pcl::PointCloud<pcl::PointXYZ>),
+RectPrismFitting::RectPrismFitting(InnerModelManager *imm): cloud_cup (new pcl::PointCloud<pcl::PointXYZRGBA>),
 QThread(),
 computing(false)
 {
@@ -57,7 +57,7 @@ computing(false)
     for(float y=0; y<=Wx; y=y+res)
     {
       //face front (x=0)
-      pcl::PointXYZ p;
+      pcl::PointXYZRGBA p;
       p.x = x;
       p.y = y;
       p.z = 0;
@@ -74,7 +74,7 @@ computing(false)
     for(float z=0; z<=Wz; z=z+res)
     {
       //face front (x=0)
-      pcl::PointXYZ p;
+      pcl::PointXYZRGBA p;
       p.x = x;
       p.y = 0;
       p.z = z;
@@ -91,7 +91,7 @@ computing(false)
     for(float z=0; z<=Wz; z=z+res)
     {
       //face front (x=0)
-      pcl::PointXYZ p;
+      pcl::PointXYZRGBA p;
       p.x = 0;
       p.y = y;
       p.z = z;
@@ -127,7 +127,7 @@ computing(false)
 /**
   * \brief Default constructor
   */
-RectPrismFitting::RectPrismFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit): QThread(),
+RectPrismFitting::RectPrismFitting(InnerModelManager *imm, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudToFit): QThread(),
 computing(false)
 {
   //sigset(SIGINT, sig_term); 
@@ -198,11 +198,11 @@ void RectPrismFitting::run()
    computing=false;
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr RectPrismFitting::readPCLCloud(QString name)
+pcl::PointCloud<pcl::PointXYZRGBA>::Ptr RectPrismFitting::readPCLCloud(QString name)
 {
   
   pcl::PCDReader reader;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud;
   if (reader.read(name.toStdString(), *cloud) != -1)
     qFatal("No file %s", name.toStdString().c_str());
   return cloud;

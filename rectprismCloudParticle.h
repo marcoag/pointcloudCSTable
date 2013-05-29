@@ -17,7 +17,7 @@
 class RectPrismCloudPFInputData
 {
 public:
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_target;
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_target;
 };
 
 class RectPrismCloudParticle : public RCParticleFilter_Particle<RectPrismCloudPFInputData, int, RCParticleFilter_Config>

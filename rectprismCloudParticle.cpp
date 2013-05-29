@@ -176,7 +176,7 @@ void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data
 //   printf("RectPrism: A(%f,%f,%f), B(%f,%f,%f), r=%f\n", c.getA().getX() , c.getA().getY() ,c.getA().getZ() , c.getB().getX() ,c.getB().getY() ,c.getB().getZ(), c.getR());
   this->weight=0.;
   //double mint, maxt;
-  for( pcl::PointCloud<pcl::PointXYZ>::iterator it = data.cloud_target->begin(); it != data.cloud_target->end(); it++ )
+  for( pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = data.cloud_target->begin(); it != data.cloud_target->end(); it++ )
   {
     
     

@@ -19,7 +19,7 @@ class InnerModelManager
   InnerModelNode *getNode(const QString &id, const QString &msg);
 public:
   InnerModelManager(InnerModel *innermodel, InnerModelViewer *imv);
-  void setPointCloudData(const std::string id, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+  void setPointCloudData(const std::string id, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud);
   void setPose(std::string item,  QVec t,  QVec r,  QVec s);
   void setScale(std::string item, float scaleX,float scaleY, float scaleZ);
 
