@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 
    QApplication app(argc, argv);
    
-   myViewer m(cloud_cluster);
+   myViewer m;
    m.cube();
    
    app.exec();

@@ -46,15 +46,15 @@ computing(false)
 //   }
   
      //Sintetic cube
-  int Wx = 100;
-  int Wy = 100;
-  int Wz = 100;
+  int Wx = 120;
+  int Wy = 400;
+  int Wz = 200;
   int res = 3;
   //Rot3D r(0.5, 0.2, 0.2);
   //Faces front and back
   for(float x=0; x<=Wx; x=x+res)
   {
-    for(float y=0; y<=Wx; y=y+res)
+    for(float y=0; y<=Wy; y=y+res)
     {
       //face front (x=0)
       pcl::PointXYZ p;
