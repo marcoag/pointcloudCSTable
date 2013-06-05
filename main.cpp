@@ -61,8 +61,8 @@ int main(int argc, char* argv[])
 //	ICP *icp = new ICP(real_points, virtual_points, viewer);
 
 // Cognitive Subtraction
-//  	CognitiveSubtraction *cognitiveSubtraction = new CognitiveSubtraction(real_points, virtual_points, atoi(dataset.c_str()));
-//   result = cognitiveSubtraction->run();
+ 	CognitiveSubtraction *cognitiveSubtraction = new CognitiveSubtraction(real_points, virtual_points, atoi(dataset.c_str()));
+  result = cognitiveSubtraction->run();
   
   std::cout<<"Cognitive Subtraction result size: "<<result->size()<<std::endl;
   

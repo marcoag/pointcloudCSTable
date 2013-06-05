@@ -67,11 +67,11 @@ void myViewer::cylinder()
   innerModelManager = new InnerModelManager(innerModel, imv);
 
   if(!cloudGiven)
-    cylinderFitting = new CylinderFitting(innerModelManager);
+    rectprismFitting = new RectPrismFitting(innerModelManager);
   else
-    cylinderFitting = new CylinderFitting(innerModelManager,cloudToFit);
+    rectprismFitting = new RectPrismFitting(innerModelManager,cloudToFit);
   
-  connect (&timer, SIGNAL(timeout()),this,SLOT(runCylinder()));
+  connect (&timer, SIGNAL(timeout()),this,SLOT(runRectPrism()));
   timer.start(10);
 }
 
