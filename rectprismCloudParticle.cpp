@@ -161,8 +161,10 @@ void RectPrismCloudParticle::adapt(const int &controlBack, const int &controlNew
   QVec currentWidth = r.getWidth();
   QVec currentRotation = r.getRotation();
   
+  
   r.setCenter(QVec::vec3(currentCenter(0)+getRandom(varianceC(0)), currentCenter(1)+getRandom(varianceC(1)), currentCenter(2)+getRandom(varianceC(2))));
-  r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), currentWidth(1)+getRandom(varianceW(1)), currentWidth(2)+getRandom(varianceW(2))));
+//   r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), currentWidth(1)+getRandom(varianceW(1)), currentWidth(2)+getRandom(varianceW(2))));
+  r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), 0, currentWidth(2)+getRandom(varianceW(2))));
   r.setRotation(QVec::vec3(currentRotation(0)+getRandom(varianceR(0)), currentRotation(1)+getRandom(varianceR(1)), currentRotation(2)+getRandom(varianceR(2))));
    
   float annealing = 0.99;
