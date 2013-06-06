@@ -41,7 +41,47 @@ double distance_p2p (double x1, double y1, double z1, double x2, double y2, doub
   return sqrt(pow(x1-x2,2.0)+pow(y1-y2,2.0)+pow(z1-z2,2.0));
 }
 
-double RectPrism::distance(const QVec &point)
+double RectPrism::getInternalDistance(const QVec point,const QVec normal)
+{
+//   //check inside codes
+//   uint8_t code = 0;
+//   //check X axis
+//   if (point(0)>center(0))
+//     code=code|1<<XP;
+//   else if (point(0)<center(0))
+//     code=code|1<<XN;
+//   //check Y axis
+//   if (point(1)>(center(1)))
+//     code=code|1<<YP;
+//   else if(point(1)<center(1))
+//     code=code|1<<YN;
+//   //check Z axis
+//   if (point(2)>center(2))
+//     code=code|1<<ZP;
+//   else if(point(2)<center(2))
+//     code=code|1<<ZN;
+//   
+//   switch(code)
+//   {
+//     case LAF: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),(Wy/2),-(Wz/2)));
+//     case LAB: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),(Wy/2),(Wz/2)));
+//     case LBF: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),-(Wy/2),-(Wz/2)));
+//     case LBB: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),-(Wy/2),(Wz/2)));
+//     case RAF: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),(Wy/2),-(Wz/2)));
+//     case RAB: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),(Wy/2),(Wz/2)));
+//     case RBF: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),-(Wy/2),-(Wz/2)));
+//     case RBB: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),-(Wy/2),(Wz/2)));
+//     
+//     default: cout<<"Esto no rula locooo!!"<<endl;
+//   }
+   
+   
+   
+  return 0;
+    
+}
+
+double RectPrism::distance(const QVec &point,const QVec normal)
 {
   QVec point2 = placePoint(point);
   //point.print("point");
@@ -53,65 +93,74 @@ double RectPrism::distance(const QVec &point)
   
   switch(code)
   {
-    case LAF: return abs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),(Wy/2),-(Wz/2)));
-    case LAM: return abs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(1)-(Wy/2),2)));
-    case LAB: return abs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),(Wy/2),(Wz/2)));
-    case LMF: return abs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(2)-(-Wz/2),2)));
-    case LMM: return abs(point2(0)-(-Wx/2));
-    case LMB: return abs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(2)-(Wz/2),2)));
-    case LBF: return abs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),-(Wy/2),-(Wz/2)));
-    case LBM: return abs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(1)-(-Wy/2),2)));
-    case LBB: return abs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),-(Wy/2),(Wz/2)));
+    case LAF: return fabs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),(Wy/2),-(Wz/2)));
+    case LAM: return fabs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(1)-(Wy/2),2)));
+    case LAB: return fabs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),(Wy/2),(Wz/2)));
+    case LMF: return fabs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(2)-(-Wz/2),2)));
+    case LMM: return fabs(point2(0)-(-Wx/2));
+    case LMB: return fabs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(2)-(Wz/2),2)));
+    case LBF: return fabs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),-(Wy/2),-(Wz/2)));
+    case LBM: return fabs(sqrt(pow(point2(0)-(-Wx/2),2)+pow(point2(1)-(-Wy/2),2)));
+    case LBB: return fabs(distance_p2p(point2(0),point2(1),point2(2),-(Wx/2),-(Wy/2),(Wz/2)));
     
-    case MAF: return abs(sqrt(pow(point2(1)-(Wy/2),2)+pow(point2(2)-(-Wz/2),2)));
-    case MAM: return abs(point2(1)-(Wy/2));
-    case MAB: return abs(sqrt(pow(point2(1)-(Wy/2),2)+pow(point2(2)-(Wz/2),2)));
-    case MMF: return abs(point2(2)-(-Wz/2));
+    case MAF: return fabs(sqrt(pow(point2(1)-(Wy/2),2)+pow(point2(2)-(-Wz/2),2)));
+    case MAM: return fabs(point2(1)-(Wy/2));
+    case MAB: return fabs(sqrt(pow(point2(1)-(Wy/2),2)+pow(point2(2)-(Wz/2),2)));
+    case MMF: return fabs(point2(2)-(-Wz/2));
     
     
     case MMM: 
-      double distances[6];
-      double min_distance;
-      //-x
-      distances[0]=abs((-Wx/2)-point2(0));
-      //y
-      distances[1]=abs((Wy/2)-point2(1));
-      //-z
-      distances[2]=abs((-Wz/2)-point2(2));
-      //-y
-      distances[3]=abs((-Wy/2)-point2(1));
-      //z
-      distances[4]=abs((Wz/2)-point2(2));
-      //x
-      distances[5]=abs((Wx/2)-point2(0));
-      
-      //get the minimum distance
-      min_distance=distances[0];
-      for(int i=1;i<6;i++)
-      {
-        if (min_distance>distances[i])
-        {
-          min_distance=distances[i];
-        }
-      }
-      return min_distance;
+
+          {
+            
+      //The brand new way            
+          double min_distance=0;
+       
+        min_distance=getInternalDistance(point,normal);
+//        The old way
+//       double distances[6];
+
+//       //-x
+//       distances[0]=fabs((-Wx/2)-point2(0));
+//       //y
+//       distances[1]=fabs((Wy/2)-point2(1));
+//       //-z
+//       distances[2]=fabs((-Wz/2)-point2(2));
+//       //-y
+//       distances[3]=fabs((-Wy/2)-point2(1));
+//       //z
+//       distances[4]=fabs((Wz/2)-point2(2));
+//       //x
+//       distances[5]=fabs((Wx/2)-point2(0));
+//       
+//       //get the minimum distance
+//       //triing with max instead
+//       min_distance=distances[0];
+//       for(int i=1;i<6;i++)
+//       {
+//         if (min_distance<distances[i])
+//         {
+//           min_distance=distances[i];
+//         }
+//       }
+          return min_distance;
     
+        } 
+    case MMB: return fabs(point2(2)-(Wz/2));
+    case MBF: return fabs(sqrt(pow(point2(1)-(-Wy/2),2)+pow(point2(2)-(-Wz/2),2)));
+    case MBM: return fabs(point2(1)-(-Wy/2));
+    case MBB: return fabs(sqrt(pow(point2(1)-(-Wy/2),2)+pow(point2(2)-(Wz/2),2)));
     
-    case MMB: return abs(point2(2)-(Wz/2));
-    case MBF: return abs(sqrt(pow(point2(1)-(-Wy/2),2)+pow(point2(2)-(-Wz/2),2)));
-    case MBM: return abs(point2(1)-(-Wy/2));
-    case MBB: return abs(sqrt(pow(point2(1)-(-Wy/2),2)+pow(point2(2)-(Wz/2),2)));
-    
-    case RAF: return abs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),(Wy/2),-(Wz/2)));
-    case RAM: return abs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(1)-(Wy/2),2)));
-    case RAB: return abs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),(Wy/2),(Wz/2)));
-    case RMF: return abs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(2)-(-Wz/2),2)));
+    case RAF: return fabs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),(Wy/2),-(Wz/2)));
+    case RAM: return fabs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(1)-(Wy/2),2)));
+    case RAB: return fabs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),(Wy/2),(Wz/2)));
+    case RMF: return fabs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(2)-(-Wz/2),2)));
     case RMM: //printf("Point: %f, Wx/2: %f\n", point2(0), Wx/2 );
-      return abs(point2(0)-(Wx/2));
-    case RMB: return abs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(2)-(Wz/2),2)));
-    case RBF: return abs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),-(Wz/2)));
-    case RBM: return abs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(1)-(-Wy/2),2)));
-    case RBB: return abs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),(Wz/2)));
+      return fabs(point2(0)-(Wx/2));
+    case RMB: return fabs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(2)-(Wz/2),2)));
+    case RBF: return fabs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),-(Wz/2)));
+    case RBM: return fabs(sqrt(pow(point2(0)-(Wx/2),2)+pow(point2(1)-(-Wy/2),2)));
+    case RBB: return fabs(distance_p2p(point2(0),point2(1),point2(2),(Wx/2),-(Wy/2),(Wz/2)));
   }
   
   return -1;
@@ -125,6 +174,7 @@ QVec RectPrism::placePoint(const QVec &point)
 
 uint8_t RectPrism::collisionVector(const QVec &point)
 {
+//   cout<<" WY/2: "<<Wy/2<<" y: "<<point(1)<<" result: "<<point(1)-(Wy/2)<<endl;
   uint8_t code = 0;
   
   //check X axis
@@ -136,9 +186,15 @@ uint8_t RectPrism::collisionVector(const QVec &point)
   //check Y axis
   
   if (point(1)>(Wy/2))
+  {
+    //cout<<"POOOINTy"<<endl;
     code=code|1<<YP;
+  }
   else if(point(1)<(-Wy/2))
+  {
+    //cout<<"POOOINT-y"<<endl;
     code=code|1<<YN;
+  }
   
   //check Z axis
   if (point(2)>(Wz/2))

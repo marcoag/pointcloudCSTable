@@ -10,7 +10,7 @@ computing(false)
   //sigset(SIGINT, sig_term); 
   innermodelManager = imm;
   
-  c.particles=100;
+  c.particles=50;
   
   //cup from kinect
   //pcl::io::loadPCDFile<pcl::PointXYZ> ("../data/cloud_cup.pcd", *cloud_cup);
@@ -133,7 +133,7 @@ computing(false)
   //sigset(SIGINT, sig_term); 
   innermodelManager = imm;
   
-  c.particles=1000;
+  c.particles=100;
   
   cloud_cup = cloudToFit;
   
@@ -189,6 +189,7 @@ void RectPrismFitting::run()
   QVec t = bestParticle.getTranslation();
   QVec r = bestParticle.getRotation();
   QVec w = bestParticle.getScale();
+  w.print("width");
 
   innermodelManager->setPose("cube_0_t", t, r, w );
   innermodelManager->setScale("cube_0", w(0)/2, w(1)/2, w(2)/2);
