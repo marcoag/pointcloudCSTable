@@ -75,8 +75,78 @@ double RectPrism::getInternalDistance(const QVec point,const QVec normal)
 //     default: cout<<"Esto no rula locooo!!"<<endl;
 //   }
    
+   //using normals
    
-   
+  float cosvalue[6];
+  //point.print("punto");
+  //normal.print("normal");
+  //plane -x
+  cosvalue[0]=(-1*normal(0)+0*normal(1)+0*normal(2))/(sqrt(pow(-1,2)+pow(0,2)+pow(0,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
+  //plane x
+  cosvalue[1]=(1*normal(0)+0*normal(1)+0*normal(2))/(sqrt(pow(1,2)+pow(0,2)+pow(0,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
+  //plane -y
+  cosvalue[2]=(0*normal(0)+-1*normal(1)+0*normal(2))/(sqrt(pow(0,2)+pow(-1,2)+pow(0,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
+  //plane y
+  cosvalue[3]=(0*normal(0)+1*normal(1)+0*normal(2))/(sqrt(pow(0,2)+pow(1,2)+pow(0,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
+  //plane -z
+  cosvalue[4]=(0*normal(0)+0*normal(1)+-1*normal(2))/(sqrt(pow(0,2)+pow(0,2)+pow(-1,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
+  //plane z
+  cosvalue[5]=(0*normal(0)+0*normal(1)+1*normal(2))/(sqrt(pow(0,2)+pow(0,2)+pow(1,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
+  
+  float maxcos=cosvalue[0];
+  int position=0;
+  //cout<<"CosValue: 0"<<cosvalue[0]<<endl;
+  for(int i=1;i<6;i++)
+  {
+    if (maxcos<cosvalue[i]);
+    {
+      maxcos=cosvalue[i];
+      position=i;
+    }
+    
+    //cout<<"CosValue: "<<i<<" "<<cosvalue[i]<<endl;
+  }
+  float dist1, dist2;
+  
+  //getchar();
+  //x
+  if(position==0||position==1)
+  {
+    dist1=fabs((-Wx/2)-point(0));
+    dist2=fabs((Wx/2)-point(0));
+    if (dist1<dist2)
+      return dist1;
+    else
+      return dist2;
+  }
+  //y
+  else if(position==2||position==3)
+  {
+    
+    dist1=fabs((-Wy/2)-point(1));
+    dist2=fabs((Wy/2)-point(1));
+    if (dist1<dist2)
+    {
+      cout<<"DISTY"<<dist1;
+      return dist1;
+    }
+    else
+    { 
+      cout<<"disty"<<dist2;
+      return dist2;
+    }
+  }
+  //z
+  else if(position==4||position==5)
+  {
+    dist1=fabs((-Wz/2)-point(2));
+    dist2=fabs((Wz/2)-point(2));
+    if (dist1<dist2)
+      return dist1;
+    else
+      return dist2;   
+  }
+  
   return 0;
     
 }
@@ -117,9 +187,13 @@ double RectPrism::distance(const QVec &point,const QVec normal)
           double min_distance=0;
        
         min_distance=getInternalDistance(point,normal);
+       // point.print("");
+        //cout<<"Distance: "<<min_distance<<endl;
+        return min_distance;
+          
 //        The old way
 //       double distances[6];
-
+// 
 //       //-x
 //       distances[0]=fabs((-Wx/2)-point2(0));
 //       //y
@@ -135,15 +209,24 @@ double RectPrism::distance(const QVec &point,const QVec normal)
 //       
 //       //get the minimum distance
 //       //triing with max instead
-//       min_distance=distances[0];
+//       max_distance=distances[0];
+//       int indice;
 //       for(int i=1;i<6;i++)
 //       {
-//         if (min_distance<distances[i])
+//         if (max_distance<distances[i])
 //         {
-//           min_distance=distances[i];
+//           max_distance=distances[i];
+//           indice=i;
 //         }
+//         //min_distance+=distances[i];
 //       }
-          return min_distance;
+//       float total_distance=0;
+//       for(int i=0;i<6;i++)
+//       {
+//         if (i!=indice)
+//           total_distance+=distances[i];
+//       } 
+//           return total_distance/5;
     
         } 
     case MMB: return fabs(point2(2)-(Wz/2));

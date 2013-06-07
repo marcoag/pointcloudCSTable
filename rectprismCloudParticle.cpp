@@ -7,8 +7,8 @@ RectPrismCloudParticle::RectPrismCloudParticle(): r()
 //   varianceA=QVec::vec3(0, 0, 0);
 //   varianceB=QVec::vec3(0, 0, 0);
 //   varianceR=0;
-  varianceC=QVec::vec3(50, 50, 50);
-  varianceW=QVec::vec3(50, 50, 50);
+  varianceC=QVec::vec3(10, 10, 10);
+  varianceW=QVec::vec3(10, 10, 10);
   varianceR=QVec::vec3(0.1, 0.1, 0.1);
 }
 
@@ -137,7 +137,9 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
   
   
   //look at this!! wrong eigen_values loco! check this shit out
+  
   r.setWidth(QVec::vec3((eigen_values(0)/ratio)*2,(eigen_values(2)/ratio)*2,(eigen_values(1)/ratio)*2));
+  //r.setWidth(QVec::vec3(0,0,0));
   
   float rx = atan2(eigen_vectors(2,1), eigen_vectors(2,2));
   float ry = atan2(-eigen_vectors(2,0),sqrt(pow(eigen_vectors(2,1),2)+pow(eigen_vectors(2,2),2)));
@@ -212,11 +214,11 @@ void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data
   // Output datasets
   pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
   // Use all neighbors in a sphere of radius 3cm
-  ne.setRadiusSearch (0.3);
+  ne.setRadiusSearch (5);
   // Compute the features
   ne.compute (*cloud_normals);
   
-  cout<<"Size cloud: "<<data.cloud_target->size()<<" size normals: "<<cloud_normals->size()<<endl;
+ // cout<<"Size cloud: "<<data.cloud_target->size()<<" size normals: "<<cloud_normals->size()<<endl;
   int normalint =0;
   for( pcl::PointCloud<pcl::PointXYZ>::iterator it = data.cloud_target->begin(); it != data.cloud_target->end(); it++ )
   {

@@ -52,8 +52,6 @@ private:
   QVec varianceW;
   QVec varianceR;
 
-
-
 };
 
 #endif
