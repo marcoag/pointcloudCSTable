@@ -8,7 +8,7 @@ SET ( SOURCES
 #   cloudParticle.cpp
 #   cognitiveSubtraction.cpp
 #   icp.cpp
-#   myViewer.cpp
+   myViewer.cpp
 #   cylinderFitting.cpp
 #   cylinderCloudParticle.cpp
    rectprismFitting.cpp
@@ -21,7 +21,7 @@ SET ( SOURCES
    osgviewer/osgview.cpp
 )
 SET ( HEADERS
-#   myViewer.h
+   myViewer.h
    osgviewer/osgview.h
 )
 

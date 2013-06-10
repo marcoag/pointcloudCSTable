@@ -6,6 +6,8 @@
 RectPrismFitting::RectPrismFitting(InnerModelManager *imm): cloud_cup (new pcl::PointCloud<pcl::PointXYZRGBA>),
 QThread(),
 computing(false)
+ ,inliers_plane (new pcl::PointIndices)
+ ,final_ (new pcl::PointCloud<PointT>())
 {
   //sigset(SIGINT, sig_term); 
   innermodelManager = imm;
@@ -106,7 +108,6 @@ computing(false)
    
 
 //   printf( "%s: %d\n", __FILE__, __LINE__);   
-  innermodelManager->setPointCloudData("cup_cloud", cloud_cup);
   
   input.cloud_target=cloud_cup;  
   pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
@@ -122,6 +123,11 @@ computing(false)
 //   double rad1= 60;
 //   Cylinder cyl(a1,b1,rad1);
 //   pf->weightedParticles[1].setCylinder(cyl);
+}
+
+void RectPrismFitting::setCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
+{
+    this->cloud=cloud;
 }
 
 /**
@@ -173,6 +179,57 @@ void RectPrismFitting::run()
 { 
   computing=true;
 
+  
+  pcl::SampleConsensusModelPlane<PointT>::Ptr
+      model_s(new pcl::SampleConsensusModelPlane<PointT> (cloud));
+    //Ransac
+    pcl::RandomSampleConsensus<PointT> ransac (model_s);
+    ransac.setDistanceThreshold (.03);
+    ransac.computeModel();
+    ransac.getInliers(inliers);
+    inliers_plane->indices=inliers;
+    extract.setInputCloud (cloud);
+    extract.setIndices (inliers_plane);
+    extract.setNegative (true);
+    extract.filter(*final_);
+    std::vector< int > nanindexes;
+    pcl::removeNaNFromPointCloud(*final_,*final_,nanindexes);
+    
+      //cluster extraction
+    pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
+    tree->setInputCloud (final_);
+
+    std::vector<pcl::PointIndices> cluster_indices;
+    pcl::EuclideanClusterExtraction<PointT> ec;
+    ec.setClusterTolerance (0.1); // 2cm
+    ec.setMinClusterSize (30);
+    ec.setMaxClusterSize (25000);
+    ec.setSearchMethod (tree);
+    ec.setInputCloud (final_);
+    ec.extract (cluster_indices);
+    
+    int j = 0;
+    pcl::PointCloud<PointT>::Ptr cloud_cluster (new pcl::PointCloud<PointT>);
+    for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+    {
+      if(j==0)
+      {
+        for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); pit++)
+          cloud_cluster->points.push_back (final_->points[*pit]); //*
+        cloud_cluster->width = cloud_cluster->points.size ();
+        cloud_cluster->height = 1;
+        cloud_cluster->is_dense = true;
+
+        std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
+        //std::stringstream ss;
+        //ss << "cloud_cluster_" << j << ".pcd";
+        //writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
+      }
+      j++;
+    }
+    input.cloud_target=cloud_cluster;
+  
+  
   pf->step(input, 0, false, -1);
 
   RectPrismCloudParticle bestParticle;

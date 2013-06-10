@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include <pcl/io/openni_grabber.h>
+
 #include <osgviewer/osgview.h>
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
@@ -15,25 +17,31 @@
 
 using namespace std;
 
+//typedef pcl::PointXYZRGBA PointT;
+
 class myViewer: public QWidget
 {
 Q_OBJECT
 public:
   myViewer();
-  myViewer(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit);
+  myViewer(pcl::PointCloud<PointT>::Ptr cloudToFit);
+  ~myViewer();
   void cube();
-  void cylinder();
+//   void cylinder();
 //   void setXmlPath(string xml);
   inline string getXmlPath() { return xmlLocation; }
   
   void resizeEvent(QResizeEvent * event);
+  void cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr &cloud);
 
 public slots:
   void runCylinder();
   void runRectPrism();
 private:
   
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudToFit;
+  pcl::Grabber* interface;
+  pcl::PointCloud<PointT>::Ptr cloudToFit;
+  pcl::PointCloud<PointT>::Ptr cloudToShow;
   bool cloudGiven;
   QTimer timer;
   string xmlLocation;
@@ -41,6 +49,7 @@ private:
   InnerModelManager *innerModelManager;
   CylinderFitting *cylinderFitting;
   RectPrismFitting *rectprismFitting;
+   QMutex mutex;
 };
 
 #endif
