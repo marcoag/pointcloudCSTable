@@ -63,6 +63,7 @@ void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInpu
 
 
 void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInputData &data){
+
   Eigen::Vector4f centroid;
   Eigen::Matrix3f covariance_matrix;
   
@@ -70,11 +71,11 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
   computeCovarianceMatrix(*data.cloud_target,centroid,covariance_matrix);
 
  
-  printf (" Size | %lu | \n", data.cloud_target->size());
-  printf (" Centroid  | %f %f %f | \n", centroid (0), centroid (1), centroid (2));
-  printf (" Covariance  | %f %f %f | \n", covariance_matrix (0,0), covariance_matrix (0,1), covariance_matrix (0,2));
-  printf ("             | %f %f %f | \n", covariance_matrix (1,0), covariance_matrix (1,1), covariance_matrix (1,2));
-  printf ("             | %f %f %f | \n", covariance_matrix (2,0), covariance_matrix (2,1), covariance_matrix (2,2));
+//   printf (" Size | %lu | \n", data.cloud_target->size());
+//   printf (" Centroid  | %f %f %f | \n", centroid (0), centroid (1), centroid (2));
+//   printf (" Covariance  | %f %f %f | \n", covariance_matrix (0,0), covariance_matrix (0,1), covariance_matrix (0,2));
+//   printf ("             | %f %f %f | \n", covariance_matrix (1,0), covariance_matrix (1,1), covariance_matrix (1,2));
+//   printf ("             | %f %f %f | \n", covariance_matrix (2,0), covariance_matrix (2,1), covariance_matrix (2,2));
 
   EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
   EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
@@ -82,10 +83,10 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
   
   estimateEigenAndCentroid(data, eigen_values, eigen_vectors, centroid);
 
-  printf (" EigenValues  | %f %f %f  | \n", eigen_values(0), eigen_values(1), eigen_values(2));
-  printf (" EigenVectors | %f %f %f | \n", eigen_vectors (0,0), eigen_vectors (0,1), eigen_vectors (0,2));
-  printf ("              | %f %f %f | \n", eigen_vectors (1,0), eigen_vectors (1,1), eigen_vectors (1,2));
-  printf ("              | %f %f %f | \n", eigen_vectors (2,0), eigen_vectors (2,1), eigen_vectors (2,2));
+//   printf (" EigenValues  | %f %f %f  | \n", eigen_values(0), eigen_values(1), eigen_values(2));
+//   printf (" EigenVectors | %f %f %f | \n", eigen_vectors (0,0), eigen_vectors (0,1), eigen_vectors (0,2));
+//   printf ("              | %f %f %f | \n", eigen_vectors (1,0), eigen_vectors (1,1), eigen_vectors (1,2));
+//   printf ("              | %f %f %f | \n", eigen_vectors (2,0), eigen_vectors (2,1), eigen_vectors (2,2));
 
   // Extract max values and indices.
   float max_value = NAN;
@@ -108,17 +109,41 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
     }
   }
   
-  // Extract endpoints
-  Vector max(eigen_vectors(max_position,0)*eigen_values(max_position),
-             eigen_vectors(max_position,1)*eigen_values(max_position),
-             eigen_vectors(max_position,2)*eigen_values(max_position));
-  Vector center(centroid(0), centroid(1), centroid(2));
-
-  Vector a = center + max;
-  Vector b = center - max;
-  double r = eigen_values(second_max_position)/2;
+  //use the biggest eigen value
+  float max_eigenvalue=0;
+  if(max_eigenvalue - eigen_values(0) < 0)
+    max_eigenvalue=eigen_values(0);
+  if(max_eigenvalue - eigen_values(1) < 0)
+    max_eigenvalue=eigen_values(1);
+  if(max_eigenvalue - eigen_values(2) < 0)
+    max_eigenvalue=eigen_values(2);
   
+  float max_distance=0;
+  for (pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = data.cloud_target->points.begin (); it < data.cloud_target->points.end (); ++it)
+  {
+    //calculate point to point distance
+//     float distance=fabs(RectPrism::distance_p2p(it->x, it->y, it->z, centroid(0), centroid(1), centroid(2)));
+    float distance=fabs(sqrt(pow((it->x)-centroid(0),2.0)+pow((it->y)-centroid(2),2.0)+pow((it->z)-centroid(1),2.0)));
+    if (max_distance<distance)
+      max_distance=distance;
+  }
+//   cout<<"RectPrismCloudParticle::initializeFromEigenValues::max_distance: "<<max_distance<<endl;
 
+  float ratio=max_eigenvalue/max_distance;
+//   cout<<"RectPrismCloudParticle::initializeFromEigenValues::Ratio: "<<ratio<<endl;
+  r.setCenter(QVec::vec3(centroid(0), centroid(1), centroid(2)));
+  cout<<(eigen_values(1)/ratio)*2<<" "<<(eigen_values(0)/ratio)*2 <<" "<<(eigen_values(2)/ratio)*2<<endl;
+  
+  
+  //look at this!! wrong eigen_values loco! check this shit out
+  
+  r.setWidth(QVec::vec3((eigen_values(0)/ratio)*2,(eigen_values(2)/ratio)*2,(eigen_values(1)/ratio)*2));
+  //r.setWidth(QVec::vec3(0,0,0));
+  
+  float rx = atan2(eigen_vectors(2,1), eigen_vectors(2,2));
+  float ry = atan2(-eigen_vectors(2,0),sqrt(pow(eigen_vectors(2,1),2)+pow(eigen_vectors(2,2),2)));
+  float rz = atan2(eigen_vectors(1,0),eigen_vectors(0,0));
+  r.setRotation(QVec::vec3(0,0,0));
   
 //   printf("max:    (%f, %f, %f)\n", max[0], max[1], max[2]);
 //   printf("center: (%f, %f, %f)\n", center[0], center[1], center[2]);
@@ -127,6 +152,7 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
 //   printf("r:      %f\n\n", r);
   // Set data
 //   c.setValues(a, b, r);
+
 
 }
 
@@ -146,8 +172,8 @@ void RectPrismCloudParticle::gypsyInitization(const RectPrismCloudPFInputData &d
 
 void RectPrismCloudParticle::initialize(const RectPrismCloudPFInputData &data, const int &control, const RCParticleFilter_Config *config)
 { 
-//   initializeFromEigenValues(data);
-  gypsyInitization(data);
+   initializeFromEigenValues(data);
+//  gypsyInitization(data);
 }
 
 void RectPrismCloudParticle::adapt(const int &controlBack, const int &controlNew, const bool noValidCandidates)

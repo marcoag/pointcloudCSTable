@@ -24,10 +24,24 @@ myViewer::~myViewer()
 
 void myViewer::cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr &cloud)
 {
+  cloudToShow->clear();
+  for(int i=0;i<cloud->size();i++)
+  {
+    PointT p;
+    p.x = cloud->points[i].x*1000;
+    p.y = cloud->points[i].y*1000;
+    p.z = cloud->points[i].z*1000;
+    p.r = cloud->points[i].r; 
+    p.g = cloud->points[i].g;
+    p.b = cloud->points[i].b;
+    p.a = cloud->points[i].a;
+    
+    cloudToShow->push_back(p);
+  }
   mutex.tryLock();
-  *this->cloudToFit = *cloud;
+  *this->cloudToFit = *cloudToShow;
   mutex.unlock();
-  *this->cloudToShow = *cloud;
+  
   innerModelManager->setPointCloudData("cup_cloud", cloudToShow);
   world3D->update();
 }

@@ -23,7 +23,7 @@ void InnerModelManager::setPointCloudData(const std::string id, pcl::PointCloud<
   {
     if (!pcl_isnan(it->x)&&!pcl_isnan(it->y)&&!pcl_isnan(it->z))
     {
-      pcNode->points->operator[](i) = QVecToOSGVec(QVec::vec3(it->x*1000, it->y*1000, it->z*1000));
+      pcNode->points->operator[](i) = QVecToOSGVec(QVec::vec3(it->x, it->y, it->z));
       pcNode->colors->operator[](i) = osg::Vec4f(float(it->r)/255, float(it->g)/255, float(it->b)/255, 1.f);
     }
     //std::cout<<i<<": "<<it->x<<" "<<it->y<<" "<<it->z<<std::endl;

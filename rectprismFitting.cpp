@@ -182,6 +182,13 @@ void RectPrismFitting::run()
   
   pcl::SampleConsensusModelPlane<PointT>::Ptr
       model_s(new pcl::SampleConsensusModelPlane<PointT> (cloud));
+      
+  for(int i=0;i<final_->size();i++)
+  {
+    final_->points[i].x/=1000;
+    final_->points[i].y/=1000;
+    final_->points[i].z/=1000;
+  }
     //Ransac
     pcl::RandomSampleConsensus<PointT> ransac (model_s);
     ransac.setDistanceThreshold (.03);
@@ -227,6 +234,14 @@ void RectPrismFitting::run()
       }
       j++;
     }
+    
+   for(int i=0;i<cloud_cluster->size();i++)
+  {
+    cloud_cluster->points[i].x*=1000;
+    cloud_cluster->points[i].y*=1000;
+    cloud_cluster->points[i].z*=1000;
+  }
+    
     input.cloud_target=cloud_cluster;
   
   
