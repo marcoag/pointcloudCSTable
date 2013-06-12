@@ -29,7 +29,6 @@ public:
   void cube();
 //   void cylinder();
 //   void setXmlPath(string xml);
-  inline string getXmlPath() { return xmlLocation; }
   
   void resizeEvent(QResizeEvent * event);
   void cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr &cloud);
@@ -42,14 +41,13 @@ private:
   pcl::Grabber* interface;
   pcl::PointCloud<PointT>::Ptr cloudToFit;
   pcl::PointCloud<PointT>::Ptr cloudToShow;
-  bool cloudGiven;
   QTimer timer;
-  string xmlLocation;
   OsgView *world3D;
   InnerModelManager *innerModelManager;
   CylinderFitting *cylinderFitting;
   RectPrismFitting *rectprismFitting;
-   QMutex mutex;
+  QMutex innermodelMutex, cloudToFitMutex;
+  bool first_cloud;
 };
 
 #endif

@@ -1,18 +1,17 @@
 #include "myViewer.h"
 
-// myViewer::myViewer()
-// {
-// }
-
-myViewer::myViewer() : QWidget(), cloudGiven(false),
+myViewer::myViewer() : QWidget(),
 cloudToFit(new pcl::PointCloud<PointT>())
  ,cloudToShow(new pcl::PointCloud<PointT>())
+ ,first_cloud(false)
 {
   interface = new pcl::OpenNIGrabber();
 }
 
 myViewer::myViewer(pcl::PointCloud<PointT>::Ptr cloudToFit) : QWidget(),
-cloudGiven(true)
+cloudToFit(new pcl::PointCloud<PointT>())
+ ,cloudToShow(new pcl::PointCloud<PointT>())
+ ,first_cloud(true)
 {
   this->cloudToFit = cloudToFit;
 }
@@ -24,25 +23,34 @@ myViewer::~myViewer()
 
 void myViewer::cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr &cloud)
 {
-  cloudToShow->clear();
-  for(int i=0;i<cloud->size();i++)
-  {
-    PointT p;
-    p.x = cloud->points[i].x*1000;
-    p.y = cloud->points[i].y*1000;
-    p.z = cloud->points[i].z*1000;
-    p.r = cloud->points[i].r; 
-    p.g = cloud->points[i].g;
-    p.b = cloud->points[i].b;
-    p.a = cloud->points[i].a;
-    
-    cloudToShow->push_back(p);
-  }
-  mutex.tryLock();
-  *this->cloudToFit = *cloudToShow;
-  mutex.unlock();
+
+
+  //*cloudToShow = *cloud;
   
-  innerModelManager->setPointCloudData("cup_cloud", cloudToShow);
+  pcl::VoxelGrid<PointT> sor;
+  sor.setInputCloud (cloud);
+  sor.setLeafSize (0.01f, 0.01f, 0.01f);
+  sor.filter (*cloudToShow);
+  
+  RectPrismFitting::cloud2mm(cloudToShow);
+  
+  cloudToFitMutex.tryLock();
+  *cloudToFit = *cloudToShow;
+  
+  if (!first_cloud)
+  {
+    rectprismFitting = new RectPrismFitting(innerModelManager,cloudToFit);
+    connect (&timer, SIGNAL(timeout()),this,SLOT(runRectPrism()));
+    timer.start(10);
+    first_cloud=true;
+  }
+  cloudToFitMutex.unlock();
+  
+  //update innermodel
+  innermodelMutex.lock();
+  //innerModelManager->setPointCloudData("cup_cloud", cloudToShow);
+  innermodelMutex.unlock();
+  
   world3D->update();
 }
 
@@ -76,13 +84,9 @@ void myViewer::cube()
   interface->registerCallback (f);
   interface->start ();
   
-  if(!cloudGiven)
-    rectprismFitting = new RectPrismFitting(innerModelManager);
-  else
-    rectprismFitting = new RectPrismFitting(innerModelManager,cloudToFit);
-  
-  connect (&timer, SIGNAL(timeout()),this,SLOT(runRectPrism()));
-  timer.start(10);
+//   if(!cloudGiven)
+//     rectprismFitting = new RectPrismFitting(innerModelManager);
+//   else
 
 }
 
@@ -123,10 +127,10 @@ void myViewer::runRectPrism()
   }
   else
   {
-    mutex.lock();
+    cloudToFitMutex.lock();
     pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
     *cloud = *cloudToFit;
-    mutex.unlock();
+    cloudToFitMutex.unlock();
     
     rectprismFitting->setCloud(cloud);
     rectprismFitting->start();
@@ -145,6 +149,7 @@ void myViewer::runCylinder()
     cylinderFitting->start();
     world3D->update();
   }
+  getchar();
 }
 
 void myViewer::resizeEvent(QResizeEvent * event)

@@ -27,8 +27,13 @@ public:
   inline double getRandom() { return (rand()%32000)/32000.0; }
   inline void setInnerModel(InnerModelManager *innermodelManager) { this->innermodelManager=innermodelManager; }
   inline bool isComputing () { return computing; }
+  static void cloud2m(pcl::PointCloud<PointT>::Ptr cloud);
+  static void cloud2mm(pcl::PointCloud<PointT>::Ptr cloud);
   
 private:
+  
+  pcl::PointCloud<PointT>::Ptr ransacAndEuclideanCluster(float ransacDistanceThreshold, float clusterTolerance);
+  pcl::PointCloud<PointT>::Ptr getSinteticCube();
   
   bool computing;
   RectPrismCloudPFInputData input;

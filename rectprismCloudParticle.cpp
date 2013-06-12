@@ -4,9 +4,9 @@
 RectPrismCloudParticle::RectPrismCloudParticle(): r()
 {
   this->weight=1;
-//   varianceA=QVec::vec3(0, 0, 0);
-//   varianceB=QVec::vec3(0, 0, 0);
-//   varianceR=0;
+//   varianceC=QVec::vec3(0, 0, 0);
+//   varianceW=QVec::vec3(0, 0, 0);
+//   varianceR=QVec::vec3(0, 0, 0);
   varianceC=QVec::vec3(10, 10, 10);
   varianceW=QVec::vec3(10, 10, 10);
   varianceR=QVec::vec3(0.1, 0.1, 0.1);
@@ -66,6 +66,8 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
 
   Eigen::Vector4f centroid;
   Eigen::Matrix3f covariance_matrix;
+  
+  cout<<"RectPrismCloudParticle::initializeFromEigenValues::data.cloud_target: "<<data.cloud_target->size()<<endl;
   
   pcl::compute3DCentroid (*data.cloud_target,centroid);
   computeCovarianceMatrix(*data.cloud_target,centroid,covariance_matrix);
@@ -132,18 +134,19 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
   float ratio=max_eigenvalue/max_distance;
 //   cout<<"RectPrismCloudParticle::initializeFromEigenValues::Ratio: "<<ratio<<endl;
   r.setCenter(QVec::vec3(centroid(0), centroid(1), centroid(2)));
-  cout<<(eigen_values(1)/ratio)*2<<" "<<(eigen_values(0)/ratio)*2 <<" "<<(eigen_values(2)/ratio)*2<<endl;
+  cout<<"Eigen values: "<<(eigen_values(1)/ratio)*2<<" "<<(eigen_values(0)/ratio)*2 <<" "<<(eigen_values(2)/ratio)*2<<endl;
   
   
   //look at this!! wrong eigen_values loco! check this shit out
   
-  r.setWidth(QVec::vec3((eigen_values(0)/ratio)*2,(eigen_values(2)/ratio)*2,(eigen_values(1)/ratio)*2));
-  //r.setWidth(QVec::vec3(0,0,0));
+  //r.setWidth(QVec::vec3((eigen_values(0)/ratio)*2,(eigen_values(2)/ratio)*2,(eigen_values(1)/ratio)*2));
+  r.setWidth(QVec::vec3(50,50,50));
   
   float rx = atan2(eigen_vectors(2,1), eigen_vectors(2,2));
   float ry = atan2(-eigen_vectors(2,0),sqrt(pow(eigen_vectors(2,1),2)+pow(eigen_vectors(2,2),2)));
   float rz = atan2(eigen_vectors(1,0),eigen_vectors(0,0));
-  r.setRotation(QVec::vec3(0,0,0));
+  
+  r.setRotation(QVec::vec3(rx,ry,rz));
   
 //   printf("max:    (%f, %f, %f)\n", max[0], max[1], max[2]);
 //   printf("center: (%f, %f, %f)\n", center[0], center[1], center[2]);
@@ -153,11 +156,11 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
   // Set data
 //   c.setValues(a, b, r);
 
-
 }
 
 void RectPrismCloudParticle::gypsyInitization(const RectPrismCloudPFInputData &data)
 {
+  
    Eigen::Vector4f centroid;
    pcl::compute3DCentroid (*data.cloud_target,centroid);
    Vector center (centroid(0), centroid(1), centroid(2));
@@ -165,7 +168,7 @@ void RectPrismCloudParticle::gypsyInitization(const RectPrismCloudPFInputData &d
    Vector b (centroid(0), centroid(1) - 50, centroid(2));
    
    r.setCenter(QVec::vec3(centroid(0), centroid(1), centroid(2)));
-   r.setWidth(QVec::vec3(50,50,50));
+   r.setWidth(QVec::vec3(100,100,100));
    r.setRotation(QVec::vec3(0,0,0));
 
 }
