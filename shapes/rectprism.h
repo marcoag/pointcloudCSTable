@@ -41,9 +41,10 @@ public:
   inline void setWidth ( const QVec Width ) { this->Wx=Width(0);this->Wy=Width(1);this->Wz=Width(2); }
   
   QVec placePoint(const QVec &point);
+  double getInternalDistance(const QVec point, const QVec normal);
   uint8_t collisionVector(const QVec &point);
   
-  double distance(const QVec &point);
+  double distance(const QVec &point, const QVec normal);
   
 private:
   QVec center;
