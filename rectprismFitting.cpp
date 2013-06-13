@@ -11,7 +11,7 @@ computing(false)
 {
   innermodelManager = imm;
   
-  c.particles=1;
+  c.particles=50;
   
   //cup from kinect
   //pcl::io::loadPCDFile<pcl::PointXYZ> ("../data/cloud_cup.pcd", *cloud_cup);
@@ -104,9 +104,12 @@ computing(false)
 //     }
 //   }
   
- //input.cloud_target = ransacAndEuclideanCluster(0.03f, 0.1f);  
- input.cloud_target=getSinteticCube();
-
+#ifdef LIVE
+  input.cloud_target = ransacAndEuclideanCluster(0.03f, 0.1f);  
+#else
+  input.cloud_target=getSinteticCube();
+#endif
+  
 //   input.cloud_target=cloud;
   
   pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
@@ -205,17 +208,20 @@ computing(false)
   //sigset(SIGINT, sig_term); 
   innermodelManager = imm;
   
-  c.particles=1;
+  c.particles=50;
   
-  cloud=cloudToFit;
+  cloud = cloudToFit;
   
   cloud = ransacAndEuclideanCluster(0.03f, 0.1f);
   
-  //innermodelManager->setPointCloudData("cup_cloud", cloud);
-  
-  //input.cloud_target=cloud;
+
+#ifdef LIVE
+  input.cloud_target=cloud;
+  innermodelManager->setPointCloudData("cup_cloud", cloud);
+#else
   input.cloud_target=getSinteticCube();
   innermodelManager->setPointCloudData("cup_cloud", getSinteticCube());
+#endif
   
   
   pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
@@ -355,9 +361,11 @@ void RectPrismFitting::run()
 
   //pcl::PointCloud<PointT>::Ptr cloud_cluster = ransacAndEuclideanCluster(0.03f, 0.1);
 
-    
-  //input.cloud_target=ransacAndEuclideanCluster(0.03f, 0.1f);
+#ifdef LIVE  
+  input.cloud_target=ransacAndEuclideanCluster(0.03f, 0.1f);
+#else
   input.cloud_target=getSinteticCube();
+#endif
     
   
   //innermodelManager->setPointCloudData("cup_cloud", input.cloud_target);

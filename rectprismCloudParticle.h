@@ -8,6 +8,7 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/transforms.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/features/normal_3d.h>
 
 #include "particleFiltering/particleFilter.h"
 #include "shapes/rectprism.h"
@@ -50,8 +51,6 @@ private:
   QVec varianceC;
   QVec varianceW;
   QVec varianceR;
-
-
 
 };
 
