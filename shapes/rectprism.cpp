@@ -77,40 +77,35 @@ double RectPrism::getInternalDistance(const QVec point,const QVec normal)
    
    //using normals
    
-  float cosvalue[6];
-  //point.print("punto");
-  //normal.print("normal");
-  //plane -x
-  cosvalue[0]=(-1*normal(0)+0*normal(1)+0*normal(2))/(sqrt(pow(-1,2)+pow(0,2)+pow(0,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
-  //plane x
-  cosvalue[1]=(1*normal(0)+0*normal(1)+0*normal(2))/(sqrt(pow(1,2)+pow(0,2)+pow(0,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
-  //plane -y
-  cosvalue[2]=(0*normal(0)+-1*normal(1)+0*normal(2))/(sqrt(pow(0,2)+pow(-1,2)+pow(0,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
-  //plane y
-  cosvalue[3]=(0*normal(0)+1*normal(1)+0*normal(2))/(sqrt(pow(0,2)+pow(1,2)+pow(0,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
-  //plane -z
-  cosvalue[4]=(0*normal(0)+0*normal(1)+-1*normal(2))/(sqrt(pow(0,2)+pow(0,2)+pow(-1,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
-  //plane z
-  cosvalue[5]=(0*normal(0)+0*normal(1)+1*normal(2))/(sqrt(pow(0,2)+pow(0,2)+pow(1,2))*sqrt(pow(normal(0),2)+pow(normal(1),2)+pow(normal(2),2)));
+  float cosvalue[3];
+//   point.print("punto");
+//   normal.print("normal");
+  cosvalue[0]=fabs(normal(0));
+  cosvalue[1]=fabs(normal(1));
+  cosvalue[2]=fabs(normal(2));
   
   float maxcos=cosvalue[0];
   int position=0;
-  //cout<<"CosValue: 0"<<cosvalue[0]<<endl;
-  for(int i=1;i<6;i++)
+
+  for (int i=1; i<3; i++)
   {
-    if (maxcos<cosvalue[i]);
+    if (cosvalue[i] > maxcos)
     {
       maxcos=cosvalue[i];
       position=i;
     }
-    
-    //cout<<"CosValue: "<<i<<" "<<cosvalue[i]<<endl;
   }
+  
+//   cout<<"position "<< position <<endl;
+//   cout<<"CosValue: 0  "<<cosvalue[0]<<endl;
+//   cout<<"CosValue: 1  "<<cosvalue[1]<<endl;
+//   cout<<"CosValue: 2  "<<cosvalue[2]<<endl;
+  
   float dist1, dist2;
   
-  //getchar();
+
   //x
-  if(position==0||position==1)
+  if(position==0)
   {
     dist1=fabs((-Wx/2)-point(0));
     dist2=fabs((Wx/2)-point(0));
@@ -120,24 +115,24 @@ double RectPrism::getInternalDistance(const QVec point,const QVec normal)
       return dist2;
   }
   //y
-  else if(position==2||position==3)
+  else if(position==1)
   {
     
     dist1=fabs((-Wy/2)-point(1));
     dist2=fabs((Wy/2)-point(1));
     if (dist1<dist2)
     {
-      cout<<"DISTY"<<dist1;
+//       cout<<"DISTY"<<dist1;
       return dist1;
     }
     else
     { 
-      cout<<"disty"<<dist2;
+//       cout<<"disty"<<dist2;
       return dist2;
     }
   }
   //z
-  else if(position==4||position==5)
+  else if(position==2)
   {
     dist1=fabs((-Wz/2)-point(2));
     dist2=fabs((Wz/2)-point(2));
@@ -147,6 +142,7 @@ double RectPrism::getInternalDistance(const QVec point,const QVec normal)
       return dist2;   
   }
   
+  throw 0;
   return 0;
     
 }
@@ -154,6 +150,7 @@ double RectPrism::getInternalDistance(const QVec point,const QVec normal)
 double RectPrism::distance(const QVec &point,const QVec normal)
 {
   QVec point2 = placePoint(point);
+  QVec normal2 = rotateNormal(normal);
   //point.print("point");
   //point2.print("point2");
   
@@ -186,7 +183,7 @@ double RectPrism::distance(const QVec &point,const QVec normal)
       //The brand new way            
           double min_distance=0;
        
-        min_distance=getInternalDistance(point,normal);
+        min_distance=getInternalDistance(point,normal2);
        // point.print("");
         //cout<<"Distance: "<<min_distance<<endl;
         return min_distance;
@@ -253,6 +250,10 @@ double RectPrism::distance(const QVec &point,const QVec normal)
 QVec RectPrism::placePoint(const QVec &point)
 {
   return RTMat(-rotation(0), -rotation(1), -rotation(2), QVec::vec3(-center(0), -center(1), -center(2)))*QVec::vec4(point(0), point(1), point(2), 1); 
+}
+QVec RectPrism::rotateNormal(const QVec &point)
+{
+  return RTMat(-rotation(0), -rotation(1), -rotation(2), QVec::vec3(0,0,0))*QVec::vec4(point(0), point(1), point(2), 1).fromHomogeneousCoordinates(); 
 }
 
 uint8_t RectPrism::collisionVector(const QVec &point)

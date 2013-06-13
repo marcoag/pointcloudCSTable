@@ -7,8 +7,8 @@ RectPrismCloudParticle::RectPrismCloudParticle(): r()
 //   varianceA=QVec::vec3(0, 0, 0);
 //   varianceB=QVec::vec3(0, 0, 0);
 //   varianceR=0;
-  varianceC=QVec::vec3(10, 10, 10);
-  varianceW=QVec::vec3(10, 10, 10);
+  varianceC=QVec::vec3(100, 100, 100);
+  varianceW=QVec::vec3(100, 100, 100);
   varianceR=QVec::vec3(0.1, 0.1, 0.1);
 }
 
@@ -193,7 +193,7 @@ void RectPrismCloudParticle::adapt(const int &controlBack, const int &controlNew
 //  r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), 0, currentWidth(2)+getRandom(varianceW(2))));
   r.setRotation(QVec::vec3(currentRotation(0)+getRandom(varianceR(0)), currentRotation(1)+getRandom(varianceR(1)), currentRotation(2)+getRandom(varianceR(2))));
    
-  float annealing = 0.99;
+  float annealing = 0.9;
   varianceC = varianceC.operator*(annealing);
   varianceW = varianceW.operator*(annealing);
   varianceR = varianceR.operator*(annealing);
