@@ -16,6 +16,7 @@ computing(false)
   //cup from kinect
   //pcl::io::loadPCDFile<pcl::PointXYZ> ("../data/cloud_cup.pcd", *cloud_cup);
   
+<<<<<<< HEAD
   //Sintetic line
 //   for(int i=1;i<1000;i++)
 //   {
@@ -110,6 +111,11 @@ computing(false)
   input.cloud_target=getSinteticCube();
 #endif
   
+=======
+ //input.cloud_target = ransacAndEuclideanCluster(0.03f, 0.1f);  
+ input.cloud_target=getSinteticCube();
+
+>>>>>>> 978a8ca44541fd2ef52e594e6cfc374fdb11fa33
 //   input.cloud_target=cloud;
   
   pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
