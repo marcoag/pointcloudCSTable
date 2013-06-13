@@ -11,6 +11,8 @@
 #include "innermodelManager.h"
 #include "shapes/vector.h"
 
+#define LIVE
+
 typedef pcl::PointXYZRGBA PointT;
 
 class RectPrismFitting: public QThread

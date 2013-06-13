@@ -17,7 +17,7 @@
 #include "innermodelManager.h"
 #include "rectprismFitting.h"
 
-#define LIVE 1
+
 
 int main (int argc, char* argv[])
 {

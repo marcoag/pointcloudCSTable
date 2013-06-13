@@ -35,7 +35,7 @@ public:
   QVec getTranslation();
   QVec getRotation();
   QVec getScale();
-  float getRandom(float var);
+  static float getRandom(float var);
   void setRectPrism (RectPrism r );
   void print(std::string v);
 

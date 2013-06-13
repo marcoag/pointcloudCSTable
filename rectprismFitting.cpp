@@ -144,13 +144,19 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
     {
       //face front (x=0)
       pcl::PointXYZRGBA p;
-      p.x = x;
-      p.y = y;
-      p.z = 0;
-      cloud_cup->push_back(p);
-      p.x = x;
-      p.y = y;
-      p.z = Wz;      
+      p.x = x+RectPrismCloudParticle::getRandom(10);
+      p.y = y+RectPrismCloudParticle::getRandom(10);
+      p.z = 0+RectPrismCloudParticle::getRandom(10);
+      p.r = 0;
+      p.g = 255;
+      p.b = 0;
+//       cloud_cup->push_back(p);
+//       p.x = x;
+//       p.y = y;
+//       p.z = Wz;  
+//       p.r = 0;
+//       p.g = 255;
+//       p.b = 0;
       cloud_cup->push_back(p);
     }
   }
@@ -161,13 +167,19 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
     {
       //face front (x=0)
       pcl::PointXYZRGBA p;
-      p.x = x;
-      p.y = 0;
-      p.z = z;
-      cloud_cup->push_back(p);
-      p.x = x;
-      p.y = Wy;
-      p.z = z;      
+      p.x = x+RectPrismCloudParticle::getRandom(10);
+      p.y = 0+RectPrismCloudParticle::getRandom(10);
+      p.z = z+RectPrismCloudParticle::getRandom(10);
+      p.r = 0;
+      p.g = 255;
+      p.b = 0;
+//       cloud_cup->push_back(p);
+//       p.x = x+RectPrismCloudParticle::getRandom(10);
+//       p.y = Wy+RectPrismCloudParticle::getRandom(10);;
+//       p.z = z+RectPrismCloudParticle::getRandom(10);
+//       p.r = 0;
+//       p.g = 255;
+//       p.b = 0;
       cloud_cup->push_back(p);
     }
   }
@@ -178,16 +190,24 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
     {
       //face front (x=0)
       pcl::PointXYZRGBA p;
-      p.x = 0;
-      p.y = y;
-      p.z = z;
-      cloud_cup->push_back(p);
-      p.x = Wx;
-      p.y = y;
-      p.z = z;      
+      p.x = 0+RectPrismCloudParticle::getRandom(10);
+      p.y = y+RectPrismCloudParticle::getRandom(10);
+      p.z = z+RectPrismCloudParticle::getRandom(10);
+      p.r = 0;
+      p.g = 255;
+      p.b = 0;
+//       cloud_cup->push_back(p);
+//       p.x = Wx+RectPrismCloudParticle::getRandom(10);
+//       p.y = y+RectPrismCloudParticle::getRandom(10);
+//       p.z = z+RectPrismCloudParticle::getRandom(10);
+//       p.r = 0;
+//       p.g = 255;
+//       p.b = 0;
       cloud_cup->push_back(p);
     }
   }
+  
+  
   return cloud_cup;
   
 }
@@ -288,7 +308,7 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::ransacAndEuclideanCluster(float r
       
     //Ransac
     pcl::RandomSampleConsensus<PointT> ransac (model_s);
-    ransac.setDistanceThreshold (0.03f);
+    ransac.setDistanceThreshold (0.02f);
     //ransac.setDistanceThreshold (5);
     ransac.computeModel();
     ransac.getInliers(inliers);
@@ -311,7 +331,7 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::ransacAndEuclideanCluster(float r
 
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<PointT> ec;
-    ec.setClusterTolerance (0.5f); // 2cm
+    ec.setClusterTolerance (0.05f); // 2cm
     //ec.setClusterTolerance (10);
     ec.setMinClusterSize (30);
     ec.setMaxClusterSize (25000);

@@ -25,11 +25,11 @@ void myViewer::cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr &cloud)
 {
 
 
-  //*cloudToShow = *cloud;
+ // *cloudToShow = *cloud;
   
   pcl::VoxelGrid<PointT> sor;
   sor.setInputCloud (cloud);
-  sor.setLeafSize (0.01f, 0.01f, 0.01f);
+  sor.setLeafSize (0.005f, 0.005f, 0.005f);
   sor.filter (*cloudToShow);
   
   RectPrismFitting::cloud2mm(cloudToShow);
