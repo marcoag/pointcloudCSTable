@@ -207,7 +207,6 @@ void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data
 //  cout<<"TAMAÑO: "<<data.cloud_target->size()<<endl;
   
   //estimate normals
-<<<<<<< HEAD
 //   pcl::NormalEstimation<pcl::PointXYZRGBA, pcl::Normal> ne;
 //   ne.setInputCloud (data.cloud_target);
 //   pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBA> ());
@@ -218,18 +217,7 @@ void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data
 //   ne.setRadiusSearch (5);
 //   // Compute the features
 //   ne.compute (*cloud_normals);
-=======
-  pcl::NormalEstimation<pcl::PointXYZRGBA, pcl::Normal> ne;
-  ne.setInputCloud (data.cloud_target);
-  pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBA> ());
-  ne.setSearchMethod (tree);
-  // Output datasets
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-  // Use all neighbors in a sphere of radius 3cm
-  ne.setRadiusSearch (5);
-  // Compute the features
-  ne.compute (*cloud_normals);
->>>>>>> 978a8ca44541fd2ef52e594e6cfc374fdb11fa33
+
   
  // cout<<"Size cloud: "<<data.cloud_target->size()<<" size normals: "<<cloud_normals->size()<<endl;
   int normalint =0;
@@ -237,12 +225,9 @@ void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data
   {
     
     QVec point = QVec::vec3(it->x, it->y, it->z);
-<<<<<<< HEAD
    // QVec normal = QVec::vec3( cloud_normals->points[normalint].normal_x,cloud_normals->points[normalint].normal_y, cloud_normals->points[normalint].normal_z);
-=======
-    QVec normal = QVec::vec3( cloud_normals->points[normalint].normal_x,cloud_normals->points[normalint].normal_y, cloud_normals->points[normalint].normal_z);
->>>>>>> 978a8ca44541fd2ef52e594e6cfc374fdb11fa33
-  
+    QVec normal = QVec::vec3(0,0,0);
+
 
 //     double dist,t;
 //     const float distA = sqrt(c.R(point));   
