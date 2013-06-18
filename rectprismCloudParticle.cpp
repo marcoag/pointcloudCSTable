@@ -9,7 +9,7 @@ RectPrismCloudParticle::RectPrismCloudParticle(): r()
 //   varianceR=0;
   varianceC=QVec::vec3(10, 10, 10);
   varianceW=QVec::vec3(10, 10, 10);
-  varianceR=QVec::vec3(0.1, 0.1, 0.1);
+  varianceR=QVec::vec3(0.2, 0.2, 0.2);
 }
 
 void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInputData &data, Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid)
@@ -133,12 +133,13 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
   float ratio=max_eigenvalue/max_distance;
 //   cout<<"RectPrismCloudParticle::initializeFromEigenValues::Ratio: "<<ratio<<endl;
   r.setCenter(QVec::vec3(centroid(0), centroid(1), centroid(2)));
+  cout<<"Centroid: "<<centroid(0)<<" "<<centroid(1)<<" "<<centroid(2)<<endl;
   cout<<(eigen_values(1)/ratio)*2<<" "<<(eigen_values(0)/ratio)*2 <<" "<<(eigen_values(2)/ratio)*2<<endl;
   
   
   //look at this!! wrong eigen_values loco! check this shit out
   
-  r.setWidth(QVec::vec3((eigen_values(0)/ratio)*2,(eigen_values(2)/ratio)*2,(eigen_values(1)/ratio)*2));
+  r.setWidth(QVec::vec3((eigen_values(0)/ratio),(eigen_values(0)/ratio),(eigen_values(0)/ratio)));
   //r.setWidth(QVec::vec3(0,0,0));
   
   float rx = atan2(eigen_vectors(2,1), eigen_vectors(2,2));
@@ -187,6 +188,64 @@ void RectPrismCloudParticle::adapt(const int &controlBack, const int &controlNew
   QVec currentWidth = r.getWidth();
   QVec currentRotation = r.getRotation();
   
+  switch(rand()%9)
+  {
+    case 0:
+        r.setCenter(QVec::vec3(currentCenter(0)+getRandom(varianceC(0)), currentCenter(1), currentCenter(2)));
+        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
+        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
+        break;
+        
+    case 1:
+        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1)+getRandom(varianceC(1)), currentCenter(2)));
+        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
+        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
+        break;
+        
+    case 2:  
+        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)+getRandom(varianceC(2))));
+        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
+        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
+        break;
+    
+    case 3:
+        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
+        r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), currentWidth(1), currentWidth(2)));
+        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
+        break;
+        
+    case 4:
+        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
+        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1)+getRandom(varianceW(1)), currentWidth(2)));
+        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
+        break;
+        
+    case 5:
+        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
+        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)+getRandom(varianceW(2))));
+        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
+        break;
+        
+    case 6:
+        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
+        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
+        r.setRotation(QVec::vec3(currentRotation(0)+getRandom(varianceR(0)), currentRotation(1), currentRotation(2)));
+        break;
+        
+    case 7:
+        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
+        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
+        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1)+getRandom(varianceR(1)), currentRotation(2)));
+        break;
+        
+    case 8:
+        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
+        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
+        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)+getRandom(varianceR(2))));
+        break;
+
+  }
+      
   
   r.setCenter(QVec::vec3(currentCenter(0)+getRandom(varianceC(0)), currentCenter(1)+getRandom(varianceC(1)), currentCenter(2)+getRandom(varianceC(2))));
   r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), currentWidth(1)+getRandom(varianceW(1)), currentWidth(2)+getRandom(varianceW(2))));

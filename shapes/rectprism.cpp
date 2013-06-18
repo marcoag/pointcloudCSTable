@@ -253,7 +253,7 @@ double RectPrism::distance(const QVec &point,const QVec normal)
 
 QVec RectPrism::placePoint(const QVec &point)
 {
-  return RTMat(-rotation(0), -rotation(1), -rotation(2), QVec::vec3(-center(0), -center(1), -center(2)))*QVec::vec4(point(0), point(1), point(2), 1); 
+  return RTMat(-rotation(0), -rotation(1), -rotation(2), QVec::vec3(0,0,0))*RTMat(0,0,0, QVec::vec3(-center(0), -center(1), -center(2)))*QVec::vec4(point(0), point(1), point(2), 1); 
 }
 
 uint8_t RectPrism::collisionVector(const QVec &point)

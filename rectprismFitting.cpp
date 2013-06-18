@@ -46,8 +46,8 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
      //Sintetic cube
   int Wx = 100;
   int Wy = 100;
-  int Wz = 100;
-  int res = 3;
+  int Wz = 400;
+  int res = 5;
   //Rot3D r(0.5, 0.2, 0.2);
   //Faces front and back
   for(float x=0; x<=Wx; x=x+res)
@@ -56,19 +56,19 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
     {
       //face front (x=0)
       pcl::PointXYZRGBA p;
-      p.x = x+RectPrismCloudParticle::getRandom(10);
-      p.y = y+RectPrismCloudParticle::getRandom(10);
-      p.z = 0+RectPrismCloudParticle::getRandom(10);
+      p.x = x;//+RectPrismCloudParticle::getRandom(10);
+      p.y = y;//+RectPrismCloudParticle::getRandom(10);
+      p.z = 0;//+RectPrismCloudParticle::getRandom(10);
       p.r = 0;
       p.g = 255;
       p.b = 0;
-//       cloud_cup->push_back(p);
-//       p.x = x;
-//       p.y = y;
-//       p.z = Wz;  
-//       p.r = 0;
-//       p.g = 255;
-//       p.b = 0;
+      cloud_cup->push_back(p);
+      p.x = x;
+      p.y = y;
+      p.z = Wz;  
+      p.r = 0;
+      p.g = 255;
+      p.b = 0;
       cloud_cup->push_back(p);
     }
   }
@@ -79,19 +79,19 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
     {
       //face front (x=0)
       pcl::PointXYZRGBA p;
-      p.x = x+RectPrismCloudParticle::getRandom(10);
-      p.y = 0+RectPrismCloudParticle::getRandom(10);
-      p.z = z+RectPrismCloudParticle::getRandom(10);
+      p.x = x;//+RectPrismCloudParticle::getRandom(10);
+      p.y = 0;//+RectPrismCloudParticle::getRandom(10);
+      p.z = z;//+RectPrismCloudParticle::getRandom(10);
       p.r = 0;
       p.g = 255;
       p.b = 0;
-//       cloud_cup->push_back(p);
-//       p.x = x+RectPrismCloudParticle::getRandom(10);
-//       p.y = Wy+RectPrismCloudParticle::getRandom(10);;
-//       p.z = z+RectPrismCloudParticle::getRandom(10);
-//       p.r = 0;
-//       p.g = 255;
-//       p.b = 0;
+      cloud_cup->push_back(p);
+      p.x = x;//+RectPrismCloudParticle::getRandom(10);
+      p.y = Wy;//+RectPrismCloudParticle::getRandom(10);;
+      p.z = z;//+RectPrismCloudParticle::getRandom(10);
+      p.r = 0;
+      p.g = 255;
+      p.b = 0;
       cloud_cup->push_back(p);
     }
   }
@@ -102,23 +102,33 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
     {
       //face front (x=0)
       pcl::PointXYZRGBA p;
-      p.x = 0+RectPrismCloudParticle::getRandom(10);
-      p.y = y+RectPrismCloudParticle::getRandom(10);
-      p.z = z+RectPrismCloudParticle::getRandom(10);
+      p.x = 0;//+RectPrismCloudParticle::getRandom(10);
+      p.y = y;//+RectPrismCloudParticle::getRandom(10);
+      p.z = z;//+RectPrismCloudParticle::getRandom(10);
       p.r = 0;
       p.g = 255;
       p.b = 0;
-//       cloud_cup->push_back(p);
-//       p.x = Wx+RectPrismCloudParticle::getRandom(10);
-//       p.y = y+RectPrismCloudParticle::getRandom(10);
-//       p.z = z+RectPrismCloudParticle::getRandom(10);
-//       p.r = 0;
-//       p.g = 255;
-//       p.b = 0;
+      cloud_cup->push_back(p);
+      p.x = Wx;//+RectPrismCloudParticle::getRandom(10);
+      p.y = y;//+RectPrismCloudParticle::getRandom(10);
+      p.z = z;//+RectPrismCloudParticle::getRandom(10);
+      p.r = 0;
+      p.g = 255;
+      p.b = 0;
       cloud_cup->push_back(p);
     }
   }
   
+  float X = 0;
+  float Y = 0;
+  float Z = 0;
+  Eigen::Matrix4f TransMat; 
+  TransMat <<       1,    0,   0,  X, 
+                    0,    -0.4161,   -0.9093,  Y, 
+                    0,    0.9093,   -0.4161,  Z, 
+                    0,    0,   0,  1; 
+                    
+  pcl::transformPointCloud(*cloud_cup,*cloud_cup,TransMat ); 
   
   return cloud_cup;
   
@@ -146,6 +156,17 @@ computing(false)
   
   cloud = ransacAndEuclideanCluster(0.03f, 0.1f);
   
+  //lets try moving it to the center
+//   Eigen::Vector4f centroid;
+//   pcl::compute3DCentroid (*cloud,centroid);
+//   
+//   for (pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = cloud->begin (); it != cloud->end (); ++it)
+//   {
+//     it->x = it->x-centroid(0);
+//     it->y = it->y-centroid(1);
+//     it->z = it->z-centroid(2);
+//   }
+//   
 
 #ifdef LIVE
   input.cloud_target=cloud;

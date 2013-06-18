@@ -11,6 +11,8 @@
 #include "innermodelManager.h"
 #include "shapes/vector.h"
 
+#include <Eigen/Geometry>
+
 #define LIVE
 
 typedef pcl::PointXYZRGBA PointT;
