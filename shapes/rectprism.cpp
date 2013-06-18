@@ -43,107 +43,107 @@ double distance_p2p (double x1, double y1, double z1, double x2, double y2, doub
 
 double RectPrism::getInternalDistance(const QVec point,const QVec normal)
 {
-//   //check inside codes
-//   uint8_t code = 0;
-//   //check X axis
-//   if (point(0)>center(0))
-//     code=code|1<<XP;
-//   else if (point(0)<center(0))
-//     code=code|1<<XN;
-//   //check Y axis
-//   if (point(1)>(center(1)))
-//     code=code|1<<YP;
-//   else if(point(1)<center(1))
-//     code=code|1<<YN;
-//   //check Z axis
-//   if (point(2)>center(2))
-//     code=code|1<<ZP;
-//   else if(point(2)<center(2))
-//     code=code|1<<ZN;
-//   
-//   switch(code)
-//   {
-//     case LAF: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),(Wy/2),-(Wz/2)));
-//     case LAB: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),(Wy/2),(Wz/2)));
-//     case LBF: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),-(Wy/2),-(Wz/2)));
-//     case LBB: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),-(Wy/2),(Wz/2)));
-//     case RAF: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),(Wy/2),-(Wz/2)));
-//     case RAB: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),(Wy/2),(Wz/2)));
-//     case RBF: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),-(Wy/2),-(Wz/2)));
-//     case RBB: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),-(Wy/2),(Wz/2)));
-//     
-//     default: cout<<"Esto no rula locooo!!"<<endl;
-//   }
+  //check inside codes
+  uint8_t code = 0;
+  //check X axis
+  if (point(0)>center(0))
+    code=code|1<<XP;
+  else if (point(0)<center(0))
+    code=code|1<<XN;
+  //check Y axis
+  if (point(1)>(center(1)))
+    code=code|1<<YP;
+  else if(point(1)<center(1))
+    code=code|1<<YN;
+  //check Z axis
+  if (point(2)>center(2))
+    code=code|1<<ZP;
+  else if(point(2)<center(2))
+    code=code|1<<ZN;
+  
+  switch(code)
+  {
+    case LAF: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),(Wy/2),-(Wz/2)));
+    case LAB: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),(Wy/2),(Wz/2)));
+    case LBF: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),-(Wy/2),-(Wz/2)));
+    case LBB: return fabs(distance_p2p(point(0),point(1),point(2),-(Wx/2),-(Wy/2),(Wz/2)));
+    case RAF: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),(Wy/2),-(Wz/2)));
+    case RAB: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),(Wy/2),(Wz/2)));
+    case RBF: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),-(Wy/2),-(Wz/2)));
+    case RBB: return fabs(distance_p2p(point(0),point(1),point(2),(Wx/2),-(Wy/2),(Wz/2)));
+    
+    default: cout<<"Esto no rula locooo!!"<<endl;
+  }
    
    //using normals
    
-  float cosvalue[3];
-//   point.print("punto");
-//   normal.print("normal");
-  cosvalue[0]=fabs(normal(0));
-  cosvalue[1]=fabs(normal(1));
-  cosvalue[2]=fabs(normal(2));
-  
-  float maxcos=cosvalue[0];
-  int position=0;
-
-  for (int i=1; i<3; i++)
-  {
-    if (cosvalue[i] > maxcos)
-    {
-      maxcos=cosvalue[i];
-      position=i;
-    }
-  }
-  
-//   cout<<"position "<< position <<endl;
-//   cout<<"CosValue: 0  "<<cosvalue[0]<<endl;
-//   cout<<"CosValue: 1  "<<cosvalue[1]<<endl;
-//   cout<<"CosValue: 2  "<<cosvalue[2]<<endl;
-  
-  float dist1, dist2;
-  
-
-  //x
-  if(position==0)
-  {
-    dist1=fabs((-Wx/2)-point(0));
-    dist2=fabs((Wx/2)-point(0));
-    if (dist1<dist2)
-      return dist1;
-    else
-      return dist2;
-  }
-  //y
-  else if(position==1)
-  {
-    
-    dist1=fabs((-Wy/2)-point(1));
-    dist2=fabs((Wy/2)-point(1));
-    if (dist1<dist2)
-    {
-//       cout<<"DISTY"<<dist1;
-      return dist1;
-    }
-    else
-    { 
-//       cout<<"disty"<<dist2;
-      return dist2;
-    }
-  }
-  //z
-  else if(position==2)
-  {
-    dist1=fabs((-Wz/2)-point(2));
-    dist2=fabs((Wz/2)-point(2));
-    if (dist1<dist2)
-      return dist1;
-    else
-      return dist2;   
-  }
-  
-  throw 0;
-  return 0;
+//   float cosvalue[3];
+// //   point.print("punto");
+// //   normal.print("normal");
+//   cosvalue[0]=fabs(normal(0));
+//   cosvalue[1]=fabs(normal(1));
+//   cosvalue[2]=fabs(normal(2));
+//   
+//   float maxcos=cosvalue[0];
+//   int position=0;
+// 
+//   for (int i=1; i<3; i++)
+//   {
+//     if (cosvalue[i] > maxcos)
+//     {
+//       maxcos=cosvalue[i];
+//       position=i;
+//     }
+//   }
+//   
+// //   cout<<"position "<< position <<endl;
+// //   cout<<"CosValue: 0  "<<cosvalue[0]<<endl;
+// //   cout<<"CosValue: 1  "<<cosvalue[1]<<endl;
+// //   cout<<"CosValue: 2  "<<cosvalue[2]<<endl;
+//   
+//   float dist1, dist2;
+//   
+// 
+//   //x
+//   if(position==0)
+//   {
+//     dist1=fabs((-Wx/2)-point(0));
+//     dist2=fabs((Wx/2)-point(0));
+//     if (dist1<dist2)
+//       return dist1;
+//     else
+//       return dist2;
+//   }
+//   //y
+//   else if(position==1)
+//   {
+//     
+//     dist1=fabs((-Wy/2)-point(1));
+//     dist2=fabs((Wy/2)-point(1));
+//     if (dist1<dist2)
+//     {
+// //       cout<<"DISTY"<<dist1;
+//       return dist1;
+//     }
+//     else
+//     { 
+// //       cout<<"disty"<<dist2;
+//       return dist2;
+//     }
+//   }
+//   //z
+//   else if(position==2)
+//   {
+//     dist1=fabs((-Wz/2)-point(2));
+//     dist2=fabs((Wz/2)-point(2));
+//     if (dist1<dist2)
+//       return dist1;
+//     else
+//       return dist2;   
+//   }
+//   
+//   throw 0;
+//   return 0;
     
 }
 
@@ -181,49 +181,49 @@ double RectPrism::distance(const QVec &point,const QVec normal)
           {
             
       //The brand new way            
-          double min_distance=0;
+          double max_distance=0;
        
-        min_distance=getInternalDistance(point,normal2);
+//         min_distance=getInternalDistance(point,normal2);
        // point.print("");
         //cout<<"Distance: "<<min_distance<<endl;
-        return min_distance;
+//         return min_distance;
           
 //        The old way
-//       double distances[6];
-// 
-//       //-x
-//       distances[0]=fabs((-Wx/2)-point2(0));
-//       //y
-//       distances[1]=fabs((Wy/2)-point2(1));
-//       //-z
-//       distances[2]=fabs((-Wz/2)-point2(2));
-//       //-y
-//       distances[3]=fabs((-Wy/2)-point2(1));
-//       //z
-//       distances[4]=fabs((Wz/2)-point2(2));
-//       //x
-//       distances[5]=fabs((Wx/2)-point2(0));
-//       
-//       //get the minimum distance
-//       //triing with max instead
-//       max_distance=distances[0];
-//       int indice;
-//       for(int i=1;i<6;i++)
-//       {
-//         if (max_distance<distances[i])
-//         {
-//           max_distance=distances[i];
-//           indice=i;
-//         }
-//         //min_distance+=distances[i];
-//       }
-//       float total_distance=0;
-//       for(int i=0;i<6;i++)
-//       {
-//         if (i!=indice)
-//           total_distance+=distances[i];
-//       } 
-//           return total_distance/5;
+      double distances[6];
+
+      //-x
+      distances[0]=fabs((-Wx/2)-point2(0));
+      //y
+      distances[1]=fabs((Wy/2)-point2(1));
+      //-z
+      distances[2]=fabs((-Wz/2)-point2(2));
+      //-y
+      distances[3]=fabs((-Wy/2)-point2(1));
+      //z
+      distances[4]=fabs((Wz/2)-point2(2));
+      //x
+      distances[5]=fabs((Wx/2)-point2(0));
+      
+      //get the minimum distance
+      //triing with max instead
+      max_distance=distances[0];
+      int indice;
+      for(int i=1;i<6;i++)
+      {
+        if (max_distance<distances[i])
+        {
+          max_distance=distances[i];
+          indice=i;
+        }
+        //min_distance+=distances[i];
+      }
+      float total_distance=0;
+      for(int i=0;i<6;i++)
+      {
+        if (i!=indice)
+          total_distance+=distances[i];
+      } 
+          return total_distance/5;
     
         } 
     case MMB: return fabs(point2(2)-(Wz/2));

@@ -13,6 +13,8 @@ public:
   ~RectPrismFitting();
   void sig_term();
   void run();
+  float getRandom(float var);
+  float getVariance(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
   //Vector V(const double& r);
   inline double getRandom() { return (rand()%32000)/32000.0; }
   inline void setInnerModel(InnerModelManager *innermodelManager) { this->innermodelManager=innermodelManager; }

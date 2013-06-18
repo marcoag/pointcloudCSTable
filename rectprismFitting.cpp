@@ -1,5 +1,12 @@
 #include "rectprismFitting.h"
 
+float RectPrismFitting::getRandom(float var)
+{
+  double U = double(rand())/RAND_MAX;
+  double V = double(rand())/RAND_MAX;
+  return sqrt(-2*log(U))*cos(2.*M_PIl*V)*var;
+}
+
 /**
   * \brief Default constructor
   */
@@ -10,7 +17,7 @@ computing(false)
   //sigset(SIGINT, sig_term); 
   innermodelManager = imm;
   
-  c.particles=50;
+  c.particles=30;
   
   //cup from kinect
   //pcl::io::loadPCDFile<pcl::PointXYZ> ("../data/cloud_cup.pcd", *cloud_cup);
@@ -49,7 +56,7 @@ computing(false)
   int Wx = 120;
   int Wy = 400;
   int Wz = 200;
-  int res = 3;
+  int res = 10;
   //Rot3D r(0.5, 0.2, 0.2);
   //Faces front and back
   for(float x=0; x<=Wx; x=x+res)
@@ -108,8 +115,13 @@ computing(false)
 //   printf( "%s: %d\n", __FILE__, __LINE__);   
   innermodelManager->setPointCloudData("cup_cloud", cloud_cup);
   
-  input.cloud_target=cloud_cup;  
+  input.cloud_target=cloud_cup; 
+  
   pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
+  
+  //get the variances values
+  float variance = getVariance(cloud_cup);
+
   
   //Sintetic initialization
 //   Vector aa(0,0,50);
@@ -142,6 +154,12 @@ computing(false)
   input.cloud_target=cloud_cup;
   pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
   
+}
+
+float RectPrismFitting::getVariance(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+{
+  //fill this;
+  return 0;
 }
 
 /**
