@@ -12,7 +12,6 @@
 #include <string>
 
 #include "innermodelManager.h"
-#include "cylinderFitting.h"
 #include "rectprismFitting.h"
 
 using namespace std;
@@ -34,7 +33,7 @@ public:
   void cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr &cloud);
 
 public slots:
-  void runCylinder();
+  //void runCylinder();
   void runRectPrism();
 private:
   
@@ -44,7 +43,7 @@ private:
   QTimer timer;
   OsgView *world3D;
   InnerModelManager *innerModelManager;
-  CylinderFitting *cylinderFitting;
+ // CylinderFitting *cylinderFitting;
   RectPrismFitting *rectprismFitting;
   QMutex innermodelMutex, cloudToFitMutex;
   bool first_cloud;

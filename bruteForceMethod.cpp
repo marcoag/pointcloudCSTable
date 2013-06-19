@@ -1,18 +1,12 @@
-#include "rectprismCloudParticle.h"
+#include "bruteForceMethod.h"
 
 
-RectPrismCloudParticle::RectPrismCloudParticle(): r()
+BruteForceMethod::BruteForceMethod(): r()
 {
   this->weight=1;
-//   varianceA=QVec::vec3(0, 0, 0);
-//   varianceB=QVec::vec3(0, 0, 0);
-//   varianceR=0;
-  varianceC=QVec::vec3(10, 10, 10);
-  varianceW=QVec::vec3(10, 10, 10);
-  varianceR=QVec::vec3(0.3, 0.3, 0.3);
 }
 
-void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInputData &data, Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid)
+void BruteForceMethod::estimateEigenAndCentroid(Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid)
 {
   static Eigen::Vector4f mean;
   static Eigen::Matrix3f cov;
@@ -20,12 +14,12 @@ void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInpu
   
   centroid(0) = centroid(1) = centroid(2) = centroid(3) = 0.;
   np = 0;
-  for (uint i=0; i<data.cloud_target->points.size(); i++)
+  for (uint i=0; i<data->points.size(); i++)
   {
-    if (isnan(data.cloud_target->points[i].z)) continue;
-    centroid(0) += data.cloud_target->points[i].x;
-    centroid(1) += data.cloud_target->points[i].y;
-    centroid(2) += data.cloud_target->points[i].z;
+    if (isnan(data->points[i].z)) continue;
+    centroid(0) += data->points[i].x;
+    centroid(1) += data->points[i].y;
+    centroid(2) += data->points[i].z;
     np += 1;
   }
   centroid(0) /= np;
@@ -38,13 +32,13 @@ void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInpu
 
   Eigen::Vector4f tmp;
   tmp(3) = 0;
-  for (uint i=0; i<data.cloud_target->points.size(); i++)
+  for (uint i=0; i<data->points.size(); i++)
   {
     tmp(0) = tmp(1) = tmp(2) = 0;
-    if (isnan(data.cloud_target->points[i].z)) continue;
-    tmp(0) = data.cloud_target->points[i].x - centroid(0);
-    tmp(1) = data.cloud_target->points[i].y - centroid(1);
-    tmp(2) = data.cloud_target->points[i].z - centroid(2);
+    if (isnan(data->points[i].z)) continue;
+    tmp(0) = data->points[i].x - centroid(0);
+    tmp(1) = data->points[i].y - centroid(1);
+    tmp(2) = data->points[i].z - centroid(2);
     for (uint32_t ii=0; ii<3; ii++)
       for (uint32_t jj=0; jj<3; jj++)
         cov(ii,jj) += tmp(ii)*tmp(jj);
@@ -62,14 +56,15 @@ void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInpu
 }
 
 
-void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInputData &data){
+void BruteForceMethod::initializeFromEigenValues()
+{
 
   
   Eigen::Vector4f centroid;
   Eigen::Matrix3f covariance_matrix;
   
-  pcl::compute3DCentroid (*data.cloud_target,centroid);
-  computeCovarianceMatrix(*data.cloud_target,centroid,covariance_matrix);
+  pcl::compute3DCentroid (*data,centroid);
+  computeCovarianceMatrix(*data,centroid,covariance_matrix);
 
  
 //   printf (" Size | %lu | \n", data.cloud_target->size());
@@ -82,7 +77,7 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
   EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
 //   pcl::eigen33(covariance_matrix, eigen_vectors, eigen_values);
   
-  estimateEigenAndCentroid(data, eigen_values, eigen_vectors, centroid);
+  estimateEigenAndCentroid(eigen_values, eigen_vectors, centroid);
 
 //   printf (" EigenValues  | %f %f %f  | \n", eigen_values(0), eigen_values(1), eigen_values(2));
 //   printf (" EigenVectors | %f %f %f | \n", eigen_vectors (0,0), eigen_vectors (0,1), eigen_vectors (0,2));
@@ -120,7 +115,7 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
     max_eigenvalue=eigen_values(2);
   
   float max_distance=0;
-  for (pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = data.cloud_target->points.begin (); it < data.cloud_target->points.end (); ++it)
+  for (pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = data->points.begin (); it < data->points.end (); ++it)
   {
     //calculate point to point distance
 //     float distance=fabs(RectPrism::distance_p2p(it->x, it->y, it->z, centroid(0), centroid(1), centroid(2)));
@@ -139,13 +134,13 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
   
   //look at this!! wrong eigen_values loco! check this shit out
   
-  r.setWidth(QVec::vec3((eigen_values(0)/ratio),(eigen_values(0)/ratio),(eigen_values(0)/ratio)));
-  //r.setWidth(QVec::vec3(0,0,0));
+  //r.setWidth(QVec::vec3((eigen_values(0)/ratio),(eigen_values(0)/ratio),(eigen_values(0)/ratio)));
+  r.setWidth(QVec::vec3(100,100,400));
   
   float rx = atan2(eigen_vectors(2,1), eigen_vectors(2,2));
   float ry = atan2(-eigen_vectors(2,0),sqrt(pow(eigen_vectors(2,1),2)+pow(eigen_vectors(2,2),2)));
   float rz = atan2(eigen_vectors(1,0),eigen_vectors(0,0));
-  r.setRotation(QVec::vec3(0,0,0));
+  r.setRotation(QVec::vec3(0.1,0,0));
   
 //   printf("max:    (%f, %f, %f)\n", max[0], max[1], max[2]);
 //   printf("center: (%f, %f, %f)\n", center[0], center[1], center[2]);
@@ -157,10 +152,10 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
 
 }
 
-void RectPrismCloudParticle::gypsyInitization(const RectPrismCloudPFInputData &data)
+void BruteForceMethod::gypsyInitization()
 {
    Eigen::Vector4f centroid;
-   pcl::compute3DCentroid (*data.cloud_target,centroid);
+   pcl::compute3DCentroid (*data,centroid);
    Vector center (centroid(0), centroid(1), centroid(2));
    Vector a (centroid(0), centroid(1) + 50, centroid(2));
    Vector b (centroid(0), centroid(1) - 50, centroid(2));
@@ -171,97 +166,213 @@ void RectPrismCloudParticle::gypsyInitization(const RectPrismCloudPFInputData &d
 
 }
 
-void RectPrismCloudParticle::initialize(const RectPrismCloudPFInputData &data, const int &control, const RCParticleFilter_Config *config)
+void BruteForceMethod::initialize()
 { 
-   initializeFromEigenValues(data);
+   initializeFromEigenValues();
+   this->weight=computeWeight();
 //  gypsyInitization(data);
 }
 
-void RectPrismCloudParticle::adapt(const int &controlBack, const int &controlNew, const bool noValidCandidates)
+void BruteForceMethod::incTranslation(int index)
 {
-//   Vector a(c.getA().getX()+getRandom(varianceA(0)), c.getA().getY()+getRandom(varianceA(1)), c.getA().getZ()+getRandom(varianceA(2)));
-//   Vector b(c.getB().getX()+getRandom(varianceB(0)), c.getB().getY()+getRandom(varianceB(1)), c.getB().getZ()+getRandom(varianceB(2)));
-//   double r = fabs(c.getR()+getRandom(varianceR));
-//   c.setValues(a,b,r);
+  QVec auxvec;
+  float positiveWeight, negativeWeight, transformedWeight;
+  QVec width = r.getWidth();
+  float inc = width(index)/40;
+  auxvec = r.getCenter();
   
-  QVec currentCenter = r.getCenter();
-  QVec currentWidth = r.getWidth();
-  QVec currentRotation = r.getRotation();
-  
-  switch(rand()%9)
-  {
-    case 0:
-        r.setCenter(QVec::vec3(currentCenter(0)+getRandom(varianceC(0)), currentCenter(1), currentCenter(2)));
-        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
-        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
-        break;
-        
-    case 1:
-        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1)+getRandom(varianceC(1)), currentCenter(2)));
-        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
-        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
-        break;
-        
-    case 2:  
-        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)+getRandom(varianceC(2))));
-        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
-        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
-        break;
-    
-    case 3:
-        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
-        r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), currentWidth(1), currentWidth(2)));
-        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
-        break;
-        
-    case 4:
-        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
-        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1)+getRandom(varianceW(1)), currentWidth(2)));
-        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
-        break;
-        
-    case 5:
-        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
-        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)+getRandom(varianceW(2))));
-        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)));
-        break;
-        
-    case 6:
-        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
-        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
-        r.setRotation(QVec::vec3(currentRotation(0)+getRandom(varianceR(0)), currentRotation(1), currentRotation(2)));
-        break;
-        
-    case 7:
-        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
-        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
-        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1)+getRandom(varianceR(1)), currentRotation(2)));
-        break;
-        
-    case 8:
-        r.setCenter(QVec::vec3(currentCenter(0), currentCenter(1), currentCenter(2)));
-        r.setWidth(QVec::vec3(currentWidth(0), currentWidth(1), currentWidth(2)));
-        r.setRotation(QVec::vec3(currentRotation(0), currentRotation(1), currentRotation(2)+getRandom(varianceR(2))));
-        break;
 
-  }
-      
+  //decide direction
+  auxvec(index)=auxvec(index)+inc;
+  r.setCenter(auxvec);
   
-  r.setCenter(QVec::vec3(currentCenter(0)+getRandom(varianceC(0)), currentCenter(1)+getRandom(varianceC(1)), currentCenter(2)+getRandom(varianceC(2))));
-  r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), currentWidth(1)+getRandom(varianceW(1)), currentWidth(2)+getRandom(varianceW(2))));
-//  r.setWidth(QVec::vec3(currentWidth(0)+getRandom(varianceW(0)), 0, currentWidth(2)+getRandom(varianceW(2))));
-  r.setRotation(QVec::vec3(currentRotation(0)+getRandom(varianceR(0)), currentRotation(1)+getRandom(varianceR(1)), currentRotation(2)+getRandom(varianceR(2))));
-   
-  float annealing = 0.99;
-  varianceC = varianceC.operator*(annealing);
-  varianceW = varianceW.operator*(annealing);
-  varianceR = varianceR.operator*(annealing);
+  positiveWeight=computeWeight();
+  
+  //undo and sobstract a quarter = 2 quarters
+  auxvec(index)=auxvec(index)-(inc*2);
+  r.setCenter(auxvec);
+  
+  negativeWeight=computeWeight();
+  
+  //undo changes
+  auxvec(index)=auxvec(index)+inc;
+  r.setCenter(auxvec);
+  
+  //if negative is good go with it
+  if(negativeWeight>positiveWeight)
+  {
+    transformedWeight=negativeWeight;
+    inc*=-1;
+  }
+  else
+    transformedWeight=positiveWeight;
+    
+  while(transformedWeight>weight)
+  {
+    auxvec(index)=auxvec(index)+inc;
+    r.setCenter(auxvec);
+    weight=transformedWeight;
+    
+    //calculate futureWeight
+    auxvec(index)=auxvec(index)+inc;
+    r.setCenter(auxvec);
+    transformedWeight=computeWeight();
+    auxvec(index)=auxvec(index)-inc;
+    r.setCenter(auxvec);
+  }
 }
 
-void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data)
+
+void BruteForceMethod::incWidth(int index)
+{
+  QVec auxvec;
+  float positiveWeight, negativeWeight, transformedWeight;
+  auxvec = r.getWidth();
+  float inc = auxvec(index)/40;;
+  
+
+  //decide direction
+  auxvec(index)=auxvec(index)+inc;
+  r.setWidth(auxvec);
+  
+  positiveWeight=computeWeight();
+  
+  //undo and sobstract a quarter = 2 quarters
+  auxvec(index)=auxvec(index)-(inc*2);
+  r.setWidth(auxvec);
+  
+  negativeWeight=computeWeight();
+  
+  //undo changes
+  auxvec(index)=auxvec(index)+inc;
+  r.setWidth(auxvec);
+  
+  //if negative is good go with it
+  if(negativeWeight>positiveWeight)
+  {
+    transformedWeight=negativeWeight;
+    inc*=-1;
+  }
+  else
+    transformedWeight=positiveWeight;
+    
+  while(transformedWeight>weight)
+  {
+    auxvec(index)=auxvec(index)+inc;
+    r.setWidth(auxvec);
+    weight=transformedWeight;
+    
+    //calculate futureWeight
+    auxvec(index)=auxvec(index)+inc;
+    r.setWidth(auxvec);
+    transformedWeight=computeWeight();
+    auxvec(index)=auxvec(index)-inc;
+    r.setWidth(auxvec);
+  }
+}
+
+void BruteForceMethod::incRotation(int index)
+{
+  QVec auxvec;
+  float positiveWeight, negativeWeight, transformedWeight;
+  auxvec = r.getRotation();
+  float inc = 0.02;
+  
+
+  //decide direction
+  auxvec(index)=auxvec(index)+inc;
+  r.setRotation(auxvec);
+  
+  positiveWeight=computeWeight();
+  
+  //undo and sobstract a quarter = 2 quarters
+  auxvec(index)=auxvec(index)-(inc*2);
+  r.setRotation(auxvec);
+  
+  negativeWeight=computeWeight();
+  
+  //undo changes
+  auxvec(index)=auxvec(index)+inc;
+  r.setRotation(auxvec);
+  
+  //if negative is good go with it
+  if(negativeWeight>positiveWeight)
+  {
+    transformedWeight=negativeWeight;
+    inc*=-1;
+  }
+  else
+    transformedWeight=positiveWeight;
+    
+  while(transformedWeight>weight)
+  {
+    auxvec(index)=auxvec(index)+inc;
+    r.setRotation(auxvec);
+    weight=transformedWeight;
+    
+    //calculate futureWeight
+    auxvec(index)=auxvec(index)+inc;
+    r.setRotation(auxvec);
+    transformedWeight=computeWeight();
+    auxvec(index)=auxvec(index)-inc;
+    r.setRotation(auxvec);
+  }
+}
+
+void BruteForceMethod::adapt ()
+{
+
+  switch(rand()%9)
+  {
+    //x
+    case 0:
+      incTranslation(0);
+      break;
+    //y
+    case 1:
+      incTranslation(1);
+      break;
+    //z
+    case 2:
+      incTranslation(2);
+      break;
+    //Wx
+    case 3:
+      incWidth(0);
+      break;
+    //Wy
+    case 4:
+      incWidth(1);
+      break;  
+    //Wz
+    case 5:
+      incWidth(2);
+      break;
+    //Rx
+    case 6:
+      incRotation(0);
+      break;
+    //Ry
+    case 7:
+      incRotation(1);
+      break;
+    //Rz
+    case 8:
+      incRotation(2);
+      break;       
+  }
+}
+
+void BruteForceMethod::setData (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud) 
+{ 
+  this->data = cloud; 
+  this->weight=computeWeight(); 
+}
+
+float BruteForceMethod::computeWeight()
 {
 //   printf("RectPrism: A(%f,%f,%f), B(%f,%f,%f), r=%f\n", c.getA().getX() , c.getA().getY() ,c.getA().getZ() , c.getB().getX() ,c.getB().getY() ,c.getB().getZ(), c.getR());
-  this->weight=0.;
+  float weight=0.;
   //double mint, maxt;
 //  cout<<"TAMAÑO: "<<data.cloud_target->size()<<endl;
   
@@ -280,7 +391,7 @@ void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data
   
  // cout<<"Size cloud: "<<data.cloud_target->size()<<" size normals: "<<cloud_normals->size()<<endl;
   int normalint =0;
-  for( pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = data.cloud_target->begin(); it != data.cloud_target->end(); it++ )
+  for( pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = data->begin(); it != data->end(); it++ )
   {
     
     QVec point = QVec::vec3(it->x, it->y, it->z);
@@ -308,7 +419,7 @@ void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data
 //     }
     double dist = r.distance(point,normal);
     
-    this->weight += dist;
+    weight += dist;
 //     std::cout<<"X:"<<it->x<<" Y:"<<it->y<<" Z:"<<it->z<<" D:"<<dist<<std::endl;
     
     //look for the upper and low points
@@ -323,44 +434,44 @@ void RectPrismCloudParticle::computeWeight(const RectPrismCloudPFInputData &data
 //     }
     normalint++;
   }
-  this->weight /= data.cloud_target->points.size();
+  
+  weight /= data->points.size();
+  
   //const float k = fabs(0.-mint)+fabs(1.-maxt);
   //const float topbottom_weight = 1./(c.getR()*k+1);
-  const float distance_weight = 1./(this->weight+1.);
+  
+  const float distance_weight = 1./(this->weight+0.1);
+  
 //   std::cout<<"k: "<<k<<std::endl;
 //   std::cout<<"topbottom_weight: "<<topbottom_weight<<" distance_weight: "<<distance_weight<<std::endl;
-  this->weight=distance_weight;//*topbottom_weight;
+  
+  weight=distance_weight;//*topbottom_weight;
+  
 //   printf("WEIGHT: %f\n", this->weight);
+  return weight;
 }
 
-RectPrismCloudParticle::~RectPrismCloudParticle()
+BruteForceMethod::~BruteForceMethod()
 {
 
 }
 
-QVec RectPrismCloudParticle::getTranslation()
+QVec BruteForceMethod::getTranslation()
 {
   return r.getCenter();
 }
 
-QVec RectPrismCloudParticle::getRotation()
+QVec BruteForceMethod::getRotation()
 {
   return r.getRotation();
 }
 
-QVec RectPrismCloudParticle::getScale()
+QVec BruteForceMethod::getScale()
 {
   return r.getWidth();
 }
 
-float RectPrismCloudParticle::getRandom(float var)
-{
-  double U = double(rand())/RAND_MAX;
-  double V = double(rand())/RAND_MAX;
-  return sqrt(-2*log(U))*cos(2.*M_PIl*V)*var;
-}
-
-void RectPrismCloudParticle::setRectPrism (RectPrism r )
+void BruteForceMethod::setRectPrism (RectPrism r )
 {
   this->r.setCenter ( r.getCenter() );
   this->r.setRotation ( r.getRotation() );
@@ -368,7 +479,7 @@ void RectPrismCloudParticle::setRectPrism (RectPrism r )
   
 }
 
-void RectPrismCloudParticle::print(std::string v)
+void BruteForceMethod::print(std::string v)
 {
   printf("%s: \n", v.c_str());
   printf("RectPrism: Center (%f,%f,%f), Rotation (%f,%f,%f), Width (%f,%f,%f), Weight: %f\n", 

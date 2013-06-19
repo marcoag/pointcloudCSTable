@@ -17,7 +17,7 @@ void InnerModelManager::setPointCloudData(const std::string id, pcl::PointCloud<
   int points = cloud->size();
   pcNode->points->resize(points);
   pcNode->colors->resize(points);
-  pcNode->setPointSize(1);
+  pcNode->setPointSize(4);
   int i = 0;
   for(pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = cloud->begin(); it != cloud->end(); it++ )
   {

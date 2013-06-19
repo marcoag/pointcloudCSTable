@@ -138,19 +138,19 @@ void myViewer::runRectPrism()
   }
 }
 
-void myViewer::runCylinder()
-{
-  if(cylinderFitting->isComputing())
-  {
-    world3D->update();
-  }
-  else
-  {
-    cylinderFitting->start();
-    world3D->update();
-  }
-  getchar();
-}
+// void myViewer::runCylinder()
+// {
+//   if(cylinderFitting->isComputing())
+//   {
+//     world3D->update();
+//   }
+//   else
+//   {
+//     cylinderFitting->start();
+//     world3D->update();
+//   }
+//   getchar();
+// }
 
 void myViewer::resizeEvent(QResizeEvent * event)
 {

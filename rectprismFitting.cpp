@@ -11,20 +11,20 @@ computing(false)
 {
   innermodelManager = imm;
   
-  c.particles=50;
+//   c.particles=50;
   
   //cup from kinect
   //pcl::io::loadPCDFile<pcl::PointXYZ> ("../data/cloud_cup.pcd", *cloud_cup);
+  
 
 #ifdef LIVE
-  input.cloud_target = ransacAndEuclideanCluster(0.03f, 0.1f);  
+  bruteforce.setData(ransacAndEuclideanCluster(0.03f, 0.1f));
 #else
-  input.cloud_target=getSinteticCube();
+  bruteforce.setData(getSinteticCube());
 #endif
-
-//   input.cloud_target=cloud;
+  bruteforce.initialize();
   
-  pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
+//   input.cloud_target=cloud;
   
   //Sintetic initialization
 //   Vector aa(0,0,50);
@@ -47,7 +47,7 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
   int Wx = 100;
   int Wy = 100;
   int Wz = 400;
-  int res = 5;
+  int res = 50;
   //Rot3D r(0.5, 0.2, 0.2);
   //Faces front and back
   for(float x=0; x<=Wx; x=x+res)
@@ -119,16 +119,16 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
     }
   }
   
-  float X = 0;
-  float Y = 0;
-  float Z = 100;
-  Eigen::Matrix4f TransMat; 
-  TransMat <<       1,    0,   0,  X, 
-                    0,    -0.4161,   -0.9093,  Y, 
-                    0,    0.9093,   -0.4161,  Z, 
-                    0,    0,   0,  1; 
-                    
-  pcl::transformPointCloud(*cloud_cup,*cloud_cup,TransMat ); 
+//   float X = 0;
+//   float Y = 0;
+//   float Z = 100;
+//   Eigen::Matrix4f TransMat; 
+//   TransMat <<       1,    0,   0,  X, 
+//                     0,    -0.4161,   -0.9093,  Y, 
+//                     0,    0.9093,   -0.4161,  Z, 
+//                     0,    0,   0,  1; 
+//                     
+//   pcl::transformPointCloud(*cloud_cup,*cloud_cup,TransMat ); 
   
   return cloud_cup;
   
@@ -150,7 +150,7 @@ computing(false)
   //sigset(SIGINT, sig_term); 
   innermodelManager = imm;
   
-  c.particles=50;
+//   c.particles=50;
   
   cloud = cloudToFit;
   
@@ -167,17 +167,16 @@ computing(false)
 //     it->z = it->z-centroid(2);
 //   }
 //   
-
+  
 #ifdef LIVE
-  input.cloud_target=cloud;
+  bruteforce.setData(cloud);
   innermodelManager->setPointCloudData("cup_cloud", cloud);
 #else
-  input.cloud_target=getSinteticCube();
+  bruteforce.setData(getSinteticCube());
   innermodelManager->setPointCloudData("cup_cloud", getSinteticCube());
 #endif
   
-  
-  pf = new RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> (&c, input, 0);
+  bruteforce.initialize();
   
 }
 
@@ -303,17 +302,16 @@ void RectPrismFitting::run()
   //pcl::PointCloud<PointT>::Ptr cloud_cluster = ransacAndEuclideanCluster(0.03f, 0.1);
 
 #ifdef LIVE  
-  input.cloud_target=ransacAndEuclideanCluster(0.03f, 0.1f);
+  bruteforce.setData(ransacAndEuclideanCluster(0.03f, 0.1f));
 #else
-  input.cloud_target=getSinteticCube();
+  bruteforce.setData(getSinteticCube());
 #endif
     
   
   //innermodelManager->setPointCloudData("cup_cloud", input.cloud_target);
   
-  pf->step(input, 0, false, -1);
+  bruteforce.adapt();
 
-  RectPrismCloudParticle bestParticle;
 
 //   for (int i=0;i<c.particles; i++)
 //   {
@@ -322,11 +320,10 @@ void RectPrismFitting::run()
 //     bestParticle.print(" resampled particle:");
 //   }
   
-  bestParticle = pf->getBest();
-  bestParticle.print("bestParticle:");
-  QVec t = bestParticle.getTranslation();
-  QVec r = bestParticle.getRotation();
-  QVec w = bestParticle.getScale();
+  bruteforce.print("Data from model:");
+  QVec t = bruteforce.getTranslation();
+  QVec r = bruteforce.getRotation();
+  QVec w = bruteforce.getScale();
 
   innermodelManager->setPose("cube_0_t", t, r, w );
   innermodelManager->setScale("cube_0", w(0)/2, w(1)/2, w(2)/2);

@@ -7,9 +7,8 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/kdtree/kdtree.h>
 
-#include "rectprismCloudParticle.h"
 #include "innermodelManager.h"
-#include "shapes/vector.h"
+#include "bruteForceMethod.h"
 
 #include <Eigen/Geometry>
 
@@ -40,14 +39,12 @@ private:
   pcl::PointCloud<PointT>::Ptr getSinteticCube();
   
   bool computing;
-  RectPrismCloudPFInputData input;
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_cup;
-  RCParticleFilter<RectPrismCloudPFInputData, int, RectPrismCloudParticle, RCParticleFilter_Config> *pf;
+  BruteForceMethod bruteforce;
   Vector p[10000];
   Vector d[10000];
   double t[10000];
   
-  RCParticleFilter_Config c;
   InnerModelManager *innermodelManager;
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud;
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr readPCLCloud(QString name);
