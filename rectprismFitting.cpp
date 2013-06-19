@@ -121,7 +121,7 @@ pcl::PointCloud<PointT>::Ptr RectPrismFitting::getSinteticCube()
   
   float X = 0;
   float Y = 0;
-  float Z = 0;
+  float Z = 100;
   Eigen::Matrix4f TransMat; 
   TransMat <<       1,    0,   0,  X, 
                     0,    -0.4161,   -0.9093,  Y, 
@@ -194,18 +194,6 @@ void RectPrismFitting::sig_term ()
 {
   QApplication::exit();
 }
-
-// Vector RectPrismFitting::V(const double& r)
-// {
-//   Vector v(getRandom(), getRandom(), getRandom());
-//     
-//   v-=Vector(0.5);
-//     
-//   v*=2.0*r;
-//   
-//   return v;
-//   
-// }
 
 void RectPrismFitting::cloud2m(pcl::PointCloud<PointT>::Ptr cloud)
 {

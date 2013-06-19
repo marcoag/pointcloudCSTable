@@ -9,7 +9,7 @@ RectPrismCloudParticle::RectPrismCloudParticle(): r()
 //   varianceR=0;
   varianceC=QVec::vec3(10, 10, 10);
   varianceW=QVec::vec3(10, 10, 10);
-  varianceR=QVec::vec3(0.2, 0.2, 0.2);
+  varianceR=QVec::vec3(0.3, 0.3, 0.3);
 }
 
 void RectPrismCloudParticle::estimateEigenAndCentroid(const RectPrismCloudPFInputData &data, Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid)
@@ -131,10 +131,10 @@ void RectPrismCloudParticle::initializeFromEigenValues(const RectPrismCloudPFInp
 //   cout<<"RectPrismCloudParticle::initializeFromEigenValues::max_distance: "<<max_distance<<endl;
 
   float ratio=max_eigenvalue/max_distance;
-//   cout<<"RectPrismCloudParticle::initializeFromEigenValues::Ratio: "<<ratio<<endl;
+  cout<<"RectPrismCloudParticle::initializeFromEigenValues::Ratio: "<<ratio<<" max_distance:"<<max_distance<<endl;
   r.setCenter(QVec::vec3(centroid(0), centroid(1), centroid(2)));
   cout<<"Centroid: "<<centroid(0)<<" "<<centroid(1)<<" "<<centroid(2)<<endl;
-  cout<<(eigen_values(1)/ratio)*2<<" "<<(eigen_values(0)/ratio)*2 <<" "<<(eigen_values(2)/ratio)*2<<endl;
+  cout<<"Eigen Values/ratio: "<<(eigen_values(1)/ratio)*2<<" "<<(eigen_values(0)/ratio)*2 <<" "<<(eigen_values(2)/ratio)*2<<endl;
   
   
   //look at this!! wrong eigen_values loco! check this shit out

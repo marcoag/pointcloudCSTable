@@ -13,7 +13,7 @@
 
 #include <Eigen/Geometry>
 
-#define LIVE
+//#define LIVE
 
 typedef pcl::PointXYZRGBA PointT;
 
