@@ -309,6 +309,7 @@ void BruteForceMethod::incRotation(int index)
     auxvec(index)=auxvec(index)+inc;
     r.setRotation(auxvec);
     weight=transformedWeight;
+    cout<<"current: " <<weight<<endl;
     
     //calculate futureWeight
     auxvec(index)=auxvec(index)+inc;
@@ -316,6 +317,8 @@ void BruteForceMethod::incRotation(int index)
     transformedWeight=computeWeight();
     auxvec(index)=auxvec(index)-inc;
     r.setRotation(auxvec);
+    
+    cout<<"tranformedWeight: "<<transformedWeight<<endl;
   }
 }
 
