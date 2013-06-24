@@ -140,7 +140,7 @@ void BruteForceMethod::initializeFromEigenValues()
   float rx = atan2(eigen_vectors(2,1), eigen_vectors(2,2));
   float ry = atan2(-eigen_vectors(2,0),sqrt(pow(eigen_vectors(2,1),2)+pow(eigen_vectors(2,2),2)));
   float rz = atan2(eigen_vectors(1,0),eigen_vectors(0,0));
-  r.setRotation(QVec::vec3(0.1,0,0));
+  r.setRotation(QVec::vec3(0,0,0));
   
 //   printf("max:    (%f, %f, %f)\n", max[0], max[1], max[2]);
 //   printf("center: (%f, %f, %f)\n", center[0], center[1], center[2]);
@@ -156,9 +156,6 @@ void BruteForceMethod::gypsyInitization()
 {
    Eigen::Vector4f centroid;
    pcl::compute3DCentroid (*data,centroid);
-   Vector center (centroid(0), centroid(1), centroid(2));
-   Vector a (centroid(0), centroid(1) + 50, centroid(2));
-   Vector b (centroid(0), centroid(1) - 50, centroid(2));
    
    r.setCenter(QVec::vec3(centroid(0), centroid(1), centroid(2)));
    r.setWidth(QVec::vec3(50,50,50));
@@ -169,221 +166,210 @@ void BruteForceMethod::gypsyInitization()
 void BruteForceMethod::initialize()
 { 
    initializeFromEigenValues();
-   this->weight=computeWeight();
-//  gypsyInitization(data);
+   //also to best
+   best.setCenter(r.getCenter());
+   best.setRotation(r.getRotation());
+   best.setWidth(r.getWidth());
+
 }
 
 void BruteForceMethod::incTranslation(int index)
 {
-   QVec auxvec;
-//   float positiveWeight, negativeWeight, transformedWeight;
+  QVec auxvec;
+  float positiveWeight, negativeWeight, transformedWeight;
   QVec width = r.getWidth();
   float inc = width(index)/40;
   auxvec = r.getCenter();
-//   
-//   //decide direction
+  
+  //decide direction
   auxvec(index)=auxvec(index)+inc;
   r.setCenter(auxvec);
-//   
-//   positiveWeight=computeWeight();
-//   
-//   //undo and sobstract a quarter = 2 quarters
-//   auxvec(index)=auxvec(index)-(inc*2);
-//   r.setCenter(auxvec);
-//   
-//   negativeWeight=computeWeight();
-//   
-//   //undo changes
-//   auxvec(index)=auxvec(index)+inc;
-//   r.setCenter(auxvec);
-//   
-//   cout<<"Negative: "<<negativeWeight<<" Positive: "<<positiveWeight<<endl;
-//   
-//   //if negative is good go with it
-//   if(negativeWeight>positiveWeight)
-//   {
-//     transformedWeight=negativeWeight;
-//     inc*=-1;
-//   }
-//   else
-//     transformedWeight=positiveWeight;
-//     
-//   
-//   cout<<"QQQQQQTransofredWeight: "<<transformedWeight<<" weight"<<this->weight<<endl;
-//   while(transformedWeight>weight)
-//   {
-//     cout<<"TransofredWeight: "<<transformedWeight<<" weight"<<this->weight<<endl;
-//     auxvec(index)=auxvec(index)+inc;
-//     r.setCenter(auxvec);
-//     this->weight=transformedWeight;
-//     
-//     //calculate futureWeight
-//     auxvec(index)=auxvec(index)+inc;
-//     r.setCenter(auxvec);
-//     transformedWeight=computeWeight();
-//     auxvec(index)=auxvec(index)-inc;
-//     r.setCenter(auxvec);
-//   }
+  computeWeight();
+  positiveWeight=weight;
   
-  this->weight=computeWeight();
-  cout<<this->weight<<endl;
-}
+  //undo and sobstract a quarter = 2 quarters
+  auxvec(index)=auxvec(index)-(inc*2);
+  r.setCenter(auxvec);
+  computeWeight();
+  negativeWeight=weight;
+  
+  //undo changes
+  auxvec(index)=auxvec(index)+inc;
+  r.setCenter(auxvec);
+  
+  computeWeight();
+  
+    cout<<"positive: "<<positiveWeight<<" negative: "<<negativeWeight<<endl;
+  //if negative is good go with it
+  if(negativeWeight>positiveWeight)
+  {
+    transformedWeight=negativeWeight;
+    inc*=-1;
+  }
+  else
+    transformedWeight=positiveWeight;
+    
 
+  
+  cout<<"Transformed: "<<transformedWeight<<" weight: "<<weight<<endl;
+  while(transformedWeight>weight)
+  {
+    auxvec(index)=auxvec(index)+inc;
+    r.setCenter(auxvec);
+    weight=transformedWeight;
+    
+    //calculate futureWeight
+    auxvec(index)=auxvec(index)+inc;
+    r.setCenter(auxvec);
+    computeWeight();
+    transformedWeight=weight;
+    
+    //undo
+    auxvec(index)=auxvec(index)-inc;
+    r.setCenter(auxvec);
+    computeWeight();
+  }
 
-void BruteForceMethod::incWidth(int index)
-{
 //   QVec auxvec;
 //   float positiveWeight, negativeWeight, transformedWeight;
-//   auxvec = r.getWidth();
-//   float inc = auxvec(index)/40;;
+//   QVec width = r.getWidth();
+//   float inc = width(index)/40;
+//   auxvec = r.getCenter();
 //   
-// 
-//   //decide direction
 //   auxvec(index)=auxvec(index)+inc;
-//   r.setWidth(auxvec);
-//   
-//   positiveWeight=computeWeight();
-//   
-//   //undo and sobstract a quarter = 2 quarters
-//   auxvec(index)=auxvec(index)-(inc*2);
-//   r.setWidth(auxvec);
-//   
-//   negativeWeight=computeWeight();
-//   
-//   //undo changes
-//   auxvec(index)=auxvec(index)+inc;
-//   r.setWidth(auxvec);
-//   
-//   //if negative is good go with it
-//   if(negativeWeight>positiveWeight)
-//   {
-//     transformedWeight=negativeWeight;
-//     inc*=-1;
-//   }
-//   else
-//     transformedWeight=positiveWeight;
-//     
-//   while(transformedWeight>weight)
-//   {
-//     auxvec(index)=auxvec(index)+inc;
-//     r.setWidth(auxvec);
-//     weight=transformedWeight;
-//     
-//     //calculate futureWeight
-//     auxvec(index)=auxvec(index)+inc;
-//     r.setWidth(auxvec);
-//     transformedWeight=computeWeight();
-//     auxvec(index)=auxvec(index)-inc;
-//     r.setWidth(auxvec);
-//   }
+//   r.setCenter(auxvec);
+//   computeWeight();
 }
 
 void BruteForceMethod::incRotation(int index)
 {
-//   QVec auxvec;
-//   float positiveWeight, negativeWeight, transformedWeight;
-//   auxvec = r.getRotation();
-//   float inc = 0.02;
-//   
-// 
-//   //decide direction
-//   auxvec(index)=auxvec(index)+inc;
-//   r.setRotation(auxvec);
-//   
-//   positiveWeight=computeWeight();
-//   
-//   //undo and sobstract a quarter = 2 quarters
-//   auxvec(index)=auxvec(index)-(inc*2);
-//   r.setRotation(auxvec);
-//   
-//   negativeWeight=computeWeight();
-//   
-//   //undo changes
-//   auxvec(index)=auxvec(index)+inc;
-//   r.setRotation(auxvec);
-//   
-//   //if negative is good go with it
-//   if(negativeWeight>positiveWeight)
-//   {
-//     transformedWeight=negativeWeight;
-//     inc*=-1;
-//   }
-//   else
-//     transformedWeight=positiveWeight;
-//     
-//   while(transformedWeight>weight)
-//   {
-//     auxvec(index)=auxvec(index)+inc;
-//     r.setRotation(auxvec);
-//     weight=transformedWeight;
-//     cout<<"current: " <<weight<<endl;
-//     
-//     //calculate futureWeight
-//     auxvec(index)=auxvec(index)+inc;
-//     r.setRotation(auxvec);
-//     transformedWeight=computeWeight();
-//     auxvec(index)=auxvec(index)-inc;
-//     r.setRotation(auxvec);
-//     
-//     cout<<"tranformedWeight: "<<transformedWeight<<endl;
-//   }
+  QVec auxvec;
+  float positiveWeight, negativeWeight, transformedWeight;
+  QVec width = r.getWidth();
+  float inc = 0.02;
+  auxvec = r.getRotation();
+  
+  //decide direction
+  auxvec(index)=auxvec(index)+inc;
+  r.setRotation(auxvec);
+  computeWeight();
+  positiveWeight=weight;
+  
+  //undo and sobstract a quarter = 2 quarters
+  auxvec(index)=auxvec(index)-(inc*2);
+  r.setRotation(auxvec);
+  computeWeight();
+  negativeWeight=weight;
+  
+  //undo changes
+  auxvec(index)=auxvec(index)+inc;
+  r.setRotation(auxvec);
+  computeWeight();
+  
+  //if negative is good go with it
+  if(negativeWeight>positiveWeight)
+  {
+    transformedWeight=negativeWeight;
+    inc*=-1;
+  }
+  else
+    transformedWeight=positiveWeight;
+    
+  while(transformedWeight>weight)
+  {
+    auxvec(index)=auxvec(index)+inc;
+    r.setRotation(auxvec);
+    weight=transformedWeight;
+    
+    //calculate futureWeight
+    auxvec(index)=auxvec(index)+inc;
+    r.setRotation(auxvec);
+    computeWeight();
+    transformedWeight=weight;
+    
+    //undo
+    auxvec(index)=auxvec(index)-inc;
+    r.setRotation(auxvec);
+    computeWeight();
+  }
+}
+
+void BruteForceMethod::MarkovChainTranslation(int index)
+{
+  float inc = getRandom(RANDOM_SIZE);
+  float currentWeight=weight;
+  float nextWeight;
+  QVec auxvec;
+  
+  auxvec=r.getCenter();
+  
+  //do and get weight
+  auxvec(index)=auxvec(index)+inc;
+  r.setCenter(auxvec);
+  computeWeight();
+  nextWeight=weight;
+  //undo
+  auxvec(index)=auxvec(index)-inc;
+  r.setCenter(auxvec);
+  computeWeight();
+  
+  //we get it for sure
+  if(nextWeight>weight)
+  {
+    auxvec(index)=auxvec(index)+inc;
+    r.setCenter(auxvec);
+    computeWeight();
+    //if better than best update best
+    if(weight>bestweight)
+    {
+      best.setCenter(r.getCenter());
+      best.setRotation(r.getRotation());
+      best.setWidth(r.getWidth());
+      bestweight=weight;
+    }
+  }
+  //ifnot get it with probability nextweight/weight
+  else
+  {
+    float probability=nextWeight/weight;
+    if ( (((float) rand())/(float) RAND_MAX) < probability)
+    {
+      auxvec(index)=auxvec(index)+inc;
+      r.setCenter(auxvec);
+      computeWeight();
+    }
+  }
+  
 }
 
 void BruteForceMethod::adapt ()
 {
-  incTranslation(0);
+//   QVec auxvec;
+  MarkovChainTranslation(0);
+//   auxvec = r.getCenter();
   
-  switch(rand()%9)
-  {
-    //x
-    case 0:
-//       incTranslation(0);
-      break;
-    //y
-    case 1:
-      //incTranslation(1);
-      break;
-    //z
-    case 2:
-      //incTranslation(2);
-      break;
-    //Wx
-    case 3:
-      incWidth(0);
-      break;
-    //Wy
-    case 4:
-      incWidth(1);
-      break;  
-    //Wz
-    case 5:
-      incWidth(2);
-      break;
-    //Rx
-    case 6:
-      incRotation(0);
-      break;
-    //Ry
-    case 7:
-      incRotation(1);
-      break;
-    //Rz
-    case 8:
-      incRotation(2);
-      break;       
-  }
+//   incTranslation(0);
+//     
+//     
+//     incTranslation(1);
+//     incTranslation(2);
+//     incRotation(0);
+//     incRotation(1);
+//     incRotation(2);
 }
 
 void BruteForceMethod::setData (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud) 
 { 
   this->data = cloud; 
-  this->weight=computeWeight(); 
+  computeWeight();
+  bestweight=weight;
 }
 
-float BruteForceMethod::computeWeight()
-{
 
-  float weight=0.;
+void BruteForceMethod::computeWeight()
+{
+ 
+  weight=0.;
   //estimate normals
   pcl::NormalEstimation<pcl::PointXYZRGBA, pcl::Normal> ne;
   ne.setInputCloud (data);
@@ -395,7 +381,7 @@ float BruteForceMethod::computeWeight()
   ne.setRadiusSearch (5);
   // Compute the features
   ne.compute (*cloud_normals);
-  
+
   int normalint =0;
   for( pcl::PointCloud<pcl::PointXYZRGBA>::iterator it = data->begin(); it != data->end(); it++ )
   {
@@ -404,60 +390,17 @@ float BruteForceMethod::computeWeight()
     QVec normal = QVec::vec3( cloud_normals->points[normalint].normal_x,cloud_normals->points[normalint].normal_y, cloud_normals->points[normalint].normal_z);
 
 
-//     double dist,t;
-//     const float distA = sqrt(c.R(point));   
-//     
-//     QVec qP = QVec::vec3(it->x, it->y, it->z);
-//     QVec qA = QVec::vec3(c.getA().getX(), c.getA().getY(), c.getA().getZ());
-//     QVec qB = QVec::vec3(c.getB().getX(), c.getB().getY(), c.getB().getZ());
-//     
-//     if (distA<0.0001)
-//     {
-//       const double distB = c.getR() - ((qP-qA).crossProduct(qP-qB)).norm2() / (qB-qA).norm2();
-// //       printf("metodo 2: %f\n", distB);
-//       dist = distB;
-//     }
-//     else
-//     {
-// //       printf("metodo 1: %f\n", distA);
-//       dist = distA;
-//     }
     double dist = r.distance(point,normal);
-    
-    weight += dist;
-//     std::cout<<"X:"<<it->x<<" Y:"<<it->y<<" Z:"<<it->z<<" D:"<<dist<<std::endl;
-    
-    //look for the upper and low points
-//     t=-((qA-qP).dotProduct(qB-qA))/fabs(pow((qB-qA).norm2(),2));
-//     if (t<mint || it==data.cloud_target->begin())
-//     {
-//       mint=t;
-//     }
-//     if (t>maxt || it==data.cloud_target->begin())
-//     {
-//       maxt=t;
-//     }
+    weight += dist*dist;
     normalint++;
   }
   
   weight /= data->points.size();
   
-  //const float k = fabs(0.-mint)+fabs(1.-maxt);
-  //const float topbottom_weight = 1./(c.getR()*k+1);
-  
   const float distance_weight = 1./(this->weight+0.1);
-  
-//   std::cout<<"k: "<<k<<std::endl;
-//   std::cout<<"topbottom_weight: "<<topbottom_weight<<" distance_weight: "<<distance_weight<<std::endl;
+
   
   weight=distance_weight;//*topbottom_weight;
-  
-//   printf("WEIGHT: %f\n", this->weight);
-  return weight;
-}
-
-BruteForceMethod::~BruteForceMethod()
-{
 
 }
 
@@ -476,14 +419,6 @@ QVec BruteForceMethod::getScale()
   return r.getWidth();
 }
 
-void BruteForceMethod::setRectPrism (RectPrism r )
-{
-  this->r.setCenter ( r.getCenter() );
-  this->r.setRotation ( r.getRotation() );
-  this->r.setWidth ( r.getWidth() );
-  
-}
-
 void BruteForceMethod::print(std::string v)
 {
   printf("%s: \n", v.c_str());
@@ -491,4 +426,11 @@ void BruteForceMethod::print(std::string v)
 	 r.getCenter()(0),r.getCenter()(1),r.getCenter()(2),
 	 r.getRotation()(0),r.getRotation()(1),r.getRotation()(2),
 	 r.getWidth()(0),r.getWidth()(1),r.getWidth()(2), weight);
+}
+
+float BruteForceMethod::getRandom(float var)
+{
+  double U = double(rand())/RAND_MAX;
+  double V = double(rand())/RAND_MAX;
+  return sqrt(-2*log(U))*cos(2.*M_PIl*V)*var;
 }

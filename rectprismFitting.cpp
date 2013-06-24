@@ -320,7 +320,8 @@ void RectPrismFitting::run()
 //     bestParticle.print(" resampled particle:");
 //   }
   
-  bruteforce.print("Data from model:");
+  //bruteforce.print("Data from model:");
+
   QVec t = bruteforce.getTranslation();
   QVec r = bruteforce.getRotation();
   QVec w = bruteforce.getScale();
