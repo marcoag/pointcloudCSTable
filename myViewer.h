@@ -16,37 +16,31 @@
 
 using namespace std;
 
-//typedef pcl::PointXYZRGBA PointT;
-
 class myViewer: public QWidget
 {
 Q_OBJECT
 public:
   myViewer();
-  myViewer(pcl::PointCloud<PointT>::Ptr cloudToFit);
   ~myViewer();
   void cube();
-//   void cylinder();
-//   void setXmlPath(string xml);
   
   void resizeEvent(QResizeEvent * event);
-  void cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr &cloud);
 
 public slots:
-  //void runCylinder();
   void runRectPrism();
 private:
   
-  pcl::Grabber* interface;
-  pcl::PointCloud<PointT>::Ptr cloudToFit;
-  pcl::PointCloud<PointT>::Ptr cloudToShow;
+  //Mutex for shared pointers
+  boost::shared_ptr<QMutex> innerModelMutex;
+  
+  //Fitting
+  RectPrismFitting *rectprismFitting;
   QTimer timer;
+  
+  //Visualization management
   OsgView *world3D;
   InnerModelManager *innerModelManager;
- // CylinderFitting *cylinderFitting;
-  RectPrismFitting *rectprismFitting;
-  QMutex innermodelMutex, cloudToFitMutex;
-  bool first_cloud;
+  
 };
 
 #endif

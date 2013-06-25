@@ -1,12 +1,12 @@
-#include "bruteForceMethod.h"
+#include "MCMCAdjust.h"
 
 
-BruteForceMethod::BruteForceMethod(): r()
+MCMCAdjust::MCMCAdjust(): r()
 {
   this->weight=1;
 }
 
-void BruteForceMethod::estimateEigenAndCentroid(Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid)
+void MCMCAdjust::estimateEigenAndCentroid(Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid)
 {
   static Eigen::Vector4f mean;
   static Eigen::Matrix3f cov;
@@ -56,7 +56,7 @@ void BruteForceMethod::estimateEigenAndCentroid(Eigen::Vector3f &eig_values, Eig
 }
 
 
-void BruteForceMethod::initializeFromEigenValues()
+void MCMCAdjust::initializeFromEigenValues()
 {
 
   
@@ -127,7 +127,7 @@ void BruteForceMethod::initializeFromEigenValues()
 
   float ratio=max_eigenvalue/max_distance;
   cout<<"RectPrismCloudParticle::initializeFromEigenValues::Ratio: "<<ratio<<" max_distance:"<<max_distance<<endl;
-  r.setCenter(QVec::vec3(centroid(0)-500, centroid(1), centroid(2)));
+  r.setCenter(QVec::vec3(centroid(0)-100, centroid(1)-100, centroid(2)-100));
   cout<<"Centroid: "<<centroid(0)<<" "<<centroid(1)<<" "<<centroid(2)<<endl;
   cout<<"Eigen Values/ratio: "<<(eigen_values(1)/ratio)*2<<" "<<(eigen_values(0)/ratio)*2 <<" "<<(eigen_values(2)/ratio)*2<<endl;
   
@@ -152,7 +152,7 @@ void BruteForceMethod::initializeFromEigenValues()
 
 }
 
-void BruteForceMethod::gypsyInitization()
+void MCMCAdjust::gypsyInitization()
 {
    Eigen::Vector4f centroid;
    pcl::compute3DCentroid (*data,centroid);
@@ -163,7 +163,7 @@ void BruteForceMethod::gypsyInitization()
 
 }
 
-void BruteForceMethod::initialize()
+void MCMCAdjust::initialize()
 { 
    initializeFromEigenValues();
    //also to best
@@ -173,7 +173,7 @@ void BruteForceMethod::initialize()
 
 }
 
-void BruteForceMethod::incTranslation(int index)
+void MCMCAdjust::incTranslation(int index)
 {
   QVec auxvec;
   float positiveWeight, negativeWeight, transformedWeight;
@@ -241,7 +241,7 @@ void BruteForceMethod::incTranslation(int index)
 //   computeWeight();
 }
 
-void BruteForceMethod::incRotation(int index)
+void MCMCAdjust::incRotation(int index)
 {
   QVec auxvec;
   float positiveWeight, negativeWeight, transformedWeight;
@@ -294,7 +294,7 @@ void BruteForceMethod::incRotation(int index)
   }
 }
 
-void BruteForceMethod::MarkovChainTranslation(int index)
+void MCMCAdjust::MarkovChainTranslation(int index)
 {
   float inc = getRandom(RANDOM_SIZE);
   float currentWeight=weight;
@@ -342,10 +342,12 @@ void BruteForceMethod::MarkovChainTranslation(int index)
   
 }
 
-void BruteForceMethod::adapt ()
+void MCMCAdjust::adapt ()
 {
 //   QVec auxvec;
   MarkovChainTranslation(0);
+  MarkovChainTranslation(1);
+  MarkovChainTranslation(2);
 //   auxvec = r.getCenter();
   
 //   incTranslation(0);
@@ -358,7 +360,7 @@ void BruteForceMethod::adapt ()
 //     incRotation(2);
 }
 
-void BruteForceMethod::setData (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud) 
+void MCMCAdjust::setData (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud) 
 { 
   this->data = cloud; 
   computeWeight();
@@ -366,7 +368,7 @@ void BruteForceMethod::setData (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
 }
 
 
-void BruteForceMethod::computeWeight()
+void MCMCAdjust::computeWeight()
 {
  
   weight=0.;
@@ -404,22 +406,22 @@ void BruteForceMethod::computeWeight()
 
 }
 
-QVec BruteForceMethod::getTranslation()
+QVec MCMCAdjust::getTranslation()
 {
   return r.getCenter();
 }
 
-QVec BruteForceMethod::getRotation()
+QVec MCMCAdjust::getRotation()
 {
   return r.getRotation();
 }
 
-QVec BruteForceMethod::getScale()
+QVec MCMCAdjust::getScale()
 {
   return r.getWidth();
 }
 
-void BruteForceMethod::print(std::string v)
+void MCMCAdjust::print(std::string v)
 {
   printf("%s: \n", v.c_str());
   printf("RectPrism: Center (%f,%f,%f), Rotation (%f,%f,%f), Width (%f,%f,%f), Weight: %f\n", 
@@ -428,7 +430,7 @@ void BruteForceMethod::print(std::string v)
 	 r.getWidth()(0),r.getWidth()(1),r.getWidth()(2), weight);
 }
 
-float BruteForceMethod::getRandom(float var)
+float MCMCAdjust::getRandom(float var)
 {
   double U = double(rand())/RAND_MAX;
   double V = double(rand())/RAND_MAX;

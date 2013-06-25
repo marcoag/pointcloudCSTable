@@ -6,7 +6,6 @@
 #include <math.h>
 #include <cassert>
 #include <QMat/QMatAll>
-#include "axis.h"
 #include "codes.h"
 
 #include <CGAL/Nef_polyhedron_3.h>
@@ -32,6 +31,7 @@ class RectPrism
 public:
   RectPrism();
   RectPrism(const QVec &center, const QVec &rotation, double Wx, double Wy, double Wz);
+  //RectPrism& operator= (const RectPrism &cSource);
   inline const QVec getCenter () { return center; }
   inline const QVec getRotation () { return rotation; }
   inline const QVec getWidth () { return QVec::vec3(Wx,Wy,Wz); }

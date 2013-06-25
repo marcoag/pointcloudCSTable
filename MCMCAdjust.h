@@ -14,42 +14,56 @@
 
 #include <QMat/QMatAll>
 
-class BruteForceMethod
+#define RANDOM_SIZE 100
+
+class MCMCAdjust
 {
 public:
 
-  BruteForceMethod();
-  ~BruteForceMethod();
+  MCMCAdjust();
   void initialize ();
   void adapt ();
-  float computeWeight();
-  void initializeFromEigenValues ();
-  void gypsyInitization ();
+  float computeWeight(RectPrism r);
+
   QVec getTranslation();
   QVec getRotation();
   QVec getScale();
+    
   static float getRandom(float var);
-  void setRectPrism (RectPrism r );
   void print(std::string v);
-
-  void estimateEigenAndCentroid(Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid);
   
+  inline float getWeight() { return weight; }
+  
+  //data
   inline pcl::PointCloud<pcl::PointXYZRGBA>::Ptr getData () { return data; }
   void setData (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud);
 
+private:
+
+  
+  void computeWeight();
+  
+  //initialization methods
+  void estimateEigenAndCentroid(Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid);
+  void initializeFromEigenValues ();
+  void gypsyInitization ();
+  
+  //IncModel methods
   void incTranslation(int index);
   void incWidth(int index);
   void incRotation(int index);
   
-  inline RectPrism getRectPrism() { return r; }
-
-private:
+  //MarcovChainMontecaro
+  void MarkovChainTranslation(int index);
   
   float weight;
+  float bestweight;
+  RectPrism r; //actual 
+  RectPrism best; //best
   
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr data;
   
-  RectPrism r;
+
   
   //Random variance variables
   QVec varianceC;

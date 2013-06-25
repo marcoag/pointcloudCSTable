@@ -5,15 +5,15 @@ PROJECT( cogSub )
 SET ( SOURCES
   main.cpp
   myViewer.cpp
-  rectprismFitting.cpp
-  bruteForceMethod.cpp
-  innermodelManager.cpp
-  shapes/rectprism.cpp
   osgviewer/osgview.cpp
+  innermodelManager.cpp
+  rectprismFitting.cpp
+  MCMCAdjust.cpp
+  shapes/rectprism.cpp
 )
 SET ( HEADERS
-   myViewer.h
-   osgviewer/osgview.h
+  myViewer.h
+  osgviewer/osgview.h
 )
 
 set(CMAKE_CXX_FLAGS "-Wall -Wfatal-errors -fopenmp -frounding-math" )

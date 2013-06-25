@@ -13,19 +13,19 @@
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
 
-#include "myViewer.h"
-#include "innermodelManager.h"
-#include "rectprismFitting.h"
+ #include "myViewer.h"
+// #include "innermodelManager.h"
+// #include "rectprismFitting.h"
 
 
 
 int main (int argc, char* argv[])
 {
-   QApplication app(argc, argv);
-   
-   myViewer m;
-   m.cube();
-   app.exec();
+    QApplication app(argc, argv);
+    
+    myViewer m;
+    m.cube();
+    app.exec();
   
   return 0;
 }
