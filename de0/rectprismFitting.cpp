@@ -51,7 +51,7 @@ void RectPrismFitting::makeSinteticCube()
   int Wx = 100;
   int Wy = 100;
   int Wz = 400;
-  int res = 50;
+  int res = 20;
   //Rot3D r(0.5, 0.2, 0.2);
   //Faces front and back
   for(float x=0; x<=Wx; x=x+res)
@@ -60,9 +60,9 @@ void RectPrismFitting::makeSinteticCube()
     {
       //face front (x=0)
       pcl::PointXYZRGBA p;
-      p.x = x;//+RectPrismCloudParticle::getRandom(10);
-      p.y = y;//+RectPrismCloudParticle::getRandom(10);
-      p.z = 0;//+RectPrismCloudParticle::getRandom(10);
+      p.x = x+BruteForceMethod::getRandom(10);
+      p.y = y+BruteForceMethod::getRandom(10);
+      p.z = 0+BruteForceMethod::getRandom(10);
       p.r = 0;
       p.g = 255;
       p.b = 0;
@@ -83,16 +83,16 @@ void RectPrismFitting::makeSinteticCube()
     {
       //face front (x=0)
       pcl::PointXYZRGBA p;
-      p.x = x;//+RectPrismCloudParticle::getRandom(10);
-      p.y = 0;//+RectPrismCloudParticle::getRandom(10);
-      p.z = z;//+RectPrismCloudParticle::getRandom(10);
+      p.x = x+BruteForceMethod::getRandom(10);
+      p.y = 0+BruteForceMethod::getRandom(10);
+      p.z = z+BruteForceMethod::getRandom(10);
       p.r = 0;
       p.g = 255;
       p.b = 0;
       cloudToFit->push_back(p);
-      p.x = x;//+RectPrismCloudParticle::getRandom(10);
-      p.y = Wy;//+RectPrismCloudParticle::getRandom(10);;
-      p.z = z;//+RectPrismCloudParticle::getRandom(10);
+      p.x = x+BruteForceMethod::getRandom(10);
+      p.y = Wy+BruteForceMethod::getRandom(10);;
+      p.z = z+BruteForceMethod::getRandom(10);
       p.r = 0;
       p.g = 255;
       p.b = 0;
@@ -106,16 +106,16 @@ void RectPrismFitting::makeSinteticCube()
     {
       //face front (x=0)
       pcl::PointXYZRGBA p;
-      p.x = 0;//+RectPrismCloudParticle::getRandom(10);
-      p.y = y;//+RectPrismCloudParticle::getRandom(10);
-      p.z = z;//+RectPrismCloudParticle::getRandom(10);
+      p.x = 0+BruteForceMethod::getRandom(10);
+      p.y = y+BruteForceMethod::getRandom(10);
+      p.z = z+BruteForceMethod::getRandom(10);
       p.r = 0;
       p.g = 255;
       p.b = 0;
       cloudToFit->push_back(p);
-      p.x = Wx;//+RectPrismCloudParticle::getRandom(10);
-      p.y = y;//+RectPrismCloudParticle::getRandom(10);
-      p.z = z;//+RectPrismCloudParticle::getRandom(10);
+      p.x = Wx+BruteForceMethod::getRandom(10);
+      p.y = y+BruteForceMethod::getRandom(10);
+      p.z = z+BruteForceMethod::getRandom(10);
       p.r = 0;
       p.g = 255;
       p.b = 0;

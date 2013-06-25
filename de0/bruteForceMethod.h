@@ -53,9 +53,6 @@ private:
   void incWidth(int index);
   void incRotation(int index);
   
-  //MarcovChainMontecaro
-  void MarkovChainTranslation(int index);
-  
   float weight;
   float bestweight;
   RectPrism r; //actual 
