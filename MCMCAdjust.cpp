@@ -4,6 +4,9 @@
 MCMCAdjust::MCMCAdjust(): r()
 {
   this->weight=1;
+  varianceC = QVec::vec3(5,5,5);
+  varianceW = QVec::vec3(5,5,5);
+  varianceR = QVec::vec3(0.1,0.1,0.1);
 }
 
 void MCMCAdjust::estimateEigenAndCentroid(Eigen::Vector3f &eig_values, Eigen::Matrix3f &eig_vectors, Eigen::Vector4f &centroid)
@@ -127,7 +130,7 @@ void MCMCAdjust::initializeFromEigenValues()
 
   float ratio=max_eigenvalue/max_distance;
   cout<<"RectPrismCloudParticle::initializeFromEigenValues::Ratio: "<<ratio<<" max_distance:"<<max_distance<<endl;
-  r.setCenter(QVec::vec3(centroid(0)-100, centroid(1)-100, centroid(2)-100));
+  r.setCenter(QVec::vec3(centroid(0)-20, centroid(1)-20, centroid(2)-20));
   cout<<"Centroid: "<<centroid(0)<<" "<<centroid(1)<<" "<<centroid(2)<<endl;
   cout<<"Eigen Values/ratio: "<<(eigen_values(1)/ratio)*2<<" "<<(eigen_values(0)/ratio)*2 <<" "<<(eigen_values(2)/ratio)*2<<endl;
   
@@ -171,127 +174,6 @@ void MCMCAdjust::initialize()
    best.setRotation(r.getRotation());
    best.setWidth(r.getWidth());
 
-}
-
-void MCMCAdjust::incTranslation(int index)
-{
-  QVec auxvec;
-  float positiveWeight, negativeWeight, transformedWeight;
-  QVec width = r.getWidth();
-  float inc = width(index)/40;
-  auxvec = r.getCenter();
-  
-  //decide direction
-  auxvec(index)=auxvec(index)+inc;
-  r.setCenter(auxvec);
-  computeWeight();
-  positiveWeight=weight;
-  
-  //undo and sobstract a quarter = 2 quarters
-  auxvec(index)=auxvec(index)-(inc*2);
-  r.setCenter(auxvec);
-  computeWeight();
-  negativeWeight=weight;
-  
-  //undo changes
-  auxvec(index)=auxvec(index)+inc;
-  r.setCenter(auxvec);
-  
-  computeWeight();
-  
-    cout<<"positive: "<<positiveWeight<<" negative: "<<negativeWeight<<endl;
-  //if negative is good go with it
-  if(negativeWeight>positiveWeight)
-  {
-    transformedWeight=negativeWeight;
-    inc*=-1;
-  }
-  else
-    transformedWeight=positiveWeight;
-    
-
-  
-  cout<<"Transformed: "<<transformedWeight<<" weight: "<<weight<<endl;
-  while(transformedWeight>weight)
-  {
-    auxvec(index)=auxvec(index)+inc;
-    r.setCenter(auxvec);
-    weight=transformedWeight;
-    
-    //calculate futureWeight
-    auxvec(index)=auxvec(index)+inc;
-    r.setCenter(auxvec);
-    computeWeight();
-    transformedWeight=weight;
-    
-    //undo
-    auxvec(index)=auxvec(index)-inc;
-    r.setCenter(auxvec);
-    computeWeight();
-  }
-
-//   QVec auxvec;
-//   float positiveWeight, negativeWeight, transformedWeight;
-//   QVec width = r.getWidth();
-//   float inc = width(index)/40;
-//   auxvec = r.getCenter();
-//   
-//   auxvec(index)=auxvec(index)+inc;
-//   r.setCenter(auxvec);
-//   computeWeight();
-}
-
-void MCMCAdjust::incRotation(int index)
-{
-  QVec auxvec;
-  float positiveWeight, negativeWeight, transformedWeight;
-  QVec width = r.getWidth();
-  float inc = 0.02;
-  auxvec = r.getRotation();
-  
-  //decide direction
-  auxvec(index)=auxvec(index)+inc;
-  r.setRotation(auxvec);
-  computeWeight();
-  positiveWeight=weight;
-  
-  //undo and sobstract a quarter = 2 quarters
-  auxvec(index)=auxvec(index)-(inc*2);
-  r.setRotation(auxvec);
-  computeWeight();
-  negativeWeight=weight;
-  
-  //undo changes
-  auxvec(index)=auxvec(index)+inc;
-  r.setRotation(auxvec);
-  computeWeight();
-  
-  //if negative is good go with it
-  if(negativeWeight>positiveWeight)
-  {
-    transformedWeight=negativeWeight;
-    inc*=-1;
-  }
-  else
-    transformedWeight=positiveWeight;
-    
-  while(transformedWeight>weight)
-  {
-    auxvec(index)=auxvec(index)+inc;
-    r.setRotation(auxvec);
-    weight=transformedWeight;
-    
-    //calculate futureWeight
-    auxvec(index)=auxvec(index)+inc;
-    r.setRotation(auxvec);
-    computeWeight();
-    transformedWeight=weight;
-    
-    //undo
-    auxvec(index)=auxvec(index)-inc;
-    r.setRotation(auxvec);
-    computeWeight();
-  }
 }
 
 void MCMCAdjust::MarkovChainTranslation(int index)
@@ -342,22 +224,140 @@ void MCMCAdjust::MarkovChainTranslation(int index)
   
 }
 
+void MCMCAdjust::MarkovChainTranslationStepOnOne()
+{
+  //incs on each stuff
+  int selection = rand()%3;
+  QVec translationInc = QVec::vec3(getRandom(varianceC(0)),getRandom(varianceC(1)),getRandom(varianceC(2)));
+  QVec rotationInc    = QVec::vec3(getRandom(varianceR(0)),getRandom(varianceR(1)),getRandom(varianceR(2)));
+  QVec widthInc       = QVec::vec3(getRandom(varianceW(0)),getRandom(varianceW(1)),getRandom(varianceW(2)));
+  
+  float currentWeight=weight;
+  float nextWeight;
+  QVec translation = r.getCenter();
+  QVec rotation = r.getRotation();
+  QVec width = r.getWidth();
+  
+  //do change and get weight
+  if(selection==0)
+    r.setCenter(translation+translationInc);
+  if(selection==1)
+    r.setRotation(rotation+rotationInc);
+  if(selection==2)
+    r.setWidth(width+widthInc);  
+  computeWeight();
+  nextWeight=weight;
+  
+  //undo
+  if(selection==0)
+    r.setCenter(translation-translationInc);
+  if(selection==1)
+    r.setRotation(rotation-rotationInc);
+  if(selection==2)
+    r.setWidth(width-widthInc);   
+  computeWeight();
+  
+  //we get it for sure
+  if(nextWeight>weight)
+  {
+    if(selection==0)
+      r.setCenter(translation+translationInc);
+    if(selection==1)
+      r.setRotation(rotation+rotationInc);
+    if(selection==2)
+      r.setWidth(width+widthInc); 
+    computeWeight();
+    //if better than best update best
+    if(weight>bestweight)
+    {
+      if(selection==0)
+        best.setCenter(r.getCenter());
+      if(selection==1)
+        best.setRotation(r.getRotation());
+      if(selection==2)
+        best.setWidth(r.getWidth());
+      bestweight=weight;
+    }
+  }
+  //ifnot get it with probability nextweight/weight
+  else
+  {
+    float probability=nextWeight/weight;
+    if ( (((float) rand())/(float) RAND_MAX) < probability)
+    {
+      if(selection==0)
+        r.setCenter(translation+translationInc);
+      if(selection==1)
+        r.setRotation(rotation+rotationInc);
+      if(selection==2)
+        r.setWidth(width+widthInc); 
+      computeWeight();
+    }
+  }
+}
+
+void MCMCAdjust::MarkovChainTranslationStepOnAll()
+{
+  //incs on each stuff
+  QVec translationInc = QVec::vec3(getRandom(varianceC(0)),getRandom(varianceC(1)),getRandom(varianceC(2)));
+  QVec rotationInc    = QVec::vec3(getRandom(varianceR(0)),getRandom(varianceR(1)),getRandom(varianceR(2)));
+  QVec widthInc       = QVec::vec3(getRandom(varianceW(0)),getRandom(varianceW(1)),getRandom(varianceW(2)));
+  
+  float currentWeight=weight;
+  float nextWeight;
+  QVec translation = r.getCenter();
+  QVec rotation = r.getRotation();
+  QVec width = r.getWidth();
+  
+  //do change and get weight
+  r.setCenter(QVec::vec3(translation(0)+translationInc(0),translation(1)+translationInc(1),translation(2)+translationInc(2)));
+  r.setRotation(QVec::vec3(rotation(0)+rotationInc(0),rotation(1)+rotationInc(1),rotation(2)+rotationInc(2)));
+  r.setWidth(QVec::vec3(width(0)+widthInc(0),width(1)+widthInc(1),width(2)+widthInc(2)));  
+  computeWeight();
+  nextWeight=weight;
+  
+  //undo
+  r.setCenter(QVec::vec3(translation(0)-translationInc(0),translation(1)-translationInc(1),translation(2)-translationInc(2)));
+  r.setRotation(QVec::vec3(rotation(0)-rotationInc(0),rotation(1)-rotationInc(1),rotation(2)-rotationInc(2)));
+  r.setWidth(QVec::vec3(width(0)-widthInc(0),width(1)-widthInc(1),width(2)-widthInc(2)));   
+  computeWeight();
+  
+  //we get it for sure
+  if(nextWeight>weight)
+  {
+    r.setCenter(QVec::vec3(translation(0)+translationInc(0),translation(1)+translationInc(1),translation(2)+translationInc(2)));
+    r.setRotation(QVec::vec3(rotation(0)+rotationInc(0),rotation(1)+rotationInc(1),rotation(2)+rotationInc(2)));
+    r.setWidth(QVec::vec3(width(0)+widthInc(0),width(1)+widthInc(1),width(2)+widthInc(2))); 
+    computeWeight();
+    //if better than best update best
+    if(weight>bestweight)
+    {
+      best.setCenter(r.getCenter());
+      best.setRotation(r.getRotation());
+      best.setWidth(r.getWidth());
+      bestweight=weight;
+    }
+  }
+  //ifnot get it with probability nextweight/weight
+  else
+  {
+    float probability=nextWeight/weight;
+    if ( (((float) rand())/(float) RAND_MAX) < probability)
+    {
+      r.setCenter(QVec::vec3(translation(0)+translationInc(0),translation(1)+translationInc(1),translation(2)+translationInc(2)));
+      r.setRotation(QVec::vec3(rotation(0)+rotationInc(0),translation(1)+rotationInc(1),rotation(2)+rotationInc(2)));
+      r.setWidth(QVec::vec3(width(0)+widthInc(0),width(1)+widthInc(1),width(2)+widthInc(2))); 
+      computeWeight();
+    }
+  }
+}
+
 void MCMCAdjust::adapt ()
 {
-//   QVec auxvec;
-  MarkovChainTranslation(0);
-  MarkovChainTranslation(1);
-  MarkovChainTranslation(2);
-//   auxvec = r.getCenter();
-  
-//   incTranslation(0);
-//     
-//     
-//     incTranslation(1);
-//     incTranslation(2);
-//     incRotation(0);
-//     incRotation(1);
-//     incRotation(2);
+  MarkovChainTranslationStepOnOne();
+//   varianceR.operator*(0.99);
+//   varianceC.operator*(0.99);
+//   varianceW.operator*(0.99);
 }
 
 void MCMCAdjust::setData (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud) 
@@ -393,16 +393,16 @@ void MCMCAdjust::computeWeight()
 
 
     double dist = r.distance(point,normal);
-    weight += dist*dist;
+    weight += dist;
     normalint++;
   }
   
-  weight /= data->points.size();
-  
-  const float distance_weight = 1./(this->weight+0.1);
-
-  
-  weight=distance_weight;//*topbottom_weight;
+   weight /= data->points.size();
+//   
+   const float distance_weight = 1./(this->weight+0.1);
+// 
+//   
+   weight=distance_weight;//*topbottom_weight;
 
 }
 
@@ -419,6 +419,21 @@ QVec MCMCAdjust::getRotation()
 QVec MCMCAdjust::getScale()
 {
   return r.getWidth();
+}
+
+QVec MCMCAdjust::getBestTranslation()
+{
+  return best.getCenter();
+}
+
+QVec MCMCAdjust::getBestRotation()
+{
+  return best.getRotation();
+}
+
+QVec MCMCAdjust::getBestScale()
+{
+  return best.getWidth();
 }
 
 void MCMCAdjust::print(std::string v)

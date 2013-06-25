@@ -28,7 +28,7 @@ void RectPrismFitting::run()
   computing=true;
 
   mcmcAdjust->adapt();
-  cout<<""<<mcmcAdjust->getWeight()<<", ";
+  //cout<<""<<mcmcAdjust->getWeight()<<", ";
   
   QVec t = mcmcAdjust->getTranslation();
   QVec r = mcmcAdjust->getRotation();
@@ -37,6 +37,16 @@ void RectPrismFitting::run()
   innerModelMutex->lock();
   innermodelManager->setPose("cube_0_t", t, r, w );
   innermodelManager->setScale("cube_0", w(0)/2, w(1)/2, w(2)/2);
+  innerModelMutex->unlock();
+  
+  //from the best
+  t = mcmcAdjust->getBestTranslation();
+  r = mcmcAdjust->getBestRotation();
+  w = mcmcAdjust->getBestScale();
+  
+  innerModelMutex->lock();
+  innermodelManager->setPose("cube_1_t", t, r, w );
+  innermodelManager->setScale("cube_1", w(0)/2, w(1)/2, w(2)/2);
   innerModelMutex->unlock();
   
   computing=false;

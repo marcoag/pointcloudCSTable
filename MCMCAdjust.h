@@ -28,7 +28,11 @@ public:
   QVec getTranslation();
   QVec getRotation();
   QVec getScale();
-    
+  
+  QVec getBestTranslation();
+  QVec getBestRotation();
+  QVec getBestScale();
+  
   static float getRandom(float var);
   void print(std::string v);
   
@@ -48,13 +52,10 @@ private:
   void initializeFromEigenValues ();
   void gypsyInitization ();
   
-  //IncModel methods
-  void incTranslation(int index);
-  void incWidth(int index);
-  void incRotation(int index);
-  
   //MarcovChainMontecaro
   void MarkovChainTranslation(int index);
+  void MarkovChainTranslationStepOnAll();
+  void MarkovChainTranslationStepOnOne();
   
   float weight;
   float bestweight;

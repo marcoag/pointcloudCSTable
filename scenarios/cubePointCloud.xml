@@ -4,6 +4,9 @@
     <transform id="cube_0_t">
       <mesh id="cube_0" file="/home/robocomp/robocomp/Files/osgModels/basics/cubexxx.3ds" scale="500" rx="0" render="wireframe"/>
     </transform>
+    <transform id="cube_1_t">
+      <mesh id="cube_1" file="/home/robocomp/robocomp/Files/osgModels/basics/cubexxx.3ds" scale="500" rx="0" />
+    </transform>
   </transform>
   <mesh id="rawOdometry_mesh" file="/home/robocomp/robocomp/Files/osgModels/axis.osg" scale="30" rx="1.57" render="wireframe" /> 
 <!--
