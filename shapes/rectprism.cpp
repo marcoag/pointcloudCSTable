@@ -183,52 +183,45 @@ double RectPrism::distance(const QVec &point,const QVec normal)
 
           {
             
-      //The brand new way            
-          double min_distance=0;
-       
-        min_distance=getInternalDistance(point,normal);
-       // point.print("");
-        //cout<<"Distance: "<<min_distance<<endl;
-        return min_distance;
+//       //The brand new way            
+//           double min_distance=0;
+//        
+//         min_distance=getInternalDistance(point,normal);
+//        // point.print("");
+//         //cout<<"Distance: "<<min_distance<<endl;
+//         return min_distance;
           
-//        The old way
-//       double distances[6];
-// 
-//       //-x
-//       distances[0]=fabs((-Wx/2)-point2(0));
-//       //y
-//       distances[1]=fabs((Wy/2)-point2(1));
-//       //-z
-//       distances[2]=fabs((-Wz/2)-point2(2));
-//       //-y
-//       distances[3]=fabs((-Wy/2)-point2(1));
-//       //z
-//       distances[4]=fabs((Wz/2)-point2(2));
-//       //x
-//       distances[5]=fabs((Wx/2)-point2(0));
-//       
-//       //get the minimum distance
-//       //triing with max instead
-//       max_distance=distances[0];
-//       int indice;
-//       for(int i=1;i<6;i++)
-//       {
-//         if (max_distance<distances[i])
-//         {
-//           max_distance=distances[i];
-//           indice=i;
-//         }
-//         //min_distance+=distances[i];
-//       }
-//       float total_distance=0;
-//       for(int i=0;i<6;i++)
-//       {
-//         if (i!=indice)
-//           total_distance+=distances[i];
-//       } 
-//           return total_distance/5;
-    
-        } 
+      //the old way
+      double distances[6];
+      double min_distance=-1;
+      //-x
+      distances[0]=fabs((-Wx/2)-point2(0));
+      //y
+      distances[1]=fabs((Wy/2)-point2(1));
+      //-z
+      distances[2]=fabs((-Wz/2)-point2(2));
+      //-y
+      distances[3]=fabs((-Wy/2)-point2(1));
+      //z
+      distances[4]=fabs((Wz/2)-point2(2));
+      //x
+      distances[5]=fabs((Wx/2)-point2(0));
+      
+      //get the minimum distance
+      //triing with max instead
+      min_distance=distances[0];
+      int indice;
+      for(int i=1;i<6;i++)
+      {
+        if (min_distance>distances[i])
+        {
+          min_distance=distances[i];
+          indice=i;
+        }
+        //min_distance+=distances[i];
+      }
+      return min_distance;
+	  }
     
     case MMB: return abs(point2(2)-(Wz/2));
     case MBF: return abs(sqrt(pow(point2(1)-(-Wy/2),2)+pow(point2(2)-(-Wz/2),2)));
@@ -261,22 +254,22 @@ uint8_t RectPrism::collisionVector(const QVec &point)
   uint8_t code = 0;
   
   //check X axis
-  if (point(0)>(Wx/2))
+  if (point(0)>=(Wx/2))
     code=code|1<<XP;
-  else if (point(0)<(-(Wx/2)))
+  else if (point(0)<=(-(Wx/2)))
     code=code|1<<XN;
   
   //check Y axis
   
-  if (point(1)>(Wy/2))
+  if (point(1)>=(Wy/2))
     code=code|1<<YP;
-  else if(point(1)<(-Wy/2))
+  else if(point(1)<=(-Wy/2))
     code=code|1<<YN;
   
   //check Z axis
-  if (point(2)>(Wz/2))
+  if (point(2)>=(Wz/2))
     code=code|1<<ZP;
-  else if(point(2)<((-Wz/2)))
+  else if(point(2)<=((-Wz/2)))
     code=code|1<<ZN;
   
   //printCode(code);
