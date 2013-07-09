@@ -30,7 +30,6 @@ set(CMAKE_CXX_FLAGS "-Wall -Wfatal-errors -fopenmp -frounding-math" )
 include_directories(.)
 
 find_package(PCL 1.6 REQUIRED COMPONENTS common )
-find_package(CGAL QUIET COMPONENTS Core )
 include_directories(${PCL_INCLUDE_DIRS})
 include_directories(/usr/include/pcl-1.6 /usr/include/vtk-5.8 /opt/robocomp/include/ /usr/include/ni/ /usr/include/boost/ /usr/include/ )
 link_directories(${PCL_LIBRARY_DIRS} /usr/local/lib /opt/robocomp/lib)
